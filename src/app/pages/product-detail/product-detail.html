@@ -1,0 +1,265 @@
+@if(product()){
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a routerLink="/">Home</a></li>
+        <li class="breadcrumb-item"><a routerLink="/products">Products</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ product()?.name }}</li>
+        </ol>
+    </nav>
+    <div class="row" itemscope>
+        <meta itemprop="sku" [content]="product()?.sku" />
+        <meta itemprop="mpn" [content]="product()?.id" />
+
+        <!-- Product Images - Left Column -->
+        <div class="col-md-6 mb-4">
+        <div class="product-image-container">
+            <div class="main-image-wrapper">
+                @if((product()?.images?.length ?? 0) > 1) {
+                    <button *ngIf="" 
+                            class="image-nav-btn prev-btn" 
+                            (click)="prevImage()" 
+                            aria-label="Previous image">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+                }
+            <img [src]="selectedImage" 
+                [alt]="product()?.name" 
+                class="img-fluid product-image" 
+                itemprop="image" 
+                loading="eager" />
+              @if((product()?.images?.length ?? 0) > 1) {
+                    <button 
+                        class="image-nav-btn next-btn" 
+                        (click)="nextImage()" 
+                        aria-label="Next image">
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
+                }
+            </div>
+            @if((product()?.images?.length ?? 0) > 1) {
+                <div class="thumbnail-gallery">
+                    @for (img of product()?.images; track $index) {
+                        <button 
+                            class="thumbnail-item" 
+                            [class.active]="selectedImageIndex() === $index"
+                            (click)="selectImage($index)"
+                            [attr.aria-label]="'View image ' + ($index + 1)"
+                        >
+                            <img [src]="img" 
+                                [alt]="product()!.name + ' thumbnail ' + ($index + 1)" 
+                                class="img-fluid" 
+                                loading="lazy" />
+                        </button>
+                    }
+                </div>
+            }
+        </div>
+        </div>
+
+        <!-- Product Details - Right Column -->
+        <div class="col-md-6">
+            <h1 class="product-title" itemprop="name">{{ product()!.name }}</h1>
+            <p class="product-brand text-muted" itemprop="brand">
+                <span class="fw-bold">Brand:</span> {{ product()!.brand }}
+            </p>
+            <p class="product-sku text-muted">
+                <span class="fw-bold">SKU:</span> {{ product()!.sku }}
+            </p>
+            <div class="product-price mb-3 d-flex align-items-center" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+            <meta itemprop="priceCurrency" content="INR" />
+            <span class="price-tag" itemprop="price">₹ {{ product()?.price }}</span>
+            @if((product()?.stock ?? 0) > 0){
+                <span class="badge bg-success ms-2">In Stock</span>
+            } @else if ((product()?.stock ?? 0) <= 0) {
+                <span class="badge bg-danger ms-2">Out of Stock</span>
+            }
+        </div>
+
+        <!-- Check Delivery Availability -->
+        <div class="delivery-check mb-3">
+            <button class="btn btn-link delivery-check-btn p-0" (click)="toggleLocationPopup()">
+            <i class="bi bi-geo-alt me-1"></i> 
+            <span *ngIf="!userLocation()">Check delivery availability</span>
+            <span *ngIf="userLocation()">Delivery to: {{ userLocation() }}</span>
+            </button>
+            <div *ngIf="deliveryChecking()" class="delivery-info mt-2 text-muted">
+            <div class="spinner-border spinner-border-sm me-1" aria-hidden="true">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            Checking delivery availability...
+            </div>
+            <div *ngIf="userLocation() && deliveryAvailable() && !deliveryChecking()" class="delivery-info mt-2 text-success">
+            <i class="bi bi-check-circle me-1"></i> Delivery available by {{ deliveryDate() }}
+            </div>
+            <div *ngIf="userLocation() && !deliveryAvailable() && !deliveryChecking()" class="delivery-info mt-2 text-danger">
+            <i class="bi bi-x-circle me-1"></i> Sorry, delivery not available to this location
+            </div>
+        </div>
+
+        <div class="product-description mb-4" itemprop="description">
+            <h2 class="h5">Description</h2>
+            <p>{{ product()!.description }}</p>
+        </div>
+
+        <div class="product-specs mb-4">
+            @if(product()!.specifications){
+                <h2 class="h5">Specifications</h2>
+                <ul class="list-group">
+                    @for (item of product()?.specifications; track $index) {
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="fw-bold">{{item.name}}</span>
+                            <span>{{ item.value }}</span>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+
+        <div class="product-actions">
+            <div class="quantity-controls mb-3">
+                  @if ((product()?.stock ?? 0 ) > 0) {
+                    <div class="d-flex align-items-center">
+                        <button class="btn btn-outline-secondary" 
+                                (click)="cartService.decreaseQuantity(product()!.id, -1)" 
+                                [disabled]="quantity() <= 1" 
+                                aria-label="Decrease quantity">
+                        <i class="bi bi-dash"></i>
+                        </button>
+                        <span class="quantity-display mx-3">{{ quantity() }}</span>
+                        <button class="btn btn-outline-secondary" 
+                                (click)="cartService.increaseQuantity(product()!.id, 1)" 
+                                [disabled]="quantity() >= (product()?.stock ?? 0)" 
+                                aria-label="Increase quantity">
+                        <i class="bi bi-plus"></i>
+                        </button>
+                        @if ((product()?.stock ?? 0) < 10) {
+                            <span class="text-muted ms-3" >Only {{ product()?.stock }} left in stock</span>
+                        }
+                        
+                    </div>
+                }
+            </div>
+            <div class="d-flex flex-wrap">
+            <button class="btn btn-primary btn-lg me-2 mb-2" 
+                    (click)="addToCart(product())" 
+                    [disabled]="isAddingToCart() || (product()?.stock ?? 0) <= 0">
+                <span *ngIf="!isAddingToCart()">
+                <i class="bi bi-cart-plus me-2"></i>Add to Cart
+                </span>
+                <span *ngIf="isAddingToCart()">
+                <i class="bi bi-arrow-repeat spin me-2"></i>Adding...
+                </span>
+            </button>
+            <button class="btn btn-outline-secondary btn-lg mb-2">
+                <i class="bi bi-heart me-2"></i>Add to Wishlist
+            </button>
+            </div>
+            
+            <!-- Success Message -->
+            <div class="alert alert-success mt-3" *ngIf="addedToCartMessage()">
+            <i class="bi bi-check-circle me-2"></i>{{ addedToCartMessage() }}
+            </div>
+        </div>
+        </div>
+    </div>
+    <!-- Related Products Section -->
+    <section class="related-products mt-5" *ngIf="relatedProducts().length > 0">
+        <h2 class="mb-4">Related Products</h2>
+        <div class="row">
+        <div class="col-6 col-md-3 mb-4" >
+            @for (relatedProduct of relatedProducts(); track $index) {
+                <button class="card product-card h-100 w-100 text-start border-0" 
+                    (click)="navigateToProduct(relatedProduct.id)" 
+                    itemprop="itemListElement" 
+                    itemscope 
+                    itemtype="https://schema.org/Product">
+                <img [src]="relatedProduct.image" 
+                    class="card-img-top" 
+                    [alt]="relatedProduct.name" 
+                    loading="lazy" />
+                <div class="card-body">
+                    <h5 class="card-title">{{ relatedProduct.name }}</h5>
+                    <p class="card-text">{{ relatedProduct.brand }}</p>
+                    <p class="fw-bold">₹{{ relatedProduct.price }}</p>
+                </div>
+                </button>
+            }
+        </div>
+        </div>
+    </section>
+</div>
+} @else {
+    <!-- Load   ing State -->
+    <div class="container mt-5 text-center">
+    <div class="d-flex justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" aria-hidden="true">
+        <span class="visually-hidden">Loading product details...</span>
+        </div>
+    </div>
+    <p class="mt-3" aria-live="polite">Loading product details...</p>
+    </div>
+}
+
+<!-- Error State -->
+<div class="container mt-4 text-center" *ngIf="error()">
+  <div class="alert alert-danger">
+    <h2>Error</h2>
+    <p>{{ error() }}</p>
+    <a routerLink="/products" class="btn btn-primary mt-3">Browse All Products</a>
+  </div>
+</div>
+
+<!-- Not Found State -->
+<div class="container mt-4 text-center" *ngIf="!product() && !loading() && !error()">
+  <div class="alert alert-warning">
+    <h2>Product Not Found</h2>
+    <p>Sorry, the product you are looking for does not exist or has been removed.</p>
+    <a routerLink="/products" class="btn btn-primary mt-3">Browse All Products</a>
+  </div>
+</div>
+
+<!-- Location Popup Modal -->
+<div class="location-popup" [class.active]="showLocationPopup()" (click)="toggleLocationPopup()" (keydown.escape)="toggleLocationPopup()">
+  <div class="location-popup-content" (click)="$event.stopPropagation()" (keydown.escape)="toggleLocationPopup()">
+    <div class="location-popup-header">
+      <h3>Check Delivery Availability</h3>
+      <button class="location-popup-close" (click)="toggleLocationPopup()" aria-label="Close">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="location-popup-body">
+      <p>Enter your PIN code to check delivery availability and estimated delivery time.</p>
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="Enter PIN code" 
+               [ngModel]="userLocation()" maxlength="6" pattern="[0-9]*"
+               (ngModelChange)="onDeliveryPincodeChange($event)">
+      </div>
+      
+      <div *ngIf="deliveryChecking()" class="delivery-result">
+        <div class="d-flex align-items-center">
+          <div class="spinner-border spinner-border-sm me-2" aria-hidden="true">
+            <span class="visually-hidden">Checking...</span>
+          </div>
+          <span>Checking delivery availability...</span>
+        </div>
+      </div>
+      
+      <div *ngIf="userLocation().trim() && deliveryAvailable() && !deliveryChecking()" class="delivery-result success">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <div>
+          <p class="mb-1">Delivery available to {{ userLocation() }}</p>
+          <p class="delivery-date mb-0">Estimated delivery: {{ deliveryDate() }}</p>
+        </div>
+      </div>
+      
+      <div *ngIf="userLocation().trim() && !deliveryAvailable() && !deliveryChecking()" class="delivery-result error">
+        <i class="bi bi-x-circle-fill me-2"></i>
+        <div>
+          <p class="mb-1">We're sorry!</p>
+          <p class="mb-0">Delivery is currently not available to {{ userLocation() }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

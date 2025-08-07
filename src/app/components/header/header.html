@@ -1,0 +1,180 @@
+<nav class="custom-navbar">
+  <!-- Top Navbar with Logo, Search, Cart & Login -->
+  <div class="navbar-top" (mouseenter)="hideMegaMenu()">
+    <!-- Logo for Desktop -->
+    <div class="logo-container desktop-only">
+      <a routerLink="/" class="logo-link">
+        <img src="assets/images/logo.svg" alt="TechHub Logo" class="logo-image">
+      </a>
+    </div>
+    
+    <!-- Search Container -->
+    <div class="search-container" >
+      <div class="search-input-wrapper">
+        <input 
+          type="text" 
+          class="search-input" 
+          placeholder="Search products..." 
+          [(ngModel)]="searchQuery" 
+          (focus)="isSearchFocused = true"
+          (input)="onSearchInput()"
+        />
+        <span class="search-icon">
+          <i class="bi bi-search"></i>
+        </span>
+        <button 
+          *ngIf="searchQuery" 
+          class="clear-search" 
+          (click)="clearSearch()"
+        >
+          <i class="bi bi-x"></i>
+        </button>
+      </div>
+      
+      <!-- Search Results Dropdown -->
+      <div class="search-results" *ngIf="isSearchFocused && filteredProducts.length > 0">
+        <div class="search-results-container">
+          <button 
+            *ngFor="let product of filteredProducts" 
+            class="search-result-item"
+            (click)="selectProduct(product)"
+            aria-label="Select product"
+          >
+            <img [src]="product.image" [alt]="product.name" class="search-result-image" />
+            <div class="search-result-info">
+              <div class="search-result-name">{{ product.name }}</div>
+              <div class="search-result-price">₹{{ product.price }}</div>
+            </div>
+          </button>
+        </div>
+        <div class="search-results-footer" *ngIf="filteredProducts.length >= 5">
+          <a [routerLink]="['/products']" [queryParams]="{search: searchQuery}" (click)="isSearchFocused = false">
+            View all results
+          </a>
+        </div>
+      </div>
+      
+      <!-- No Results Message -->
+      <div class="search-no-results" *ngIf="isSearchFocused && searchQuery && filteredProducts.length === 0">
+        No results found for "{{ searchQuery }}"
+      </div>
+      
+      <!-- Overlay for closing search results -->
+      <button 
+        class="search-overlay" 
+        *ngIf="isSearchFocused && filteredProducts.length > 0" 
+        (click)="isSearchFocused = false"
+        aria-label="Close search results"
+      ></button>
+    </div>
+    
+    <!-- Cart and Login Buttons -->
+    <div class="cart-login">
+      <a routerLink="/cart" class="cart-icon">
+        <i class="bi bi-cart3"></i>
+        @if(cartCount > 0) {
+          <span class="cart-count">{{ cartCount }}</span>
+        } @else {
+          <span class="cart-count">{{ cartCount }}</span>
+        }
+      </a>
+      @if (true) {
+        <span (click)="logout()" class="logout-btn">
+          <!-- <i class="bi bi-box-arrow-right"></i> -->
+         <span class="logout-text">Logout</span>
+        </span>    
+      } @else {
+        <a routerLink="/auth" class="login-btn">
+            <span class="login-text">Login</span>
+            <i class="bi bi-person"></i>
+        </a>
+      }
+    </div>
+  </div>
+  
+  <!-- Bottom Navbar with Categories (Desktop Only) -->
+  <div class="navbar-bottom desktop-only">
+    <ul class="nav-menu">
+      <li class="nav-item" 
+          *ngFor="let category of categories" 
+          (mouseenter)="showMegaMenu(category.slug)">
+        <a routerLink="/products" [queryParams]="{category: category.slug}" class="nav-link">
+          {{ category.name }}
+          <i class="bi bi-chevron-down small ms-1"></i>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a routerLink="/products" class="nav-link">All Products</a>
+      </li>
+    </ul>
+    
+    <!-- Mega Menu Dropdown -->
+    <div class="mega-menu-container" 
+         *ngIf="activeCategory" 
+         (mouseenter)="showMegaMenu(activeCategory)" 
+         (mouseleave)="hideMegaMenu()">
+      <div class="mega-menu-content">
+        <div class="mega-menu-grid">
+          <ng-container *ngFor="let category of categories">
+            <div class="mega-menu-category" *ngIf="category.slug === activeCategory">
+              <h3 class="mega-menu-title">{{ category.name }}</h3>
+              <div class="mega-menu-subcategories">
+                <a *ngFor="let subcategory of category.subcategories" 
+                   class="mega-menu-item"
+                   routerLink="/products" 
+                   [queryParams]="{category: category.slug, subcategory: subcategory.slug}" 
+                   (click)="hideMegaMenu()">
+                  {{ subcategory.name }}
+                </a>
+                <a class="mega-menu-item view-all" 
+                   routerLink="/products" 
+                   [queryParams]="{category: category.slug}" 
+                   (click)="hideMegaMenu()">
+                  View All {{ category.name }} <i class="bi bi-arrow-right"></i>
+                </a>
+              </div>
+            </div>
+          </ng-container>
+          
+          <!-- Featured Products or Promotions -->
+          <div class="mega-menu-featured">
+            <div class="featured-card">
+              <div class="featured-label">FEATURED</div>
+              <img src="assets/products/laptop1.jpg" alt="Featured product" class="featured-image">
+              <div class="featured-info">
+                <h4>Gaming Laptop</h4>
+                <p class="featured-price">₹1,200</p>
+                <a routerLink="/products/1" class="featured-btn" (click)="hideMegaMenu()">View Details</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Mobile Bottom Navigation (Fixed at Bottom) -->
+  <div class="mobile-navbar mobile-only">
+    <a routerLink="/home" class="mobile-nav-item">
+      <i class="bi bi-house"></i>
+      <span>Home</span>
+    </a>
+    <a routerLink="/products" class="mobile-nav-item">
+      <i class="bi bi-grid"></i>
+      <span>Products</span>
+    </a>
+    <a routerLink="/cart" class="mobile-nav-item">
+      <i class="bi bi-cart3"></i>
+      <span>Cart</span>
+      @if(cartCount > 0) {
+          <span class="cart-count">{{ cartCount }}</span>
+        } @else {
+          <span class="cart-count">{{ cartCount }}</span>
+        }
+    </a>
+    <a routerLink="/profile" class="mobile-nav-item">
+      <i class="bi bi-person"></i>
+      <span>Account</span>
+    </a>
+  </div>
+</nav>

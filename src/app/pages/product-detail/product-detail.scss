@@ -1,0 +1,366 @@
+// Variables
+$primary-color: #0d6efd;
+$light-gray: #dee2e6;
+$transition-speed: 0.2s;
+$image-bg: #fff;
+
+// Mixins for reusable styles
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin button-reset {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+@mixin card-shadow {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+@mixin card-hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+// Container for product images
+.product-image-container {
+  background: $image-bg;
+  border-radius: 8px;
+  @include card-shadow;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  
+  .main-image-wrapper {
+    position: relative;
+    @include flex-center;
+    margin-bottom: 1rem;
+    
+    .product-image {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      max-height: 400px;
+      transition: opacity $transition-speed ease;
+      will-change: opacity; // Optimize GPU rendering
+    }
+    
+    .image-nav-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: rgba(255, 255, 255, 0.8);
+      border: 1px solid $light-gray;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      @include flex-center;
+      z-index: 10;
+      transition: all $transition-speed ease;
+      will-change: background-color, color; // Optimize GPU rendering
+      
+      &:hover {
+        background-color: $primary-color;
+        color: white;
+        border-color: $primary-color;
+      }
+      
+      &.prev-btn {
+        left: 10px;
+      }
+      
+      &.next-btn {
+        right: 10px;
+      }
+      
+      i {
+        font-size: 1.2rem;
+      }
+    }
+  }
+  
+  .thumbnail-gallery {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    
+    .thumbnail-item {
+      width: 60px;
+      height: 60px;
+      border: 2px solid transparent;
+      border-radius: 4px;
+      cursor: pointer;
+      overflow: hidden;
+      padding: 0;
+      background: none;
+      transition: border-color $transition-speed ease;
+      will-change: border-color; // Optimize GPU rendering
+      
+      &:hover {
+        border-color: #6c757d;
+      }
+      
+      &.active {
+        border-color: $primary-color;
+      }
+      
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+  }
+}
+
+// Product info styling
+.product-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.product-brand, .product-sku {
+  font-size: 0.9rem;
+}
+
+.price-tag {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: $primary-color;
+}
+
+.product-actions {
+  margin-top: 2rem;
+}
+
+// Quantity controls
+.quantity-controls {
+  button {
+    @include flex-center;
+    width: 38px !important;
+    height: 38px;
+    padding: 0;
+    &:disabled {
+      opacity: 0.5;
+    }
+  }
+  
+  .quantity-display {
+    font-size: 1.2rem;
+    font-weight: 600;
+    min-width: 30px;
+    text-align: center;
+  }
+}
+
+// Animation for the loading spinner
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.spin {
+  display: inline-block;
+  animation: spin 1s linear infinite;
+}
+
+// Success message animation
+.alert-success {
+  animation: fadeIn $transition-speed ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+// Related Products
+.product-card {
+  cursor: pointer;
+  transition: transform $transition-speed ease, box-shadow $transition-speed ease;
+  will-change: transform, box-shadow; // Optimize GPU rendering
+  background-color: #fff;
+  text-align: left;
+  
+  &:hover {
+    @include card-hover;
+  }
+  
+  &:focus {
+    outline: 2px solid $primary-color;
+    box-shadow: 0 0 0 0.25rem rgba($primary-color, 0.25);
+  }
+}
+
+// Location Check Styles
+.delivery-check {
+  .delivery-check-btn {
+    text-decoration: none;
+    color: $primary-color;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    transition: color $transition-speed;
+    
+    &:hover {
+      color: $primary-color, 10%;
+      text-decoration: underline;
+    }
+  }
+  
+  .delivery-info {
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+  }
+}
+
+// Location Popup Modal
+.location-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  @include flex-center;
+  z-index: 1050;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity $transition-speed, visibility $transition-speed;
+  will-change: opacity, visibility; // Optimize GPU rendering
+  
+  &.active {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  .location-popup-content {
+    background: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow: auto;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    animation: modalFadeIn 0.3s ease-out;
+    will-change: transform, opacity; // Optimize GPU rendering
+    
+    .location-popup-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid $light-gray;
+      
+      h3 {
+        margin: 0;
+        font-size: 1.25rem;
+      }
+      
+      .location-popup-close {
+        @include button-reset;
+        font-size: 1.2rem;
+        color: #6c757d;
+        transition: color $transition-speed;
+        
+        &:hover {
+          color: #343a40;
+        }
+      }
+    }
+    
+    .location-popup-body {
+      padding: 1.5rem;
+      
+      .delivery-result {
+        display: flex;
+        align-items: flex-start;
+        margin-top: 1rem;
+        padding: 1rem;
+        border-radius: 6px;
+        
+        i {
+          font-size: 1.5rem;
+          margin-top: 0.1rem;
+        }
+        
+        &.success {
+          background-color: rgba(25, 135, 84, 0.1);
+          color: #198754;
+          
+          .delivery-date {
+            color: #495057;
+          }
+        }
+        
+        &.error {
+          background-color: rgba(220, 53, 69, 0.1);
+          color: #dc3545;
+        }
+      }
+    }
+  }
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+// Media queries for responsive design
+@media (max-width: 768px) {
+  .product-title {
+    font-size: 1.5rem;
+  }
+  
+  .price-tag {
+    font-size: 1.5rem;
+  }
+  
+  .product-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    
+    button {
+      width: 100%;
+    }
+  }
+  
+  .location-popup-content {
+    width: 95%;
+  }
+}
+
+// Screen reader only
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// Loading state
+.spinner-border {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  vertical-align: -0.125em;
+  border: 0.2em solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}

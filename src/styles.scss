@@ -1,1 +1,51 @@
 /* You can add global styles to this file, and also import other style files */
+
+// Global box-sizing and font settings
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+  background: #f8f9fa;
+  color: #222;
+
+  // Prevent body scrolling when mobile filter drawer is open
+  &.filter-drawer-open {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+// Mobile-first base styles
+.container {
+  width: 100%;
+  padding: 1rem;
+}
+.header {
+  font-size: 1.5rem;
+  padding: 1rem 0;
+}
+
+// Responsive adjustments for desktop
+@media (min-width: 1024px) {
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  .header {
+    font-size: 2.5rem;
+    padding: 2rem 0;
+  }
+}
+
+// Example for mobile navigation
+@media (max-width: 600px) {
+  nav {
+    font-size: 1rem;
+    padding: 0.5rem;
+  }
+}

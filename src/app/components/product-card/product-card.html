@@ -1,0 +1,27 @@
+
+<div class="card h-100 product-card" itemscope itemtype="https://schema.org/Product" (click)="navigateToProduct(product._id)">
+      <meta itemprop="sku" [content]="product.sku" />
+      <meta itemprop="mpn" [content]="product.id" />
+      @if(product.productImages){
+         <img [src]="product.productImages[0]" class="card-img-top" [alt]="product.name" itemprop="image" />
+      }
+      <div class="card-body">
+        <h5 class="card-title" itemprop="name">{{ product.name }}</h5>
+        <p class="card-text" itemprop="brand"><span class="">SKU</span>: {{ product.sku ? product.sku : product.model }}</p>
+        <p class="card-text"><span itemprop="brand">{{ product.brand }}</span></p>
+        <!-- <p class="card-text" itemprop="description">{{ product.description }}</p> -->
+        <!-- <div class="mb-2">
+          <span class="badge bg-primary me-1">{{ product.variants.ram }}</span>
+          <span class="badge bg-success me-1">{{ product.variants.ssd }}</span>
+          <span class="badge bg-info">{{ product.variants.processor }}</span>
+        </div> -->
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="fw-bold" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+            <meta itemprop="priceCurrency" content="INR" />
+            <span itemprop="price">₹{{ product.price }}</span>
+            <!-- <link itemprop="availability" [attr.href]="'https://schema.org/' + (product.stock > 0 ? 'InStock' : 'OutOfStock')" /> -->
+          </span>
+          <button class="btn btn-outline-primary btn-sm" (click)="addToCart($event)">Add to Cart</button>
+        </div>
+      </div>
+    </div>
