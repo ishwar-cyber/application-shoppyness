@@ -47,7 +47,7 @@ export class Home {
       description: 'Shop the latest laptops, desktops, and computer accessories at the best prices. Free shipping, extended warranty, and expert support available.',
       keywords: 'computer shop, laptops, desktops, computer accessories, gaming PC, business laptops, Acer, Dell, HP, Lenovo, Apple',
       image: '/assets/og-image.jpg',
-      url: 'https://computershop.com'
+      url: 'https://shoppyness.com'
     });
 
     this.product.getProduct().subscribe({
@@ -57,7 +57,7 @@ export class Home {
         
       }
     });
-    
+
     this.home.getBrand().subscribe({
       next: (brand:any) =>{
         console.log('brands', brand);

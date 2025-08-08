@@ -127,7 +127,7 @@ export class ProductDetail implements OnInit{
       description: product.description,
       keywords: `${product.name}, ${product.brand}, ${product.category}, computer, laptop, desktop`,
       image: product.image,
-      url: `https://computershop.com/products/${product.id}`
+      url: `https://shoppyness.com/products/${product.id}`
     });
   }
 
