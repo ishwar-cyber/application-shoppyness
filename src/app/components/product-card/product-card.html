@@ -2,7 +2,7 @@
 <div class="card h-100 product-card" itemscope itemtype="https://schema.org/Product" (click)="navigateToProduct(product._id)">
       <meta itemprop="sku" [content]="product.sku" />
       <meta itemprop="mpn" [content]="product.id" />
-      @if(product.images.length > 0){
+      @if(product.images && product.images.length > 0){
          <img [src]="product.images[0].url" class="card-img-top" [alt]="product.name" itemprop="image" />
       }
       <div class="card-body">
