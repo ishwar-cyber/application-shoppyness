@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Auth } from '../../services/auth';
@@ -23,7 +23,8 @@ interface SubcategoryItem {
   templateUrl: './header.html',
   styleUrl: './header.scss'
 })
-export class Header {
+export class Header implements OnInit{
+  
 
   searchQuery = '';
   isSearchFocused = false;
@@ -33,6 +34,7 @@ export class Header {
   private readonly product = inject(Product);
   // Active Category for Mega Menu
   activeCategory: string | null = null;
+  cartCount = signal<number>(0);
   
   // Categories data with subcategories
   categories: CategoryItem[] = [
@@ -104,11 +106,13 @@ export class Header {
     }
   ];
   
-  // Get cart count
-  get cartCount(): number {
-    return cartSignal().length;
+  ngOnInit(): void {
+    
   }
-  
+  // Get cart count
+  // get cartCount(): number {
+  //   return cartSignal().length;
+  // }
   // Megamenu functions
   showMegaMenu(slug: string): void {
     this.activeCategory = slug;

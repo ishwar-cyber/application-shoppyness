@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ProductCard } from '../../components/product-card/product-card';
 import { Product } from '../../services/product';
+import { HomeService } from '../../services/home';
 
 @Component({
   selector: 'app-home',
@@ -15,7 +16,7 @@ export class Home {
   products = signal<any[]>([]); // Show only first 4 products
   
   categories = ['Laptop', 'Desktop', 'Accessories', 'Gaming'];
-  brands = ['Acer', 'Dell', 'HP', 'Lenovo', 'Apple'];
+  brands = signal<any[]>(['Acer', 'Dell', 'HP', 'Lenovo', 'Apple']);
   
   // testimonials: Testimonial[] = [
   //   {
@@ -35,6 +36,7 @@ export class Home {
   //   }
   // ];
   private readonly product = inject(Product);
+  private readonly home = inject(HomeService)
 
   constructor(private readonly seoService: Seo) {}
 
@@ -50,7 +52,19 @@ export class Home {
 
     this.product.getProduct().subscribe({
       next: (product:any) =>{
-        this.products.set(product.data)
+        this.products.set(product.data);
+        console.log('product dart', this.products());
+        
+      }
+    });
+    
+    this.home.getBrand().subscribe({
+      next: (brand:any) =>{
+        console.log('brands', brand);
+        this.brands.set(brand.data)
+      }, 
+      error: (error) =>{
+
       }
     })
   }

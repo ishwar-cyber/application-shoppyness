@@ -8,6 +8,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { Cart } from '../../services/cart';
 import { ProductModel, ResponsePayload } from '../../commons/models/product.model';
 import { FormsModule } from '@angular/forms';
+import { cartSignal } from '../../commons/store';
 
 @Component({
   selector: 'app-product-detail',
@@ -138,13 +139,8 @@ export class ProductDetail implements OnInit{
       quantity: this.quantity()
     }
     this.cartService.addToCart(cartPayload).subscribe({
-      next: () => {
-        // Show success message
-        this.addedToCartMessage.set(`${this.quantity()} item(s) added to cart!`);
-        
-        // Reset quantity to 1
-        this.quantity.set(1);
-        
+      next: (res: any) => {
+       cartSignal.set(res.data.itemCount);
         // Clear success message after 3 seconds
         setTimeout(() => {
           this.addedToCartMessage.set('');
@@ -275,19 +271,28 @@ export class ProductDetail implements OnInit{
   
   // Get the currently selected image
 get selectedImage(): string {
-  const product = this.product();
-  if (!product) return '';
-
-  const images = product.images ?? [];
-
-  if (images.length > 0) {
-    const index = this.selectedImageIndex();
-    // Ensure index is within bounds
-    return images[index] ?? product.image ?? '';
+  const images = this.product()?.images;
+  
+  // If no images exist at all
+  if (!images || images.length === 0) {
+    return '';
   }
 
-  // Fallback to main image if no images array
-  return product.image ?? '';
+  // Handle case where images is an array
+  if (Array.isArray(images)) {
+    const index = this.selectedImageIndex();
+    // Ensure index is within bounds
+    const selectedImage = images[Math.max(0, Math.min(index, images.length - 1))];
+    return selectedImage?.url ?? '';
+  }
+
+  // Handle case where images is a single image object
+  if (images.url) {
+    return images.url;
+  }
+
+  // Final fallback
+  return '';
 }
   
   // Set the selected image by index
@@ -315,15 +320,14 @@ get selectedImage(): string {
   //   this.selectedImageIndex.set(prevIndex);
   // }
 
-  private updateImageIndex(offset: number): void {
-    const product = this.product();
-    const images = this.product()?.images ?? [];
-    if (images.length <= 1) return;
+private updateImageIndex(offset: number): void {
+  const images = this.product()?.images ?? [];
+  if (images.length <= 1) return;
 
-    const currentIndex = this.selectedImageIndex();
-    const newIndex = (currentIndex + offset + images.length) % images.length;
-    this.selectedImageIndex.set(newIndex);
-  }
+  const currentIndex = this.selectedImageIndex();
+  const newIndex = (currentIndex + offset + images.length) % images.length;
+  this.selectedImageIndex.set(newIndex);
+}
 
 nextImage(): void {
   this.updateImageIndex(1);

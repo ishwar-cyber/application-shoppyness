@@ -2,13 +2,13 @@
 <div class="card h-100 product-card" itemscope itemtype="https://schema.org/Product" (click)="navigateToProduct(product._id)">
       <meta itemprop="sku" [content]="product.sku" />
       <meta itemprop="mpn" [content]="product.id" />
-      @if(product.productImages){
-         <img [src]="product.productImages[0]" class="card-img-top" [alt]="product.name" itemprop="image" />
+      @if(product.images.length > 0){
+         <img [src]="product.images[0].url" class="card-img-top" [alt]="product.name" itemprop="image" />
       }
       <div class="card-body">
         <h5 class="card-title" itemprop="name">{{ product.name }}</h5>
-        <p class="card-text" itemprop="brand"><span class="">SKU</span>: {{ product.sku ? product.sku : product.model }}</p>
-        <p class="card-text"><span itemprop="brand">{{ product.brand }}</span></p>
+        <p class="card-text" itemprop="brand"><span class="">SKU</span>: {{ product.sku }}</p>
+        <p class="card-text"><span itemprop="brand">{{ product.brand.name }}</span></p>
         <!-- <p class="card-text" itemprop="description">{{ product.description }}</p> -->
         <!-- <div class="mb-2">
           <span class="badge bg-primary me-1">{{ product.variants.ram }}</span>

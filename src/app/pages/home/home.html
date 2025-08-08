@@ -186,9 +186,9 @@
       <h2 id="brand-heading" itemprop="name">Top Brands</h2>
     </div>
     <meta itemprop="itemListOrder" content="Unordered" />
-    <meta itemprop="numberOfItems" content="{{brands.length}}" />
+    <meta itemprop="numberOfItems" content="{{brands().length}}" />
     <div class="brands-container">
-      <div class="brand-logo" *ngFor="let brand of brands; let i = index" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+      <div class="brand-logo" *ngFor="let brand of brands(); let i = index" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
         <meta itemprop="position" content="{{i+1}}" />
         <div class="brand-img-container">
           <!-- Using fallback since brand logos might not exist -->
@@ -196,7 +196,7 @@
             <i class="bi bi-laptop"></i>
           </div>
         </div>
-        <span class="brand-name" itemprop="name">{{ brand }}</span>
+        <span class="brand-name" itemprop="name">{{ brand.name }}</span>
       </div>
     </div>
   </div>
