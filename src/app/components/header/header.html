@@ -4,92 +4,37 @@
     <!-- Logo for Desktop -->
     <div class="logo-container desktop-only">
       <a routerLink="/" class="logo-link">
-        <img src="assets/images/logo.svg" alt="TechHub Logo" class="logo-image">
+        <img src="assets/images/logo.svg" alt="shoppyness Logo" class="logo-image">
       </a>
     </div>
-    
-    <!-- Search Container -->
-    <div class="search-container" >
-      <div class="search-input-wrapper">
-        <input 
-          type="text" 
-          class="search-input" 
-          placeholder="Search products..." 
-          [(ngModel)]="searchQuery" 
-          (focus)="isSearchFocused = true"
-          (input)="onSearchInput()"
-        />
-        <span class="search-icon">
-          <i class="bi bi-search"></i>
-        </span>
-        <button 
-          *ngIf="searchQuery" 
-          class="clear-search" 
-          (click)="clearSearch()"
-        >
-          <i class="bi bi-x"></i>
-        </button>
-      </div>
-      
-      <!-- Search Results Dropdown -->
-      <div class="search-results" *ngIf="isSearchFocused && filteredProducts.length > 0">
-        <div class="search-results-container">
-          <button 
-            *ngFor="let product of filteredProducts" 
-            class="search-result-item"
-            (click)="selectProduct(product)"
-            aria-label="Select product"
-          >
-            <img [src]="product.image" [alt]="product.name" class="search-result-image" />
-            <div class="search-result-info">
-              <div class="search-result-name">{{ product.name }}</div>
-              <div class="search-result-price">₹{{ product.price }}</div>
-            </div>
-          </button>
-        </div>
-        <div class="search-results-footer" *ngIf="filteredProducts.length >= 5">
-          <a [routerLink]="['/products']" [queryParams]="{search: searchQuery}" (click)="isSearchFocused = false">
-            View all results
-          </a>
-        </div>
-      </div>
-      
-      <!-- No Results Message -->
-      <div class="search-no-results" *ngIf="isSearchFocused && searchQuery && filteredProducts.length === 0">
-        No results found for "{{ searchQuery }}"
-      </div>
-      
-      <!-- Overlay for closing search results -->
-      <button 
-        class="search-overlay" 
-        *ngIf="isSearchFocused && filteredProducts.length > 0" 
-        (click)="isSearchFocused = false"
-        aria-label="Close search results"
-      ></button>
+    <div class="search-container">
+      <app-search/>
     </div>
-    
     <!-- Cart and Login Buttons -->
-    <div class="cart-login">
-      <a routerLink="/cart" class="cart-icon">
-        <i class="bi bi-cart3"></i>
-        @if(cartCount()) {
-          <span class="cart-count">{{ cartCount() }}</span>
-        } @else {
-          <span class="cart-count">{{ cartCount() }}</span>
-        }
-      </a>
-      @if (false) {
-        <span (click)="logout()" class="logout-btn">
-          <!-- <i class="bi bi-box-arrow-right"></i> -->
-         <span class="logout-text">Logout</span>
-        </span>    
-      } @else {
-        <a routerLink="/auth" class="login-btn">
-            <span class="login-text">Login</span>
-            <i class="bi bi-person"></i>
+     @if(!isMobileView()) {
+      <div class="cart-login">
+        <a routerLink="/cart" class="cart-icon">
+          <i class="bi bi-cart3"></i>
+          @if(cartCount()) {
+            <span class="cart-count">{{ cartCount() }}</span>
+          } @else {
+            <span class="cart-count">{{ cartCount() }}</span>
+          }
         </a>
-      }
-    </div>
+        @if (false) {
+          <span (click)="logout()" class="logout-btn">
+            <!-- <i class="bi bi-box-arrow-right"></i> -->
+          <span class="logout-text">Logout</span>
+          </span>    
+        } @else {
+          <a routerLink="/auth" class="login-btn">
+              <span class="login-text">Login</span>
+              <i class="bi bi-person"></i>
+          </a>
+        }
+      </div>
+     }
+  
   </div>
   
   <!-- Bottom Navbar with Categories (Desktop Only) -->

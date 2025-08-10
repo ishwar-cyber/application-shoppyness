@@ -1,0 +1,66 @@
+<!-- Search Container -->
+      <div class="search-input-wrapper">
+        <input 
+          type="text" 
+          class="search-input" 
+          placeholder="Search products..." 
+          [(ngModel)]="searchQuery" 
+          (focus)="isSearchFocused = true"
+          (input)="onSearchInput()"
+        />
+        <span class="search-icon">
+          <i class="bi bi-search"></i>
+        </span>
+        @if(searchQuery){
+            <button 
+              class="clear-search" 
+              (click)="clearSearch()"
+            >
+              <i class="bi bi-x"></i>
+            </button>
+        }
+      </div>
+      
+      <!-- Search Results Dropdown -->
+       @if(isSearchFocused && filteredProducts().length > 0){
+         <div class="search-results">
+          <div class="search-results-container">
+            @for (product of filteredProducts(); track $index) {
+              <button 
+                class="search-result-item"
+                (click)="selectProduct(product)"
+                aria-label="Select product"
+              >
+              <img [src]="product.image" [alt]="product.name" class="search-result-image" />
+              <div class="search-result-info">
+                <div class="search-result-name">{{ product.name }}</div>
+                <div class="search-result-price">₹{{ product.price }}</div>
+              </div>
+            </button>
+            }
+          
+          </div>
+          @if(filteredProducts().length >= 5){
+            <div class="search-results-footer">
+              <a [routerLink]="['/products']" [queryParams]="{search: searchQuery}" (click)="isSearchFocused = false">
+                View all results
+              </a>
+            </div>
+          }
+       </div>
+      }
+      <!-- No Results Message -->
+       @if(isSearchFocused && searchQuery && filteredProducts().length === 0){
+          <div class="search-no-results">
+            No results found for "{{ searchQuery }}"
+          </div>
+       }
+    
+      <!-- Overlay for closing search results -->
+       @if(isSearchFocused && filteredProducts().length > 0){
+        <button 
+            class="search-overlay"
+            (click)="isSearchFocused = false"
+            aria-label="Close search results"
+        ></button>
+        }

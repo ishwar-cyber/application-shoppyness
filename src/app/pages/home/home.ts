@@ -1,21 +1,27 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { Seo } from '../../services/seo';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ProductCard } from '../../components/product-card/product-card';
 import { Product } from '../../services/product';
 import { HomeService } from '../../services/home';
-
+import { forkJoin } from 'rxjs';
+interface Category {
+  id:string,
+  name: string,
+  image?: string[],
+  isactive: boolean
+}
 @Component({
   selector: 'app-home',
   imports: [CommonModule, RouterModule, ProductCard],
   templateUrl: './home.html',
   styleUrl: './home.scss'
 })
-export class Home {
+export class Home implements OnInit{
   products = signal<any[]>([]); // Show only first 4 products
   
-  categories = ['Laptop', 'Desktop', 'Accessories', 'Gaming'];
+  categories = signal<Category[]>([]);
   brands = signal<any[]>(['Acer', 'Dell', 'HP', 'Lenovo', 'Apple']);
   
   // testimonials: Testimonial[] = [
@@ -49,22 +55,22 @@ export class Home {
       image: '/assets/og-image.jpg',
       url: 'https://shoppyness.com'
     });
+    forkJoin({
+      product: this.product.getProduct(),
+      brand: this.home.getBrand(),
+      category: this.home.getCategories()
+    }).subscribe({
+      next: (res: any) => {
+        this.products.set(res.product.data);
+        this.brands.set(res.brand.data);
+        this.categories.set(res.category.data);
 
-    this.product.getProduct().subscribe({
-      next: (product:any) =>{
-        this.products.set(product.data);
-        console.log('product dart', this.products());
-        
-      }
-    });
-
-    this.home.getBrand().subscribe({
-      next: (brand:any) =>{
-        console.log('brands', brand);
-        this.brands.set(brand.data)
-      }, 
-      error: (error) =>{
-
+        console.log('Products:', this.products());
+        console.log('Brands:', this.brands());
+        console.log('Categories:', this.categories());
+      },
+      error: (err) => {
+        console.error('Error fetching data', err);
       }
     })
   }

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { ProductModel, ResponsePayload } from '../commons/models/product.model';
 import { environment } from '../../environments/environment';
@@ -21,5 +21,9 @@ export class Product {
 
   getRelatedProducts(id: string){
     return this.http.get(`${this.URL}/products/${id}`);
+  }
+  search(query: string) {
+     const params = new HttpParams().set('q', query);
+     return this.http.get(`${this.URL}/products/search?${ params }`, );
   }
 }

@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Auth } from '../../services/auth';
 import { cartSignal } from '../../commons/store';
 import { Product } from '../../services/product';
+import { Search } from "../search/search";
 
 interface CategoryItem {
   name: string;
@@ -19,16 +20,14 @@ interface SubcategoryItem {
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterModule, CommonModule, FormsModule],
+  imports: [RouterModule, CommonModule, FormsModule, Search],
   templateUrl: './header.html',
   styleUrl: './header.scss'
 })
 export class Header implements OnInit{
-  
-
   searchQuery = '';
   isSearchFocused = false;
-  filteredProducts: any[] = [];
+  filteredProducts = signal<any>([]);
   private readonly router = inject(Router);
   public authService = inject(Auth); // Assuming AuthService is available for login state
   private readonly product = inject(Product);
@@ -107,7 +106,11 @@ export class Header implements OnInit{
   ];
   
   ngOnInit(): void {
-    
+    this.isMobileView();
+  }
+
+  isMobileView(): boolean {
+    return typeof window !== 'undefined' && window.innerWidth <= 768;
   }
   // Get cart count
   // get cartCount(): number {
@@ -122,38 +125,6 @@ export class Header implements OnInit{
     this.activeCategory = null;
   }
   
-  // Search functionality
-  onSearchInput(): void {
-    if (!this.searchQuery.trim()) {
-      this.filteredProducts = [];
-      return;
-    }
-    this.product.getProduct().subscribe({
-      next: (product) =>{
-        console.log('header procxucr',product);
-        
-      }
-    })
-    const query = this.searchQuery.toLowerCase().trim();
-    // this.filteredProducts = PRODUCTS.filter(product => 
-    //   product.name.toLowerCase().includes(query) || 
-    //   product.brand.toLowerCase().includes(query) || 
-    //   product.category.toLowerCase().includes(query) ||
-    //   product.description.toLowerCase().includes(query) ||
-    //   product.sku.toLowerCase().includes(query)
-    // ).slice(0, 5); // Limit to 5 results for dropdown
-  }
-  
-  clearSearch(): void {
-    this.searchQuery = '';
-    this.filteredProducts = [];
-  }
-  
-  selectProduct(product: any): void {
-    this.router.navigate(['/products/', product.id]);
-    this.isSearchFocused = false;
-    this.clearSearch();
-  }
 
   logout(): void {
     // this.authService.userLoggedIn.set(false);

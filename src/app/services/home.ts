@@ -11,4 +11,7 @@ export class HomeService {
   getBrand(){
     return this.http.get(`${this.url}/brands`);
   }
+  getCategories(){
+    return this.http.get(`${this.url}/category`)
+  }
 }
