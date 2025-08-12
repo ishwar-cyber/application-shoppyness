@@ -44,7 +44,7 @@ export class Search {
   }
   
   selectProduct(product: any): void {
-    this.router.navigate(['/products/', product.id]);
+    this.router.navigate(['/product/', product.id]);
     this.isSearchFocused = false;
     this.clearSearch();
   }
