@@ -1,0 +1,288 @@
+<div class="container-fluid mt-4">  
+  <!-- Page Title and Breadcrumb -->  
+  <div class="row mb-3">  
+    <div class="col-12">  
+      <h1 class="h2">Products</h1>  
+      <nav aria-label="breadcrumb">  
+        <ol class="breadcrumb">  
+          <li class="breadcrumb-item"><a routerLink="/">Home</a></li>  
+          <li class="breadcrumb-item active" aria-current="page">Products</li>  
+        </ol>  
+      </nav>  
+    </div>  
+  </div>    <div class="row">  
+    <!-- Mobile Filter Button - Only visible on mobile -->  
+    <div class="col-12 d-md-none mb-3">  
+      <button class="btn btn-outline-primary w-100" (click)="toggleFilterDrawer()">  
+        <i class="bi bi-funnel-fill me-2"></i> Filter Products  
+      </button>  
+    </div>  <!-- Desktop Filter Sidebar - Left Column (Hidden on mobile) -->  
+<div class="col-md-3 mb-4 d-none d-md-block">  
+  <div class="card filter-card">  
+    <div class="card-header d-flex justify-content-between align-items-center">  
+      <h5 class="mb-0">Filters</h5>  
+      <button class="btn btn-sm btn-outline-secondary" (click)="resetFilters()">Clear All</button>  
+    </div>  
+    <div class="card-body">  
+      <!-- Category Filter -->  
+      <div class="filter-section mb-4">  
+        <h6>Category</h6>  
+        <div class="form-check" *ngFor="let category of categories">  
+          <input class="form-check-input" type="checkbox" [id]="'category-' + category"   
+                 [checked]="selectedCategories.includes(category)"  
+                 (change)="toggleCategory(category)">  
+          <label class="form-check-label" [for]="'category-' + category">  
+            {{ category }}  
+          </label>  
+        </div>  
+      </div>  
+
+      <!-- Brand Filter -->  
+      <div class="filter-section mb-4">  
+        <h6>Brand</h6>  
+        <div class="form-check" *ngFor="let brand of brands">  
+          <input class="form-check-input" type="checkbox" [id]="'brand-' + brand"  
+                 [checked]="selectedBrands.includes(brand)"  
+                 (change)="toggleBrand(brand)">  
+          <label class="form-check-label" [for]="'brand-' + brand">  
+            {{ brand }}  
+          </label>  
+        </div>  
+      </div>  
+
+      <!-- Price Range Filter -->  
+      <div class="filter-section mb-4">  
+        <h6>Price Range</h6>  
+        <div class="price-range">  
+          <div class="d-flex justify-content-between mb-2">  
+            <span>₹{{ priceRange[0] }}</span>  
+            <span>₹{{ priceRange[1] }}</span>  
+          </div>  
+          <input type="range" class="form-range mb-2"   
+                 [min]="minPrice" [max]="maxPrice" step="100"  
+                 [(ngModel)]="priceRange[1]"   
+                 (input)="filterProducts()">  
+        </div>  
+      </div>  
+        
+      <!-- Features Filter -->  
+      <div class="filter-section">  
+        <h6>Features</h6>  
+        <div class="row">  
+          <div class="col-12">  
+            <select class="form-select mb-2" [(ngModel)]="selectedRAM" (change)="filterProducts()">  
+              <option value="">RAM (Any)</option>  
+              <option *ngFor="let ram of ramOptions" [value]="ram">{{ ram }}</option>  
+            </select>  
+          </div>  
+          <div class="col-12">  
+            <select class="form-select mb-2" [(ngModel)]="selectedStorage" (change)="filterProducts()">  
+              <option value="">Storage (Any)</option>  
+              <option *ngFor="let storage of storageOptions" [value]="storage">{{ storage }}</option>  
+            </select>  
+          </div>  
+          <div class="col-12">  
+            <select class="form-select" [(ngModel)]="selectedProcessor" (change)="filterProducts()">  
+              <option value="">Processor (Any)</option>  
+              <option *ngFor="let processor of processorOptions" [value]="processor">{{ processor }}</option>  
+            </select>  
+          </div>  
+        </div>  
+      </div>  
+    </div>  
+  </div>  
+</div>  
+
+<!-- Product Grid - Right Column -->  
+<div class="col-md-9">        
+  <!-- Sort & View Options -->  
+  <div class="row mb-3 align-items-center ">  
+    <div class="col-xs-6 col-sm-6 col-md-6 mb-2 mb-md-0">  
+      <div class="d-flex gap-2 align-items-center">  
+        <span class="text-muted">Sort by:</span>  
+        <select class="form-select form-select-sm sort-select" [(ngModel)]="sortOption" (change)="sortProducts()">  
+          <option value="featured">Featured</option>  
+          <option value="price-low">Price: Low to High</option>  
+          <option value="price-high">Price: High to Low</option>  
+          <option value="name-asc">Name: A to Z</option>  
+          <option value="name-desc">Name: Z to A</option>  
+        </select>  
+      </div>  
+    </div>  
+    <div class="ol-xs-6 col-sm-6 col-md-6 text-md-end">  
+      <div class="d-flex justify-content-md-end align-items-center">  
+        <span class="text-muted me-2">{{ filteredProducts.length }} items</span>  
+        <div class="view-options" aria-label="View options">  
+          <button type="button" class="btn btn-outline-secondary btn-sm"   
+                  [class.active]="viewMode === 'grid'"  
+                  (click)="viewMode = 'grid'">  
+            <i class="bi bi-grid"></i>  
+          </button>  
+          <button type="button" class="btn btn-outline-secondary btn-sm"   
+                  [class.active]="viewMode === 'list'"  
+                  (click)="viewMode = 'list'">  
+            <i class="bi bi-list"></i>  
+          </button>  
+        </div>  
+      </div>  
+    </div>  
+  </div>  
+
+  <!-- No Results Message -->  
+  <div *ngIf="filteredProducts.length === 0" class="alert alert-info text-center">  
+    <p class="mb-0">No products match your selected filters.</p>  
+    <button class="btn btn-link" (click)="resetFilters()">Clear all filters</button>  
+  </div>  
+
+  <!-- Grid View - Loading State -->  
+  <div class="row g-3" *ngIf="isLoading && viewMode === 'grid'">  
+    <div class="col-12 col-sm-6 col-lg-4" *ngFor="let i of [1,2,3,4,5,6]">  
+      <app-product-card [isLoading]="true"></app-product-card>  
+    </div>  
+  </div>  
+
+  <!-- Grid View - Loaded State -->  
+  <div class="row g-3" *ngIf="!isLoading && filteredProducts.length > 0 && viewMode === 'grid'">  
+    <div class="col-12 col-sm-6 col-lg-4" *ngFor="let product of filteredProducts">  
+      <app-product-card [product]="product" [isLoading]="false"></app-product-card>  
+    </div>  
+  </div>  
+
+  <!-- List View - Loading State -->  
+  <div class="list-view" *ngIf="isLoading && viewMode === 'list'">  
+    <div class="list-product-item card mb-3" *ngFor="let i of [1,2,3,4]">  
+      <div class="row g-0">  
+        <div class="col-md-3">  
+          <div class="skeleton-loader animated-bg" style="height: 180px; width: 100%; border-radius: 0.25rem;"></div>  
+        </div>  
+        <div class="col-md-9">  
+          <div class="card-body">  
+            <div class="d-flex justify-content-between">  
+              <div class="skeleton-loader animated-bg" style="height: 24px; width: 60%; border-radius: 4px;"></div>  
+              <div class="skeleton-loader animated-bg" style="height: 24px; width: 80px; border-radius: 4px;"></div>  
+            </div>  
+            <div class="skeleton-loader animated-bg mt-2" style="height: 16px; width: 40%; border-radius: 4px;"></div>  
+            <div class="skeleton-loader animated-bg mt-3" style="height: 16px; width: 100%; border-radius: 4px;"></div>  
+            <div class="skeleton-loader animated-bg mt-2" style="height: 16px; width: 100%; border-radius: 4px;"></div>  
+            <div class="specs-badges mb-3 mt-3">  
+              <div class="skeleton-loader animated-bg d-inline-block me-1" style="height: 20px; width: 60px; border-radius: 4px;"></div>  
+              <div class="skeleton-loader animated-bg d-inline-block me-1" style="height: 20px; width: 60px; border-radius: 4px;"></div>  
+              <div class="skeleton-loader animated-bg d-inline-block" style="height: 20px; width: 80px; border-radius: 4px;"></div>  
+            </div>  
+            <div class="d-flex justify-content-between align-items-center">  
+              <div class="skeleton-loader animated-bg" style="height: 16px; width: 30%; border-radius: 4px;"></div>  
+              <div class="skeleton-loader animated-bg" style="height: 32px; width: 100px; border-radius: 4px;"></div>  
+            </div>  
+          </div>  
+        </div>  
+      </div>  
+    </div>  
+  </div>  
+
+  <!-- List View - Loaded State -->  
+  <div class="list-view" *ngIf="!isLoading && filteredProducts.length > 0 && viewMode === 'list'">  
+    <div class="list-product-item card mb-3" *ngFor="let product of filteredProducts" [routerLink]="['/products', product.id]">  
+      <div class="row g-0">  
+        <div class="col-md-3">  
+          <img [src]="product.image" class="img-fluid rounded-start list-product-image" [alt]="product.name">  
+        </div>  
+        <div class="col-md-9">  
+          <div class="card-body">  
+            <div class="d-flex justify-content-between">  
+              <h5 class="card-title">{{ product.name }}</h5>  
+              <span class="price-tag">₹{{ product.price }}</span>  
+            </div>  
+            <p class="card-text">{{ product.brand }} | {{ product.category }}</p>  
+            <p class="card-text">{{ product.description }}</p>  
+            <!-- <div class="specs-badges mb-3">  
+              <span class="badge bg-primary me-1">{{ product.variants.ram }}</span>  
+              <span class="badge bg-success me-1">{{ product.variants.ssd }}</span>  
+              <span class="badge bg-info">{{ product.variants.processor }}</span>  
+            </div> -->  
+            <div class="d-flex justify-content-between align-items-center">  
+              <span class="text-muted small">SKU: {{ product.sku }}</span>  
+              <button class="btn btn-outline-primary btn-sm" (click)="addToCart($event, product)">Add to Cart</button>  
+            </div>  
+          </div>  
+        </div>  
+      </div>  
+    </div>  
+  </div>  
+</div>
+
+  </div>  
+</div>  <!-- Mobile Filter Drawer (Overlay) -->  <div class="mobile-filter-overlay" [class.active]="isFilterDrawerOpen && isMobileView" (click)="toggleFilterDrawer()" (keydown)="$event.key === 'Escape' && toggleFilterDrawer()"></div>  <!-- Mobile Filter Drawer (Bottom Sheet) -->  <dialog class="mobile-filter-drawer" [class.active]="isFilterDrawerOpen && isMobileView" aria-labelledby="filter-drawer-title" tabindex="-1">  
+  <div class="filter-drawer-header">  
+    <h5 class="mb-0" id="filter-drawer-title">Filters</h5>  
+    <button type="button" class="btn-close" aria-label="Close" (click)="toggleFilterDrawer()"></button>  
+  </div>  
+  <div class="filter-drawer-content">  
+    <!-- Category Filter -->  
+    <div class="filter-section mb-4">  
+      <h6>Category</h6>  
+      <div class="form-check" *ngFor="let category of categories">  
+        <input class="form-check-input" type="checkbox" [id]="'mobile-category-' + category"   
+               [checked]="selectedCategories.includes(category)"  
+               (change)="toggleCategory(category)">  
+        <label class="form-check-label" [for]="'mobile-category-' + category">  
+          {{ category }}  
+        </label>  
+      </div>  
+    </div>  <!-- Brand Filter -->  
+<div class="filter-section mb-4">  
+  <h6>Brand</h6>  
+  <div class="form-check" *ngFor="let brand of brands">  
+    <input class="form-check-input" type="checkbox" [id]="'mobile-brand-' + brand"  
+           [checked]="selectedBrands.includes(brand)"  
+           (change)="toggleBrand(brand)">  
+    <label class="form-check-label" [for]="'mobile-brand-' + brand">  
+      {{ brand }}  
+    </label>  
+  </div>  
+</div>  
+
+<!-- Price Range Filter -->  
+<div class="filter-section mb-4">  
+  <h6>Price Range</h6>  
+  <div class="price-range">  
+    <div class="d-flex justify-content-between mb-2">  
+      <span>₹{{ priceRange[0] }}</span>  
+      <span>₹{{ priceRange[1] }}</span>  
+    </div>  
+    <input type="range" class="form-range mb-2"   
+           [min]="minPrice" [max]="maxPrice" step="100"  
+           [(ngModel)]="priceRange[1]">  
+  </div>  
+</div>  
+  
+<!-- Features Filter -->  
+<div class="filter-section mb-4">  
+  <h6>Features</h6>  
+  <div class="row">  
+    <div class="col-12">  
+      <select class="form-select mb-2" [(ngModel)]="selectedRAM">  
+        <option value="">RAM (Any)</option>  
+        <option *ngFor="let ram of ramOptions" [value]="ram">{{ ram }}</option>  
+      </select>  
+    </div>  
+    <div class="col-12">  
+      <select class="form-select mb-2" [(ngModel)]="selectedStorage">  
+        <option value="">Storage (Any)</option>  
+        <option *ngFor="let storage of storageOptions" [value]="storage">{{ storage }}</option>  
+      </select>  
+    </div>  
+    <div class="col-12">  
+      <select class="form-select mb-3" [(ngModel)]="selectedProcessor">  
+        <option value="">Processor (Any)</option>  
+        <option *ngFor="let processor of processorOptions" [value]="processor">{{ processor }}</option>  
+      </select>  
+    </div>  
+  </div>  
+</div>
+
+  </div>  
+  <div class="filter-drawer-footer">  
+    <button class="btn btn-outline-secondary" (click)="resetFilters()">Clear All</button>  
+    <button class="btn btn-primary" (click)="applyFiltersAndClose()">Apply Filters</button>  
+  </div>  
+</dialog>
