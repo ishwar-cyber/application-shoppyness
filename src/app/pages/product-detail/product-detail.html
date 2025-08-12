@@ -159,7 +159,7 @@
         </div>
         
         <div class="product-specs mb-4">
-            @if(product()!.specifications){
+            @if(product()!.specifications > 0){
                 <h2 class="h5">Specifications</h2>
                 <ul class="list-group">
                     @for (item of product()?.specifications; track $index) {
