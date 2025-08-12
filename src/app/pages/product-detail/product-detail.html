@@ -211,14 +211,14 @@
     </div>
 }
 
-<!-- Error State -->
+<!-- Error State 
 <div class="container mt-4 text-center" *ngIf="error()">
   <div class="alert alert-danger">
     <h2>Error</h2>
     <p>{{ error() }}</p>
     <a routerLink="/products" class="btn btn-primary mt-3">Browse All Products</a>
   </div>
-</div>
+</div> -->
 
 <!-- Not Found State -->
 <div class="container mt-4 text-center" *ngIf="!product() && !loading() && !error()">
