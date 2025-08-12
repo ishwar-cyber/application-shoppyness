@@ -12,7 +12,7 @@ export class Cart {
   API_URL = `${environment.apiUrl}/cart`
   private readonly http = inject(HttpClient);
   addToCart(payload: any) {
-     return this.http.post<{count: number}>(`${this.API_URL}`, payload)
+     return this.http.post<{count: number}>(`${this.API_URL}`, payload,{ withCredentials: true})
       .pipe(
         tap((response: any) => {
           // Update the cart count from API response

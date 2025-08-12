@@ -90,7 +90,24 @@
             <i class="bi bi-x-circle me-1"></i> Sorry, delivery not available to this location
             </div>
         </div>
-
+        @if(product()?.variant && product()?.variant?.length > 0){
+             <div class="product-variant mt-4">
+                <h2 class="h5">Available Varaint</h2>
+                <div class="row">
+                    @for (variant of product()?.variant; track $index) {
+                        <div class="col-6 col-md-6 mb-3" (click)="selectVariant(variant)">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{variant.name}}</h5>
+                                    <p class="card-text">{{variant.price}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+       
         <div class="product-description mb-4" itemprop="description">
             <h2 class="h5">Description</h2>
             <p>{{ product()!.description }}</p>
@@ -157,30 +174,30 @@
         </div>
     </div>
     <!-- Related Products Section -->
-    <section class="related-products mt-5" *ngIf="relatedProducts().length > 0">
-        <h2 class="mb-4">Related Products</h2>
-        <div class="row">
-        <div class="col-6 col-md-3 mb-4" >
-            @for (relatedProduct of relatedProducts(); track $index) {
-                <button class="card product-card h-100 w-100 text-start border-0" 
-                    (click)="navigateToProduct(relatedProduct.id)" 
-                    itemprop="itemListElement" 
-                    itemscope 
-                    itemtype="https://schema.org/Product">
-                <img [src]="relatedProduct.image" 
-                    class="card-img-top" 
-                    [alt]="relatedProduct.name" 
-                    loading="lazy" />
-                <div class="card-body">
-                    <h5 class="card-title">{{ relatedProduct.name }}</h5>
-                    <p class="card-text">{{ relatedProduct.brand }}</p>
-                    <p class="fw-bold">₹{{ relatedProduct.price }}</p>
+    @if(relatedProducts().length > 0){
+        <section class="related-products mt-5">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="mb-4">Related Products</h2>
+                <div class="scroll-controls">
+                    <button class="btn btn-outline-secondary me-2 scroll-btn" (click)="scrollProducts('left')">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+                     <button class="btn btn-outline-secondary me-2 scroll-btn"  (click)="scrollProducts('right')">
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
                 </div>
-                </button>
-            }
-        </div>
-        </div>
-    </section>
+            </div>
+            <div class="related-products-scroll-container">
+                <div class="related-products-scroll" #relatedProductsScroll>
+                    @for (productItem of relatedProducts(); track $index) {
+                        <div class="related-product-card">
+                            <app-product-card [product]="productItem"></app-product-card>
+                        </div>
+                    }
+                </div>
+            </div>
+        </section>
+    }
 </div>
 } @else {
     <!-- Load   ing State -->

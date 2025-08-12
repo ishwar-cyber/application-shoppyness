@@ -1,0 +1,191 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <h1>Welcome</h1>
+      <p>Please login or create an account to continue</p>
+    </div>
+    
+    <div class="auth-tabs">
+      <button 
+        [class.active]="activeTab() === 'login'"
+        (click)="switchTab('login')"
+      >
+        Login
+      </button>
+      <button 
+        [class.active]="activeTab() === 'register'"
+        (click)="switchTab('register')"
+      >
+        Register
+      </button>
+    </div>
+    
+    <!-- Error and Success Messages -->
+    @if (error()) {
+      <div class="auth-message error-message">
+        {{ error() }}
+      </div>
+    }
+    
+    @if (success()) {
+      <div class="auth-message success-message">
+        {{ success() }}
+      </div>
+    }
+    
+    <!-- Login Form -->
+    @if (activeTab() === 'login') {
+      <form [formGroup]="loginForm" class="auth-form">
+        <div class="form-group">
+          <label for="login-email">Username</label>
+          <input 
+            type="text" 
+            id="login-username" 
+            formControlName="username" 
+            placeholder="Enter your username"
+            [class.invalid]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched"
+          >
+          @if (loginForm.get('username')?.invalid && loginForm.get('username')?.touched) {
+            <div class="error-text">
+              @if (loginForm.get('username')?.errors?.['required']) {
+                Email is required
+              } @else if (loginForm.get('username')?.errors?.['username']) {
+                Please enter a valid email address
+              }
+            </div>
+          }
+        </div>
+        
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input 
+            type="password" 
+            id="login-password" 
+            formControlName="password" 
+            placeholder="Enter your password"
+            [class.invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+          >
+          @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+            <div class="error-text">
+              @if (loginForm.get('password')?.errors?.['required']) {
+                Password is required
+              } @else if (loginForm.get('password')?.errors?.['minlength']) {
+                Password must be at least 6 characters
+              }
+            </div>
+          }
+        </div>
+        
+        <div class="form-actions">
+          <div class="forgot-password">
+            <a routerLink="/auth/forgot-password">Forgot Password?</a>
+          </div>
+          
+          <button 
+            type="submit" 
+            class="btn btn-primary" (click)="login()"
+            [disabled]="loginForm.invalid || isLoading()"
+          >
+            @if (isLoading()) {
+              <span class="spinner"></span>
+              Logging in...
+            } @else {
+              Login
+            }
+          </button>
+        </div>
+      </form>
+    }
+    
+    <!-- Register Form -->
+    @if (activeTab() === 'register') {
+      <form [formGroup]="registerForm" class="auth-form">
+        <div class="form-group">
+          <label for="register-email">Email</label>
+          <input 
+            type="email" 
+            id="register-email" 
+            formControlName="email" 
+            placeholder="Enter your email"
+            [class.invalid]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
+          >
+          @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
+            <div class="error-text">
+              @if (registerForm.get('email')?.errors?.['required']) {
+                Email is required
+              } @else if (registerForm.get('email')?.errors?.['email']) {
+                Please enter a valid email address
+              }
+            </div>
+          }
+        </div>
+        
+        <div class="form-group">
+          <label for="register-password">Password</label>
+          <input 
+            type="password" 
+            id="register-password" 
+            formControlName="password" 
+            placeholder="Create a password"
+            [class.invalid]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
+          >
+          @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
+            <div class="error-text">
+              @if (registerForm.get('password')?.errors?.['required']) {
+                Password is required
+              } @else if (registerForm.get('password')?.errors?.['minlength']) {
+                Password must be at least 6 characters
+              }
+            </div>
+          }
+        </div>
+        
+        <div class="form-group">
+          <label for="register-confirm-password">Confirm Password</label>
+          <input 
+            type="password" 
+            id="register-confirm-password" 
+            formControlName="confirmPassword" 
+            placeholder="Confirm your password"
+            [class.invalid]="getPasswordMatchError() || (registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched)"
+          >
+          @if (registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched || !getPasswordMatchError()) {
+            <div class="error-text">
+              Confirm password is required
+            </div>
+          }
+          @if (getPasswordMatchError() && !registerForm.get('confirmPassword')?.invalid) {
+            <div class="error-text">
+              Passwords do not match
+            </div>
+          }
+        </div>
+        
+        <div class="form-actions">
+          <button 
+            type="submit" 
+            class="btn btn-primary" (click)="register()"
+            [disabled]="registerForm.invalid || isLoading()"
+          >
+            @if (isLoading()) {
+              <span class="spinner"></span>
+              Registering...
+            } @else {
+              Create Account
+            }
+          </button>
+        </div>
+      </form>
+    }
+    
+    <div class="auth-footer">
+      <p>
+        @if (activeTab() === 'login') {
+          Don't have an account? <a href="javascript:void(0)" (click)="switchTab('register')">Register</a>
+        } @else {
+          Already have an account? <a href="javascript:void(0)" (click)="switchTab('login')">Login</a>
+        }
+      </p>
+    </div>
+  </div>
+</div>

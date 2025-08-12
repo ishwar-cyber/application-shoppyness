@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, inject, OnInit, PLATFORM_ID, signal, viewChild } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Subject, debounceTime, distinctUntilChanged, tap, takeUntil, switchMap, EMPTY, catchError, of, finalize, Observable } from 'rxjs';
 import { Product } from '../../services/product';
@@ -6,15 +6,17 @@ import { Seo } from '../../services/seo';
 import { CommonModule } from '@angular/common';
 import { isPlatformBrowser } from '@angular/common';
 import { Cart } from '../../services/cart';
-import { ProductModel, ResponsePayload } from '../../commons/models/product.model';
+import { ProductModel, ResponsePayload, Variant } from '../../commons/models/product.model';
 import { FormsModule } from '@angular/forms';
 import { cartSignal } from '../../commons/store';
+import { ProductCard } from "../../components/product-card/product-card";
 
 @Component({
   selector: 'app-product-detail',
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule, FormsModule, ProductCard],
   templateUrl: './product-detail.html',
-  styleUrl: './product-detail.scss'
+  styleUrl: './product-detail.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductDetail implements OnInit{
   private readonly destroy$ = new Subject<void>();
@@ -25,6 +27,7 @@ export class ProductDetail implements OnInit{
   public cartService = inject(Cart);
   private readonly platformId = inject(PLATFORM_ID);
   
+  relatedProductsScroll = viewChild<ElementRef>('relatedProductsScroll');
   // Product signals
   product = signal<any| null>(null);
   relatedProducts = signal<any[]>([]);
@@ -90,7 +93,7 @@ export class ProductDetail implements OnInit{
 
           this.product.set(res.data)
           // this.product.set(res.data);
-
+          this.loadRelatedProducts(productId);
           if (this.product()) {
             this.updateSeoTags(this.product());
           }
@@ -101,6 +104,9 @@ export class ProductDetail implements OnInit{
         }
       });
     });
+    if(isPlatformBrowser(this.platformId)){
+      window.scrollTo({top:0, behavior:'smooth'})
+    }
   }
   
   ngOnDestroy(): void {
@@ -112,6 +118,7 @@ export class ProductDetail implements OnInit{
   private loadRelatedProducts(productId: string): void {
     this.productService.getRelatedProducts(productId).subscribe((products: any) => {
       this.relatedProducts.set(products);
+      console.log('relatedProducts',this.relatedProducts());
       
       // Preload images for better performance
       if (products.length > 0) {
@@ -153,6 +160,18 @@ export class ProductDetail implements OnInit{
     });
   }
 
+  scrollProducts(direction: 'left' | 'right'){
+    if(!isPlatformBrowser(this.platformId) || !this.relatedProductsScroll) return;
+    const scrollElement = this.relatedProductsScroll()?.nativeElement;
+    const scrollAmount = scrollElement.clientWidth * 0.8;
+
+    if(direction === 'left'){
+      scrollElement.scrollBy({left: -scrollAmount, behavior: 'smooth'});
+    } else {
+      scrollElement.scrollBy({left: scrollAmount, behavior: 'smooth'});
+
+    }
+  }
   // Location popup methods
   toggleLocationPopup(): void {
     this.showLocationPopup.update(val => !val);
@@ -369,4 +388,7 @@ prevImage(): void {
     this.preloadImages(relatedImages);
   }
 
+  selectVariant(varaint:Variant){
+
+  }
 }

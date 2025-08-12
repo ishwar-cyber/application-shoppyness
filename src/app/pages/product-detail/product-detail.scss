@@ -197,6 +197,55 @@ $image-bg: #fff;
   }
 }
 
+// related Product
+.related-products{
+  position: relative;
+  .scroll-controls{
+    display: flex;
+    gap: 0.5rem;
+  }
+  .scroll-btn{
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    @include flex-center;
+    border-radius: 50%;
+    transition: background-color $transition-speed;
+
+    &:hover{
+      background-color: $primary-color;
+      color:white;
+    }
+  }
+}
+.related-products-scroll-container{
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  padding: 1rem 0;
+}
+.related-products-scroll{
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  gap: 1rem;
+  padding-bottom: 1rem;
+
+  &::-webkit-scrollbar{
+    display: none;
+  }
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.related-product-card{
+  flex: 0 0 auto;
+  width: 280px;
+  transition: transform $transition-speed ease-in-out;
+  &:hover{
+    transform: translateY(-5px);
+  }
+}
 // Location Check Styles
 .delivery-check {
   .delivery-check-btn {

@@ -20,7 +20,7 @@ export class Product {
   }
 
   getRelatedProducts(id: string){
-    return this.http.get(`${this.URL}/products/${id}`);
+    return this.http.get(`${this.URL}/products/${id}/related`)
   }
   search(query: string) {
      const params = new HttpParams().set('q', query);
