@@ -79,6 +79,7 @@ export class ProductList implements OnInit{
       next:(product: any) =>{
         console.log('prodiuct listiong', product);
         this.allProducts.set(product.data)
+        this.filteredProducts.set(product.data);
           // Extract prices
         const prices = product.data.map((p: any) => p.price || 0);
 
