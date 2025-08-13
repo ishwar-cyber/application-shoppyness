@@ -4,7 +4,7 @@ const getProductIds = async () => {
   try {
     console.log('get prodic t ios');
     
-    const res = await fetch('http://localhost:8000/api/v1/products');
+    const res = await fetch('https://shoppyness-backend.onrender.com/api/v1/products');
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);
     }
