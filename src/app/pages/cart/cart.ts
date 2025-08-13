@@ -1,11 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { Router } from 'express';
+import { Component, inject, OnInit, signal } from '@angular/core'
 import { Subject, takeUntil } from 'rxjs';
 import { Seo } from '../../services/seo';
 import { Auth } from '../../services/auth';
 import { CartService } from '../../services/cart';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
 interface CartItemResponse {
