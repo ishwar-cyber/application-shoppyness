@@ -1,4 +1,4 @@
-<nav class="custom-navbar">
+use<nav class="custom-navbar">
   <!-- Top Navbar with Logo, Search, Cart & Login -->
   <div class="navbar-top" (mouseenter)="hideMegaMenu()">
     <!-- Logo for Desktop -->
@@ -114,7 +114,7 @@
       @if(cartService.cartCount()) {
           <span class="cart-count">{{ cartService.cartCount() }}</span>
         } @else {
-          <span class="cart-count">{{ caerService.cartCount() }}</span>
+          <span class="cart-count">{{ cartService.cartCount() }}</span>
         }
     </a>
     <a routerLink="/login" class="mobile-nav-item">
