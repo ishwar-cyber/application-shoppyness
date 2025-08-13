@@ -211,7 +211,7 @@
             
               <div class="row g-0">  
                 <div class="col-md-3">  
-                  <img [src]="product.images[0]" class="img-fluid rounded-start list-product-image" [alt]="product.name">  
+                  <img [src]="product.images[0].url" class="img-fluid rounded-start list-product-image" [alt]="product.name">  
                 </div>  
                 <div class="col-md-9">  
                   <div class="card-body">  
@@ -324,4 +324,5 @@
     <button class="btn btn-primary" (click)="applyFiltersAndClose()">Apply Filters</button>  
   </div>  
 </dialog>
+
 
