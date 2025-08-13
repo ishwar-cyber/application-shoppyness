@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterLink, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Auth } from '../../services/auth';
 import { cartSignal } from '../../commons/store';
 import { Product } from '../../services/product';
 import { Search } from "../search/search";
+import { CartService } from '../../services/cart';
 
 interface CategoryItem {
   name: string;
@@ -20,7 +21,7 @@ interface SubcategoryItem {
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterModule, CommonModule, FormsModule, Search],
+  imports: [RouterModule, CommonModule, RouterLink, FormsModule, Search],
   templateUrl: './header.html',
   styleUrl: './header.scss'
 })
@@ -31,6 +32,8 @@ export class Header implements OnInit{
   private readonly router = inject(Router);
   public authService = inject(Auth); // Assuming AuthService is available for login state
   private readonly product = inject(Product);
+  public cartService = inject(CartService);
+  
   // Active Category for Mega Menu
   activeCategory: string | null = null;
   cartCount = signal<number>(0);

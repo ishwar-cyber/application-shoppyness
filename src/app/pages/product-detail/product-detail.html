@@ -117,14 +117,14 @@
                   @if ((product()?.stock ?? 0 ) > 0) {
                     <div class="d-flex align-items-center">
                         <button class="btn btn-outline-secondary" 
-                                (click)="cartService.decreaseQuantity(product()!.id, -1)" 
+                                (click)="cartService.updateQuantity(product()!.id, -1)" 
                                 [disabled]="quantity() <= 1" 
                                 aria-label="Decrease quantity">
                         <i class="bi bi-dash"></i>
                         </button>
                         <span class="quantity-display mx-3">{{ quantity() }}</span>
                         <button class="btn btn-outline-secondary" 
-                                (click)="cartService.increaseQuantity(product()!.id, 1)" 
+                                (click)="cartService.updateQuantity(product()!.id, 1)" 
                                 [disabled]="quantity() >= (product()?.stock ?? 0)" 
                                 aria-label="Increase quantity">
                         <i class="bi bi-plus"></i>

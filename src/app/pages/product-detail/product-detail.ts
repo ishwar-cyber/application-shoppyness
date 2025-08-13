@@ -5,7 +5,7 @@ import { Product } from '../../services/product';
 import { Seo } from '../../services/seo';
 import { CommonModule } from '@angular/common';
 import { isPlatformBrowser } from '@angular/common';
-import { Cart } from '../../services/cart';
+import { CartService } from '../../services/cart';
 import { ProductModel, ResponsePayload, Variant } from '../../commons/models/product.model';
 import { FormsModule } from '@angular/forms';
 import { cartSignal } from '../../commons/store';
@@ -24,7 +24,7 @@ export class ProductDetail implements OnInit{
   private readonly router = inject(Router);
   private readonly seoService = inject(Seo);
   private readonly productService = inject(Product);
-  public cartService = inject(Cart);
+  public cartService = inject(CartService);
   private readonly platformId = inject(PLATFORM_ID);
   
   relatedProductsScroll = viewChild<ElementRef>('relatedProductsScroll');
@@ -145,7 +145,7 @@ export class ProductDetail implements OnInit{
       productId: product.id,
       quantity: this.quantity()
     }
-    this.cartService.addToCart(cartPayload).subscribe({
+    this.cartService.addToCart( product.id, this.quantity()).subscribe({
       next: (res: any) => {
        cartSignal.set(res.data.itemCount);
         // Clear success message after 3 seconds

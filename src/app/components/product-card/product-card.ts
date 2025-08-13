@@ -1,7 +1,7 @@
-import { Component, inject, Input, PLATFORM_ID } from '@angular/core';
+import { Component, inject, input, Input, PLATFORM_ID } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
-import { Cart } from '../../services/cart';
+import { CartService } from '../../services/cart';
 @Component({
   selector: 'app-product-card',
   imports: [],
@@ -10,8 +10,9 @@ import { Cart } from '../../services/cart';
 })
 export class ProductCard {
   private router = inject(Router);
-  private readonly cartService = inject(Cart);
+  private readonly cartService = inject(CartService);
   @Input() product:any = [];
+  isLoading = input();
 
   addToCart(event: any){
     
