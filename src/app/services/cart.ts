@@ -58,21 +58,20 @@ export class CartService {
   constructor(private http: HttpClient) {}
 
   /** 🛒 Load cart from backend */
+ 
   loadCart() {
-    return this.http.get<CartResponse>(this.apiUrl);
+    return this.http.get<CartResponse>(`${this.apiUrl}`);
   }
 
   /** ➕ Add item to cart */
   addToCart(productId: string, quantity: number = 1) {
-    return this.http.post<ResponseModel>(`${this.apiUrl}`, { productId, quantity },{ withCredentials: true}).pipe(
+    return this.http.post<ResponseModel>(`${this.apiUrl}`, { productId, quantity }).pipe(
       tap((res:ResponseModel) => {
         console.log('reeeeeee0', res.data.itemCount);
         // this.cartItems.set(res.items);
         // this.totalItems.set(res.totalItems);
         // this.totalPrice.set(res.totalPrice);
-        this.cartCount.set(res.data.itemCount || 0)
-        console.log('counteddd', this.cartCount());
-        
+        this.cartCount.set(res.data.itemCount || 0);
       }),
       catchError(err => {
         console.error('Error adding to cart:', err);

@@ -87,16 +87,16 @@
     <meta itemprop="numberOfItems" content="4" />
     <div class="row g-4">
         @for (category of categories(); track $index) {
-
-            <div class="col-6 col-md-3">
+            <div class="col-6 col-md-3" [routerLink]="['/products/']"   [queryParams]="{category: category.id}">
                 <div class="category-card" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
                 <meta itemprop="position" content="{{$index+1}}" />
                 <div class="category-icon" [ngClass]="'category-' + category.name.toLowerCase()">
-                    <!-- <i class="bi" [ngClass]="getCategoryIcon(category)"></i> -->
+                    <img [src]="category?.image?.url" [alt]="category.name.toLowerCase()">
                 </div>
                 <div class="category-name" itemprop="name">{{ category.name }}</div>
-                <a [routerLink]="['/products', category.name.toLowerCase()]" class="category-link">Browse <i class="bi bi-arrow-right"></i></a>
+              
                 </div>
+              
             </div>
         }
     </div>

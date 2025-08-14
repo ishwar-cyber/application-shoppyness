@@ -55,6 +55,7 @@ export class Cart implements OnInit{
   ngOnInit(): void {
 
     console.log('cartrttt loaded');
+    this.loadCartItems();
     
     // Set SEO tags
     this.seoService.updateMetaTags({
@@ -65,7 +66,6 @@ export class Cart implements OnInit{
     });
     
     // Load cart items from service
-    this.loadCartItems();
 
   }
   
@@ -80,9 +80,7 @@ export class Cart implements OnInit{
     
     this.cartService.loadCart().subscribe({
         next: (response) => {
-
           console.log('cart items', response);
-          
           // this.cartItems.set(response.items);
           // this.subtotal.set(response.subtotal);
           // this.tax.set(response.tax);
@@ -93,7 +91,6 @@ export class Cart implements OnInit{
           this.isLoading.set(false);
         },
         error: (err) => {
-          console.error('Error loading cart:', err);
           this.error.set('Failed to load cart items. Please try again.');
           this.isLoading.set(false);
         }

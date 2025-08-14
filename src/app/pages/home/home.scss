@@ -230,7 +230,7 @@ $transition: all 0.3s ease;
       transform: translateY(-8px);
       box-shadow: $shadow-md;
       
-      .category-icon i {
+      .category-icon img {
         transform: scale(1.1);
       }
       
@@ -241,39 +241,27 @@ $transition: all 0.3s ease;
     }
     
     .category-icon {
-      width: 80px;
-      height: 80px;
+     
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 1.5rem;
-      border-radius: 50%;
-      background-color: rgba($primary-color, 0.1);
+     
       
-      i {
+      img {
         font-size: 2.5rem;
         color: $primary-color;
         transition: $transition;
+         border-radius: 50%;
+          width: 80px;
+      height: 80px;
+       margin: 0 auto 1.5rem;
+     
+      background-color: rgba($primary-color, 0.1);
       }
       
       &.category-laptop {
         background-color: rgba(#4263eb, 0.1);
         i { color: #4263eb; }
-      }
-      
-      &.category-desktop {
-        background-color: rgba(#ae3ec9, 0.1);
-        i { color: #ae3ec9; }
-      }
-      
-      &.category-accessories {
-        background-color: rgba(#ff6b6b, 0.1);
-        i { color: #ff6b6b; }
-      }
-      
-      &.category-gaming {
-        background-color: rgba(#51cf66, 0.1);
-        i { color: #51cf66; }
       }
     }
     

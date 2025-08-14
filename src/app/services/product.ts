@@ -26,4 +26,8 @@ export class Product {
      const params = new HttpParams().set('q', query);
      return this.http.get(`${this.URL}/products/search?${ params }`, );
   }
+
+  getProductByCategoryId(id: string){
+    return this.http.get(`${this.URL}/products/category/${id}`)
+  }
 }

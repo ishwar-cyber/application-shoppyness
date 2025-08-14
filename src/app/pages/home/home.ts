@@ -9,8 +9,13 @@ import { forkJoin } from 'rxjs';
 interface Category {
   id:string,
   name: string,
-  image?: string[],
+  image?:image,
   isactive: boolean
+}
+
+interface image {
+  url: string,
+  public_id: string
 }
 @Component({
   selector: 'app-home',
@@ -22,25 +27,8 @@ export class Home implements OnInit{
   products = signal<any[]>([]); // Show only first 4 products
   
   categories = signal<Category[]>([]);
-  brands = signal<any[]>(['Acer', 'Dell', 'HP', 'Lenovo', 'Apple']);
-  
-  // testimonials: Testimonial[] = [
-  //   {
-  //     name: 'Rahul Sharma',
-  //     title: 'Software Developer',
-  //     text: 'The gaming laptop I purchased exceeded my expectations. The performance is outstanding and customer service was excellent throughout the buying process.'
-  //   },
-  //   {
-  //     name: 'Priya Patel',
-  //     title: 'Graphic Designer',
-  //     text: 'As a designer, I needed a powerful workstation that could handle complex projects. Computer Shop helped me find the perfect setup within my budget.'
-  //   },
-  //   {
-  //     name: 'Amit Singh',
-  //     title: 'IT Manager',
-  //     text: 'We\'ve been purchasing our office equipment from Computer Shop for years. Their business solutions and after-sales support are unmatched in the industry.'
-  //   }
-  // ];
+  brands = signal<any[]>([]);
+
   private readonly product = inject(Product);
   private readonly home = inject(HomeService)
 

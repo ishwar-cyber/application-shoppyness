@@ -54,48 +54,53 @@
     </ul>
     
     <!-- Mega Menu Dropdown -->
-    <div class="mega-menu-container" 
-         *ngIf="activeCategory" 
-         (mouseenter)="showMegaMenu(activeCategory)" 
-         (mouseleave)="hideMegaMenu()">
-      <div class="mega-menu-content">
-        <div class="mega-menu-grid">
-          <ng-container *ngFor="let category of categories">
-            <div class="mega-menu-category" *ngIf="category.slug === activeCategory">
-              <h3 class="mega-menu-title">{{ category.name }}</h3>
-              <div class="mega-menu-subcategories">
-                <a *ngFor="let subcategory of category.subcategories" 
-                   class="mega-menu-item"
-                   routerLink="/products" 
-                   [queryParams]="{category: category.slug, subcategory: subcategory.slug}" 
-                   (click)="hideMegaMenu()">
-                  {{ subcategory.name }}
-                </a>
-                <a class="mega-menu-item view-all" 
-                   routerLink="/products" 
-                   [queryParams]="{category: category.slug}" 
-                   (click)="hideMegaMenu()">
-                  View All {{ category.name }} <i class="bi bi-arrow-right"></i>
-                </a>
-              </div>
-            </div>
-          </ng-container>
-          
-          <!-- Featured Products or Promotions -->
-          <div class="mega-menu-featured">
-            <div class="featured-card">
-              <div class="featured-label">FEATURED</div>
-              <img src="assets/products/laptop1.jpg" alt="Featured product" class="featured-image">
-              <div class="featured-info">
-                <h4>Gaming Laptop</h4>
-                <p class="featured-price">₹1,200</p>
-                <a routerLink="/products/1" class="featured-btn" (click)="hideMegaMenu()">View Details</a>
+     @if(activeCategory){
+          <div class="mega-menu-container" (mouseenter)="showMegaMenu(activeCategory)"  (mouseleave)="hideMegaMenu()">
+          <div class="mega-menu-content">
+            <div class="mega-menu-grid">
+              @for (category of categories; track $index) {
+                <ng-container>
+                  @if(category.slug === activeCategory){
+                  <div class="mega-menu-category">
+                    <h3 class="mega-menu-title">{{ category.name }}</h3>
+                    <div class="mega-menu-subcategories">
+                      @for (subcategory of category.subcategories; track $index) {
+                        <a 
+                          class="mega-menu-item"
+                          routerLink="/products" 
+                          [queryParams]="{category: category.slug, subcategory: subcategory.slug}" 
+                          (click)="hideMegaMenu()">
+                          {{ subcategory.name }}
+                        </a>
+                      }
+                      <a class="mega-menu-item view-all" 
+                        routerLink="/products" 
+                        [queryParams]="{category: category.slug}" 
+                        (click)="hideMegaMenu()">
+                        View All {{ category.name }} <i class="bi bi-arrow-right"></i>
+                      </a>
+                    </div>
+                  </div>
+                }
+                </ng-container>
+              }
+              <!-- Featured Products or Promotions -->
+              <div class="mega-menu-featured">
+                <div class="featured-card">
+                  <div class="featured-label">FEATURED</div>
+                  <img src="assets/products/laptop1.jpg" alt="Featured product" class="featured-image">
+                  <div class="featured-info">
+                    <h4>Gaming Laptop</h4>
+                    <p class="featured-price">₹1,200</p>
+                    <a routerLink="/products/1" class="featured-btn" (click)="hideMegaMenu()">View Details</a>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+     }
+  
   </div>
   
   <!-- Mobile Bottom Navigation (Fixed at Bottom) -->

@@ -107,11 +107,6 @@
                 </div>
             </div>
         }
-       
-        <div class="product-description mb-4" itemprop="description">
-            <h2 class="h5">Description</h2>
-            <p>{{ product()!.description }}</p>
-        </div>
         <div class="product-actions">
             <div class="quantity-controls mb-3">
                   @if ((product()?.stock ?? 0 ) > 0) {
@@ -153,24 +148,31 @@
             </div>
             
             <!-- Success Message -->
-            <div class="alert alert-success mt-3" *ngIf="addedToCartMessage()">
-            <i class="bi bi-check-circle me-2"></i>{{ addedToCartMessage() }}
+             @if(addedToCartMessage()){
+                <div class="alert alert-success mt-3" >
+                    <i class="bi bi-check-circle me-2"></i>{{ addedToCartMessage() }}
+                </div>
+             }
+            
+        </div>
+        <div class="product-description mb-4" itemprop="description">
+            <h2 class="h5">Description</h2>
+            <p>{{ product()!.description }}</p>
+        </div>
+        @if(product()!.specifications > 0){
+            <div class="product-specs mb-4">
+                    <h2 class="h5">Specifications</h2>
+                    <ul class="list-group">
+                        @for (item of product()?.specifications; track $index) {
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span class="fw-bold">{{item.name}}</span>
+                                <span>{{ item.value }}</span>
+                            </li>
+                        }
+                    </ul>
             </div>
-        </div>
-        
-        <div class="product-specs mb-4">
-            @if(product()!.specifications > 0){
-                <h2 class="h5">Specifications</h2>
-                <ul class="list-group">
-                    @for (item of product()?.specifications; track $index) {
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span class="fw-bold">{{item.name}}</span>
-                            <span>{{ item.value }}</span>
-                        </li>
-                    }
-                </ul>
-            }
-        </div>
+        }
+
         </div>
     </div>
     <!-- Related Products Section -->

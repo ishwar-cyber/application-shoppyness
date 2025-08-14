@@ -207,28 +207,21 @@
       @if(!isLoading() && filteredProducts().length > 0 && viewMode() === 'list'){
           <div class="list-view">  
             @for (product of filteredProducts(); track $index) {
-            <div class="list-product-item card mb-3" [routerLink]="['/products', product?.id]"> 
-            
+            <div class="list-product-item card mb-3" > 
               <div class="row g-0">  
-                <div class="col-md-3">  
+                <div class="col-md-3" [routerLink]="['/product', product?._id]">  
                   <img [src]="product.images[0].url" class="img-fluid rounded-start list-product-image" [alt]="product.name">  
                 </div>  
                 <div class="col-md-9">  
                   <div class="card-body">  
-                    <div class="d-flex justify-content-between">  
-                      <h5 class="card-title">{{ product.name }}</h5>  
+                    <div class="d-flex justify-content-between" [routerLink]="['/product', product?._id]">  
+                      <h5 class="card-title  text-truncate"  data-bs-toggle="tooltip"> {{ product.name }}</h5>  
                       <span class="price-tag">₹{{ product.price }}</span>  
                     </div>  
                     <p class="card-text">{{ product.brand.name }}</p>  
-                    
-                    <!-- <div class="specs-badges mb-3">  
-                      <span class="badge bg-primary me-1">{{ product.variants.ram }}</span>  
-                      <span class="badge bg-success me-1">{{ product.variants.ssd }}</span>  
-                      <span class="badge bg-info">{{ product.variants.processor }}</span>  
-                    </div> -->  
                     <div class="d-flex justify-content-between align-items-center">  
                       <span class="text-muted small">SKU: {{ product.sku }}</span>  
-                      <button class="btn btn-outline-primary btn-sm" (click)="cartService.addToCart(product.id, 1)">Add to Cart</button>  
+                      <button class="btn btn-outline-primary btn-sm" (click)="cartService.addToCart(product._id, 1)">Add to Cart</button>  
                     </div>  
                   </div>  
                 </div>  

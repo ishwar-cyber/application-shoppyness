@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { CartService } from '../../services/cart';
 import { Product } from '../../services/product';
 import { log } from 'console';
+import { strict } from 'assert';
 
 @Component({
   selector: 'app-product-list',
@@ -39,22 +40,22 @@ export class ProductList implements OnInit{
   brands = signal<any[]>([]);
   categories = signal<any[]>([]);
 
+  categoryId = signal<string>('');
   sortOption = signal<string>('featured');
+
   get sortOptionValue() {
     return this.sortOption();
   }
-
   set sortOptionValue(value: string) {
     this.sortOption.set(value);
   }
-
   get priceRangeValue() {
     return this.priceRange();
   }
 
-
   viewMode = signal<'grid' | 'list'>('grid');
   filteredProducts = signal<any[]>([]);
+  isCategoryRoute = signal<boolean>(false);
   private readonly seoService = inject(Seo);
   private readonly route = inject(ActivatedRoute);
   public cartService = inject(CartService);
@@ -75,24 +76,37 @@ export class ProductList implements OnInit{
   ngOnInit(): void {
     // Check initial screen size
     this.checkScreenSize();
-    this.productService.getProduct().subscribe({
-      next:(product: any) =>{
-        console.log('prodiuct listiong', product);
-        this.allProducts.set(product.data)
-        this.filteredProducts.set(product.data);
-          // Extract prices
-        const prices = product.data.map((p: any) => p.price || 0);
-
-        // Calculate min and max
-        this.minPrice.set(Math.min(...prices));
-        this.maxPrice.set(Math.max(...prices));
-        this.priceRange.update(price =>[this.minPrice() , this.maxPrice()]);
-        console.log('Min Price:', this.minPrice());
-        console.log('Max Price:', this.maxPrice());
-      }, error :(error) =>{
-        
+      this.route.queryParams.subscribe(params => {
+      this.isCategoryRoute.set(false);
+      if (params['search']) {
+        this.searchQuery.set(params['search']);
+        this.filterProducts();
+      } else if(params['category']){
+        console.log('params]', params['category']);
+        this.categoryId.set(params['category']);
+        this.isCategoryRoute.set(true);
       }
-    })
+    });
+    if(!this.isCategoryRoute()){
+        this.productService.getProduct().subscribe({
+          next:(product: any) =>{
+            this.allProducts.set(product.data)
+            this.filteredProducts.set(product.data);
+            const prices = product.data.map((p: any) => p.price || 0);
+            this.minPrice.set(Math.min(...prices));
+            this.maxPrice.set(Math.max(...prices));
+            this.priceRange.update(price =>[this.minPrice() , this.maxPrice()]);
+          }, error :(error) =>{}
+        })
+    } else{
+      this.productService.getProductByCategoryId(this.categoryId()).subscribe({
+        next:(res)=>{
+          console.log('category', res);
+          
+        }
+      });
+    }
+  
     // Set SEO tags
     this.seoService.updateMetaTags({
       title: 'Shop Computers, Laptops & Accessories | Computer Shop',
@@ -100,7 +114,9 @@ export class ProductList implements OnInit{
       keywords: 'computers, laptops, accessories, gaming PC, business laptops, shop computers',
       url: 'https://computershop.com/products'
     });
-    
+     if(isPlatformBrowser(this.platformId)){
+      window.scrollTo({top:0, behavior:'smooth'})
+    }
     // Simulate loading data with a delay
     setTimeout(() => {
       // Extract unique categories, brands, and specs for filters
@@ -108,7 +124,6 @@ export class ProductList implements OnInit{
         ...new Set(
           this.allProducts()
             .flatMap(p => {
-              console.log("Product categories:", p?.category);
               return p?.category?.map(c => c?.name) || [];
             })
             .filter(Boolean)
@@ -127,12 +142,7 @@ export class ProductList implements OnInit{
     }, 1000); // 1 second delay to simulate network request
     
     // Subscribe to query params for search functionality
-    this.route.queryParams.subscribe(params => {
-      if (params['search']) {
-        this.searchQuery = params['search'];
-        this.filterProducts();
-      }
-    });
+  
   }
   
   // Check if we're in mobile view
@@ -150,7 +160,7 @@ export class ProductList implements OnInit{
   
   // Toggle filter drawer for mobile
   toggleFilterDrawer(): void {
-    this.isFilterDrawerOpen.set(false);
+    this.isFilterDrawerOpen.set(!this.isFilterDrawerOpen());
     
     // Manage body class for filter drawer - only in browser environment
     if (isPlatformBrowser(this.platformId)) {

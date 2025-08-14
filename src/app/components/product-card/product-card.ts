@@ -10,13 +10,9 @@ import { CartService } from '../../services/cart';
 })
 export class ProductCard {
   private router = inject(Router);
-  private readonly cartService = inject(CartService);
+  public readonly cartService = inject(CartService);
   @Input() product:any = [];
   isLoading = input();
-
-  addToCart(event: any){
-    
-  }
 
   navigateToProduct(id: string): void {
   this.router.navigate(['/product', id]).then(() => {
