@@ -1,1 +1,178 @@
-<p>checkout works!</p>
+<div class="container py-4" *ngIf="isLoading()">  
+  <div class="text-center py-5">  
+    <div class="spinner-border" aria-hidden="true">  
+      <span class="visually-hidden">Loading...</span>  
+    </div>  
+    <p class="mt-3">Loading your cart...</p>  
+  </div>  
+</div>  <div class="container py-4" *ngIf="error()">  
+  <div class="alert alert-danger">  
+    {{ error() }}  
+    <button type="button" class="btn-close float-end" (click)="error.set(null)"></button>  
+  </div>  
+  <div class="text-center mt-4">  
+    <a routerLink="/cart" class="btn btn-primary">Return to Cart</a>  
+  </div>  
+</div>  <div class="container py-4" *ngIf="!isLoading() && !error() && !isOrderComplete()">  
+  <div class="row">  
+    <div class="col-12">  
+      <h1 class="mb-4">Checkout</h1>  <!-- Checkout Progress -->  
+  <div class="checkout-progress mb-4">  
+    <div class="step" [class.active]="currentStep() >= 1" [class.completed]="currentStep() > 1">  
+      <div class="step-number">1</div>  
+      <div class="step-label">Shipping</div>  
+    </div>  
+    <div class="step-connector"></div>  
+    <div class="step" [class.active]="currentStep() >= 2" [class.completed]="currentStep() > 2">  
+      <div class="step-number">2</div>  
+      <div class="step-label">Billing</div>  
+    </div>  
+    <div class="step-connector"></div>  
+    <div class="step" [class.active]="currentStep() >= 3">  
+      <div class="step-number">3</div>  
+      <div class="step-label">Payment</div>  
+    </div>  
+  </div>  
+</div>
+  </div>   
+  <div class="row">  
+    <!-- Checkout Form -->  
+    <div class="col-lg-8">  
+      <div class="card mb-4">  
+        <div class="card-body">  
+          <!-- Step 1: Shipping Information -->  
+          <div *ngIf="currentStep() === 1">  
+            <app-shipping-form   
+              [shippingForm]="shippingForm"   
+              (continue)="nextStep()"   
+              (valueChanged)="updateBillingForm()">  
+            </app-shipping-form>  
+          </div>  <!-- Step 2: Billing Information -->  
+      <div *ngIf="currentStep() === 2">  
+        <app-billing-form   
+          [billingForm]="billingForm"   
+          [sameAsBilling]="sameAsBilling()"   
+          (continue)="nextStep()"   
+          (back)="prevStep()"   
+          (toggleSameAsBillingChange)="toggleSameAsBilling()">  
+        </app-billing-form>  
+      </div>  
+        
+      <!-- Step 3: Payment Information -->  
+      <div *ngIf="currentStep() === 3">  
+        <app-payment-form   
+          [paymentForm]="paymentForm"   
+          [paymentMethods]="paymentMethods"   
+          [selectedPaymentMethod]="selectedPaymentMethod()"   
+          [isProcessingPayment]="isProcessingPayment()"   
+          [paymentError]="paymentError()"   
+          (continue)="processPayment()"   
+          (back)="prevStep()"   
+          (paymentMethodChange)="selectPaymentMethod($event)">  
+        </app-payment-form>  
+      </div>  
+    </div>  
+  </div>  
+</div>  
+  
+<!-- Order Summary -->  
+<div class="col-lg-4">  
+  <div class="card order-summary-card mb-4">  
+    <div class="card-header">  
+      <h5 class="mb-0">Order Summary</h5>  
+    </div>  
+    <div class="card-body">  
+      <!-- Items in cart -->  
+      <div class="cart-items-summary">  
+        <div class="cart-item-summary" *ngFor="let item of cartItems()">  
+          <div class="d-flex justify-content-between align-items-center mb-2">  
+            <div class="item-details d-flex align-items-center">  
+              <img [src]="item.image" [alt]="item.name" class="item-thumbnail me-2">  
+              <div>  
+                <div class="item-name">{{ item.name }}</div>  
+                <div class="item-quantity text-muted small">Qty: {{ item.quantity }}</div>  
+              </div>  
+            </div>  
+            <div class="item-price">₹{{ formatCurrency(item.price * item.quantity) }}</div>  
+          </div>  
+        </div>  
+      </div>  
+        
+      <hr>  
+        
+      <!-- Pricing Breakdown -->  
+      <div class="price-summary">  
+        <div class="summary-item d-flex justify-content-between mb-2">  
+          <span>Subtotal</span>  
+          <span>₹{{ formatCurrency(subtotal()) }}</span>  
+        </div>  
+        <div class="summary-item d-flex justify-content-between mb-2">  
+          <span>GST (18%)</span>  
+          <span>₹{{ formatCurrency(tax()) }}</span>  
+        </div>  
+        <div class="summary-item d-flex justify-content-between mb-2">  
+          <span>Shipping</span>  
+          <span *ngIf="shipping() > 0">₹{{ formatCurrency(shipping()) }}</span>  
+          <span *ngIf="shipping() === 0" class="text-success">Free</span>  
+        </div>  
+        <div class="summary-item d-flex justify-content-between mb-2" *ngIf="selectedPaymentMethod() === 'cod' && currentStep() === 3">  
+          <span>Cash on Delivery Fee</span>  
+          <span>₹50</span>  
+        </div>  
+        <hr>  
+        <div class="summary-total d-flex justify-content-between align-items-center">  
+          <span>Total</span>  
+          <span class="total-price">  
+            ₹{{ formatCurrency(total() + (selectedPaymentMethod() === 'cod' && currentStep() === 3 ? 50 : 0)) }}  
+          </span>  
+        </div>  
+      </div>  
+    </div>  
+  </div>  
+</div>
+
+  </div>  
+</div>  <!-- Order Confirmation -->  <div class="container py-5" *ngIf="isOrderComplete() && orderResponse()">  
+  <div class="row justify-content-center">  
+    <div class="col-md-8 col-lg-6">  
+      <div class="card order-success-card">  
+        <div class="card-body text-center">  
+          <div class="order-success-icon">  
+            <i class="bi bi-check-circle"></i>  
+          </div>  
+          <h2 class="my-4">Order Placed Successfully!</h2>  
+          <p class="mb-4">Thank you for your purchase. Your order has been received and is being processed.</p>  <div class="order-details text-start mb-4">  
+        <div class="row mb-3">  
+          <div class="col-5 fw-bold">Order Number:</div>  
+          <div class="col-7">{{ orderResponse()?.orderNumber }}</div>  
+        </div>  
+        <div class="row mb-3">  
+          <div class="col-5 fw-bold">Order Date:</div>  
+          <div class="col-7">{{ orderResponse()?.createdAt | date:'medium' }}</div>  
+        </div>  
+        <div class="row mb-3">  
+          <div class="col-5 fw-bold">Payment Method:</div>  
+          <div class="col-7">{{ orderResponse()?.paymentMethod }}</div>  
+        </div>  
+        <div class="row mb-3">  
+          <div class="col-5 fw-bold">Payment Status:</div>  
+          <div class="col-7" [ngClass]="{'text-success': orderResponse()?.paymentStatus === 'PAID', 'text-warning': orderResponse()?.paymentStatus === 'PENDING'}">  
+            {{ orderResponse()?.paymentStatus }}  
+          </div>  
+        </div>  
+        <div class="row">  
+          <div class="col-5 fw-bold">Total Amount:</div>  
+          <div class="col-7">₹{{ formatCurrency(orderResponse()?.total || 0) }}</div>  
+        </div>  
+      </div>  
+        
+      <div class="d-grid gap-3">  
+        <a routerLink="/profile/orders" class="btn btn-primary">View Order Details</a>  
+        <a routerLink="/" class="btn btn-outline-secondary">Continue Shopping</a>  
+      </div>  
+    </div>  
+  </div>  
+</div>
+
+  </div>  
+</div>
