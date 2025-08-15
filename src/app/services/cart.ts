@@ -60,7 +60,7 @@ export class CartService {
   /** 🛒 Load cart from backend */
  
 loadCart() {
-  return this.http.get<CartResponse>(`${this.apiUrl}`).pipe(
+  return this.http.get<CartResponse>(`${this.apiUrl}`, {withCredentials: true}).pipe(
     tap((res: any) => {
       const newCount = res.itemCount || 0;
       this.cartCount.update(current => current + newCount);      
@@ -72,11 +72,7 @@ loadCart() {
   addToCart(productId: string, quantity: number = 1) {
     return this.http.post<ResponseModel>(`${this.apiUrl}`, { productId, quantity }).pipe(
       tap((res:ResponseModel) => {
-   
-        // this.cartItems.set(res.items);
-        // this.totalItems.set(res.totalItems);
-        // this.totalPrice.set(res.totalPrice);
-        this.cartCount.set(res.data.itemCount || 0);
+        this.cartCount.set(res?.data?.itemCount || 0);
       }),
       catchError(err => {
         console.error('Error adding to cart:', err);
@@ -86,20 +82,9 @@ loadCart() {
   }
 
   /** ✏️ Update item quantity */
-  updateQuantity(id: string, quantity: number) {
-    console.log('///////////////////', id);
-    
-    return this.http.put<CartResponse>(`${this.apiUrl}/update/${id}`, { quantity }).pipe(
-      tap(res => {
-        this.cartItems.set(res.items);
-        // this.totalItems.set(res.totalItems);
-        // this.totalPrice.set(res.totalPrice);
-      }),
-      catchError(err => {
-        console.error('Error updating quantity:', err);
-        return of(null);
-      })
-    );
+  updateQuantity(id: string, quantity: number) {    
+    return this.http.put<CartResponse>(`${this.apiUrl}/update/${id}`,  { quantity }, {withCredentials: true});
+     
   }
 
   /** ❌ Remove item from cart */

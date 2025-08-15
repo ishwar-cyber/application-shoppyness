@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
 import { Subject, takeUntil } from 'rxjs';
 import { Seo } from '../../services/seo';
 import { Auth } from '../../services/auth';
@@ -18,7 +18,8 @@ interface CartItemResponse {
   selector: 'app-cart',
   imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './cart.html',
-  styleUrl: './cart.scss'
+  styleUrl: './cart.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Cart implements OnInit{
 
@@ -88,14 +89,13 @@ export class Cart implements OnInit{
   
   updateQuantity(id: string, newQuantity: number): void {
     if (newQuantity < 1) return;
-    
     // Set updating state
     this.updatingItemId = id;
-    
     this.cartService.updateQuantity(id, newQuantity)
       .subscribe({
         next: (response: any) => {
             this.updateRes(response);
+
         },
         error: (err) => {
           console.error('Error updating cart item:', err);

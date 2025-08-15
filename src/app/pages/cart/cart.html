@@ -105,7 +105,7 @@
                         <!-- Product Image -->
                         <div class="col-3 col-md-2">
                         <a [routerLink]="['/products', item.productId]">
-                            <img [src]="item.image" [alt]="item.name" class="cart-item-image">
+                            <img [src]="item.product.images[0].url" [alt]="item.name" class="cart-item-image">
                         </a>
                         </div>
                         
@@ -114,8 +114,8 @@
                         <div class="cart-item-content">
                             <div class="row align-items-center">
                             <div class="col-md-5">
-                                <h5 class="cart-item-title">
-                                <a [routerLink]="['/products', item.productId]">{{ item.name }}</a>
+                                <h5 class="cart-item-title text-truncate" [routerLink]="['/products', item.productId]">
+                                {{ item.name }}
                                 </h5>
                             </div>
                             
@@ -136,7 +136,7 @@
                                 </button>
                                 </div>
                                 <div class="quantity-status small">
-                                @if(updatingItemId === item.productId){
+                                @if(updatingItemId === item.id){
                                      <span  class="text-muted">
                                     <i class="bi bi-arrow-repeat spin me-1"></i>Updating...
                                 </span>
