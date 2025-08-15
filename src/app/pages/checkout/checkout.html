@@ -56,32 +56,27 @@
         <div class="card mb-4">
           <div class="card-body">
             @if (currentStep() === 1) {
-              <app-shipping-form 
+              <app-shipping
                 [shippingForm]="shippingForm" 
                 (continue)="nextStep()" 
                 (valueChanged)="updateBillingForm()">
-              </app-shipping-form>
+              </app-shipping>
             }
             @if (currentStep() === 2) {
-              <app-billing-form 
+              <app-billing
                 [billingForm]="billingForm" 
                 [sameAsBilling]="sameAsBilling()" 
                 (continue)="nextStep()" 
                 (back)="prevStep()" 
                 (toggleSameAsBillingChange)="toggleSameAsBilling()">
-              </app-billing-form>
+              </app-billing>
             }
             @if (currentStep() === 3) {
-              <app-payment-form 
-                [paymentForm]="paymentForm" 
-                [paymentMethods]="paymentMethods" 
-                [selectedPaymentMethod]="selectedPaymentMethod()" 
-                [isProcessingPayment]="isProcessingPayment()" 
-                [paymentError]="paymentError()" 
+              <app-payment
                 (continue)="processPayment()" 
                 (back)="prevStep()" 
                 (paymentMethodChange)="selectPaymentMethod($event)">
-              </app-payment-form>
+              </app-payment>
             }
           </div>
         </div>

@@ -3,7 +3,8 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Auth } from '../../services/auth';
-
+import { CookieService } from 'ngx-cookie-service';
+import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-login',
   imports: [CommonModule, RouterModule, ReactiveFormsModule],
@@ -19,11 +20,13 @@ export class Login implements OnInit{
 
   loginForm!: FormGroup;
   registerForm!: FormGroup;
-
+  returnUrl: string = '/';
   private formBuilder = inject(FormBuilder); 
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly authService = inject(Auth);
+  private readonly cookiesService = inject(CookieService);
+  private readonly toastr = inject(ToastrService)
 
   ngOnInit(): void {
     this.initForms();
@@ -35,16 +38,17 @@ export class Login implements OnInit{
         this.activeTab.set('login');
       }
 
-      if(params['returnTo']){
-        sessionStorage.setItem('returnUrl',`/${params['returnTo']}`);
+      if(params['returnUrl']){
+        sessionStorage.setItem('returnUrl',`${params['returnurl']}`);
+        this.returnUrl = params['returnUrl']
       }
     });
   }
 
   initForms(){
     this.loginForm = this.formBuilder.group({
-      username: ['', [Validators.required]],
-      password: ['', [Validators.required]]
+      email:['', [Validators.required, Validators.email]],
+      password:['', [Validators.required]]
     });
 
     this.registerForm = this.formBuilder.group({
@@ -67,7 +71,24 @@ export class Login implements OnInit{
   }
 
   login(){
-
+    if(this.loginForm.valid){
+      let payload = {
+        email: this.loginForm.value.email,
+        password: this.loginForm.value.password
+      }
+      this.authService.login(payload).subscribe({
+        next: (login: any) =>{
+          this.toastr.success(`${login.user?.name}`, 'Logged in');
+          this.cookiesService.set('authToken', login.token, { path: '/', secure: true, sameSite: 'Lax' });
+          this.authService.isLoggedIn.set(true);
+          console.log('return url', this.returnUrl);
+          
+         this.router.navigateByUrl(this.returnUrl);
+        }
+      })
+    } else{
+      alert('Enter your valid Crediantional')
+    }
   }
   register(){
 

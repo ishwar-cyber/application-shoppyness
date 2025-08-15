@@ -30,4 +30,22 @@ export class Product {
   getProductByCategoryId(id: string){
     return this.http.get(`${this.URL}/products/category/${id}`)
   }
+
+  filterProduct(categorys: any, brands: any, minPrice: number, maxPrice: number){
+     let params = new HttpParams();
+
+    if (categorys.length) {
+      params = params.set('categories', categorys.join(','));
+    }
+    if (brands.length) {
+      params = params.set('brands', brands.join(','));
+    }
+    if (minPrice) {
+      params = params.set('minPrice', minPrice!.toString());
+    }
+    if (maxPrice) {
+      params = params.set('maxPrice', maxPrice!.toString());
+    }
+     return this.http.get<any[]>(`${this.URL}/products/filter`, { params });
+  }
 }

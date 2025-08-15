@@ -10,15 +10,11 @@ import { CartService } from '../../services/cart';
 })
 export class ProductCard {
   private router = inject(Router);
-  public readonly cartService = inject(CartService);
+  public cartService = inject(CartService);
   @Input() product:any = [];
   isLoading = input();
 
-  navigateToProduct(id: string): void {
-  this.router.navigate(['/product', id]).then(() => {
-    // if (isPlatformBrowser(this.platformId)) {
-    //   window.scrollTo({ top: 0, behavior: 'smooth' });
-    // }
-  });
-}
+  navigateToProduct(slug: string): void {
+    this.router.navigate(['/product', slug]);
+  }
 }

@@ -37,19 +37,19 @@
     @if (activeTab() === 'login') {
       <form [formGroup]="loginForm" class="auth-form">
         <div class="form-group">
-          <label for="login-email">Username</label>
+          <label for="register-email">Email</label>
           <input 
-            type="text" 
-            id="login-username" 
-            formControlName="username" 
-            placeholder="Enter your username"
-            [class.invalid]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched"
+            type="email" 
+            id="register-email" 
+            formControlName="email" 
+            placeholder="Enter your email"
+            [class.invalid]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
           >
-          @if (loginForm.get('username')?.invalid && loginForm.get('username')?.touched) {
+          @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
             <div class="error-text">
-              @if (loginForm.get('username')?.errors?.['required']) {
+              @if (registerForm.get('email')?.errors?.['required']) {
                 Email is required
-              } @else if (loginForm.get('username')?.errors?.['username']) {
+              } @else if (registerForm.get('email')?.errors?.['email']) {
                 Please enter a valid email address
               }
             </div>

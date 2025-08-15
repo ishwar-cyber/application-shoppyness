@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'app-billing',
@@ -7,5 +7,6 @@ import { Component } from '@angular/core';
   styleUrl: './billing.scss'
 })
 export class Billing {
-
+  billingForm = input();
+  sameAsBilling = input()
 }

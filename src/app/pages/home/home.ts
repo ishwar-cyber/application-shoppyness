@@ -8,6 +8,7 @@ import { HomeService } from '../../services/home';
 import { forkJoin } from 'rxjs';
 interface Category {
   id:string,
+  slug:string,
   name: string,
   image?:image,
   isactive: boolean

@@ -9,26 +9,32 @@ import {
 } from '@angular/common/http';
 import { Observable, catchError, throwError } from 'rxjs';
 import { Router } from '@angular/router';
-
+import { CookieService } from 'ngx-cookie-service';
+import { Auth } from '../../services/auth';
 export const authInterceptor: HttpInterceptorFn = (
   req: HttpRequest<unknown>,
   next: HttpHandlerFn
 ): Observable<HttpEvent<unknown>> => {
   const router = inject(Router);
-  
-  // Get token from localStorage (or any storage service)
-  const token = localStorage.getItem('token');
+  const cookiesService = inject(CookieService);
+  const authService = inject(Auth);
 
+  // Get token from localStorage (or any storage service)
+  const token = cookiesService.get('authToken');
+  console.log('token', token);
+  
+  if(token){
+    authService.isLoggedIn.set(true);
+  }
   // Clone request to add Authorization header
   const authReq = token
     ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
     : req;
 
   return next(authReq).pipe(
-    catchError((error: HttpErrorResponse) => {
-      if (error.status === 401) {
-        console.warn('Unauthorized! Redirecting to login...');
-        localStorage.removeItem('token');
+   catchError((error: unknown) => {
+      if (error instanceof HttpErrorResponse && error.status === 401) {
+        cookiesService.delete('authToken');
         router.navigate(['/login']);
       }
       return throwError(() => error);

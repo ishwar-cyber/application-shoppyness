@@ -59,15 +59,20 @@ export class CartService {
 
   /** 🛒 Load cart from backend */
  
-  loadCart() {
-    return this.http.get<CartResponse>(`${this.apiUrl}`);
-  }
+loadCart() {
+  return this.http.get<CartResponse>(`${this.apiUrl}`).pipe(
+    tap((res: any) => {
+      const newCount = res.itemCount || 0;
+      this.cartCount.update(current => current + newCount);      
+    })
+  );
+}
 
   /** ➕ Add item to cart */
   addToCart(productId: string, quantity: number = 1) {
     return this.http.post<ResponseModel>(`${this.apiUrl}`, { productId, quantity }).pipe(
       tap((res:ResponseModel) => {
-        console.log('reeeeeee0', res.data.itemCount);
+   
         // this.cartItems.set(res.items);
         // this.totalItems.set(res.totalItems);
         // this.totalPrice.set(res.totalPrice);
@@ -81,8 +86,10 @@ export class CartService {
   }
 
   /** ✏️ Update item quantity */
-  updateQuantity(itemId: string, quantity: number) {
-    return this.http.put<CartResponse>(`${this.apiUrl}/update/${itemId}`, { quantity }).pipe(
+  updateQuantity(id: string, quantity: number) {
+    console.log('///////////////////', id);
+    
+    return this.http.put<CartResponse>(`${this.apiUrl}/update/${id}`, { quantity }).pipe(
       tap(res => {
         this.cartItems.set(res.items);
         // this.totalItems.set(res.totalItems);
@@ -96,8 +103,8 @@ export class CartService {
   }
 
   /** ❌ Remove item from cart */
-  removeFromCart(itemId: string) {
-    return this.http.delete<ResponseModel>(`${this.apiUrl}/remove/${itemId}`).pipe(
+  removeFromCart(id: string) {
+    return this.http.delete<ResponseModel>(`${this.apiUrl}/remove/${id}`).pipe(
       tap(res => {
         // this.cartItems.set(res.items);
         // this.totalItems.set(res.totalItems);

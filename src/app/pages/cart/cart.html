@@ -122,15 +122,15 @@
                             <!-- Quantity Controls -->
                             <div class="col-6 col-md-3">
                                 <div class="quantity-control">
-                                <button class="btn-quantity" (click)="updateQuantity(item.productId, item.quantity - 1)" 
+                                <button class="btn-quantity" (click)="updateQuantity(item._id, item.quantity - 1)" 
                                         [disabled]="item.quantity <= 1 || updatingItemId === item.productId">
                                     <i class="bi bi-dash"></i>
                                 </button>
                                 <input type="number" min="1" [(ngModel)]="item.quantity" 
-                                        (change)="updateQuantity(item.productId, item.quantity)" 
+                                        (change)="updateQuantity(item._id, item.quantity)" 
                                         class="form-control quantity-input"
                                         [disabled]="updatingItemId === item.productId">
-                                <button class="btn-quantity" (click)="updateQuantity(item.productId, item.quantity + 1)" 
+                                <button class="btn-quantity" (click)="updateQuantity(item._id, item.quantity + 1)" 
                                         [disabled]="updatingItemId === item.productId">
                                     <i class="bi bi-plus"></i>
                                 </button>
@@ -152,7 +152,7 @@
                                     <div class="current-price">₹{{ formatCurrency(item.price * item.quantity) }}</div>
                                     <div class="item-price text-muted small">₹{{ formatCurrency(item.price) }} each</div>
                                 </div>
-                                <button class="btn btn-remove" (click)="removeItem(item.productId)">
+                                <button class="btn btn-remove" (click)="removeItem(item._id)">
                                     <i class="bi bi-trash"></i>
                                 </button>
                                 </div>

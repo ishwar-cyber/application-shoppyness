@@ -53,10 +53,7 @@ export class Cart implements OnInit{
   private readonly authService = inject(Auth);
   
   ngOnInit(): void {
-
-    console.log('cartrttt loaded');
     this.loadCartItems();
-    
     // Set SEO tags
     this.seoService.updateMetaTags({
       title: 'Your Cart | Computer Shop',
@@ -77,17 +74,9 @@ export class Cart implements OnInit{
   loadCartItems(): void {
     this.isLoading.set(true);
     this.error.set(null);
-    
     this.cartService.loadCart().subscribe({
-        next: (response) => {
-          console.log('cart items', response);
-          // this.cartItems.set(response.items);
-          // this.subtotal.set(response.subtotal);
-          // this.tax.set(response.tax);
-          // this.shipping.set(response.shipping);
-          // this.discount.set(response.discount);
-          // this.couponCode.set(response.couponCode);
-          // this.total.set(response.total);
+        next: (response: any) => {
+          this.updateRes(response);
           this.isLoading.set(false);
         },
         error: (err) => {
@@ -106,15 +95,7 @@ export class Cart implements OnInit{
     this.cartService.updateQuantity(id, newQuantity)
       .subscribe({
         next: (response: any) => {
-          // Update cart items and totals
-          this.cartItems.set(response.items);
-          this.subtotal.set(response.subtotal);
-          this.tax.set(response.tax);
-          this.shipping.set(response.shipping);
-          this.discount.set(response.discount);
-          this.couponCode.set(response.couponCode);
-          this.total.set(response.total);
-          this.updatingItemId = null;
+            this.updateRes(response);
         },
         error: (err) => {
           console.error('Error updating cart item:', err);
@@ -125,21 +106,12 @@ export class Cart implements OnInit{
       });
   }
   
-  removeItem(productId: string): void {
+  removeItem(id: string): void {
     // Set updating state
-    this.updatingItemId = productId;
-    this.cartService.removeFromCart(productId)
+    this.cartService.removeFromCart(id)
       .subscribe({
         next: (response: any) => {
-          // Update cart items and totals
-          this.cartItems.set(response.items);
-          this.subtotal.set(response.subtotal);
-          this.tax.set(response.tax);
-          this.shipping.set(response.shipping);
-          this.discount.set(response.discount);
-          this.couponCode.set(response.couponCode);
-          this.total.set(response.total);
-          this.updatingItemId = null;
+           this.updateRes(response);
         },
         error: (err) => {
           console.error('Error removing cart item:', err);
@@ -148,6 +120,18 @@ export class Cart implements OnInit{
           this.loadCartItems();
         }
       });
+  }
+
+  updateRes(item:any) {
+    // Update cart items and totals
+          this.cartItems.set(item.items);
+          this.subtotal.set(item.subTotal);
+          this.tax.set(item.tax || 0);
+          this.shipping.set(item.shipping);
+          this.discount.set(item.discount);
+          this.couponCode.set(item.couponCode);
+          this.total.set(item.total || item.subTotal);
+          this.updatingItemId = null;
   }
   
   clearCart(): void {
@@ -160,8 +144,8 @@ export class Cart implements OnInit{
       .subscribe({
         next: (response: any) => {
           // Update cart items and totals
-          this.cartItems.set(response.items);
-          this.subtotal.set(response.subtotal);
+          this.cartItems.set([]);
+          this.subtotal.set(0);
           this.tax.set(response.tax);
           this.shipping.set(response.shipping);
           this.discount.set(response.discount);
@@ -260,14 +244,9 @@ export class Cart implements OnInit{
 
   checkout(): void {
     // Check if user is logged in
-    if (!this.authService.isLoggedIn) {
-      // Store the return URL in session storage
-      sessionStorage.setItem('returnUrl', '/checkout');
-      
+    if (!this.authService.isLoggedIn()) {
       // Redirect to login page
-      this.router.navigate(['/auth'], { 
-        queryParams: { returnTo: 'checkout' }
-      });
+      this.router.navigate(['/login']);
       return;
     }
     

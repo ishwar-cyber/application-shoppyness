@@ -9,6 +9,7 @@ import { CartService } from '../../services/cart';
 import { Product } from '../../services/product';
 import { log } from 'console';
 import { strict } from 'assert';
+import { HttpParams } from '@angular/common/http';
 
 @Component({
   selector: 'app-product-list',
@@ -23,7 +24,7 @@ export class ProductList implements OnInit{
   // filterProducts = signal<ProductModel[]>([]);
   isLoading = signal<boolean>(false);
 
-  selectedCategories = signal<string[]>([]);
+  selectedCategories = signal<any[]>([]);
   selectedBrands = signal<any[]>([]);
   maxPrice = signal<number>(0);
   minPrice = signal<number>(0);
@@ -76,20 +77,23 @@ export class ProductList implements OnInit{
   ngOnInit(): void {
     // Check initial screen size
     this.checkScreenSize();
+
       this.route.queryParams.subscribe(params => {
       this.isCategoryRoute.set(false);
       if (params['search']) {
         this.searchQuery.set(params['search']);
         this.filterProducts();
       } else if(params['category']){
-        console.log('params]', params['category']);
         this.categoryId.set(params['category']);
         this.isCategoryRoute.set(true);
       }
     });
+
     if(!this.isCategoryRoute()){
         this.productService.getProduct().subscribe({
           next:(product: any) =>{
+            console.log('listed product', product);
+            
             this.allProducts.set(product.data)
             this.filteredProducts.set(product.data);
             const prices = product.data.map((p: any) => p.price || 0);
@@ -100,9 +104,13 @@ export class ProductList implements OnInit{
         })
     } else{
       this.productService.getProductByCategoryId(this.categoryId()).subscribe({
-        next:(res)=>{
-          console.log('category', res);
-          
+        next:(res:any)=>{
+          this.allProducts.set(res.data)
+          this.filteredProducts.set(res.data);
+          const prices = res.data.map((p: any) => p.price || 0);
+          this.minPrice.set(Math.min(...prices));
+          this.maxPrice.set(Math.max(...prices));
+          this.priceRange.update(price =>[this.minPrice() , this.maxPrice()]);
         }
       });
     }
@@ -118,8 +126,10 @@ export class ProductList implements OnInit{
       window.scrollTo({top:0, behavior:'smooth'})
     }
     // Simulate loading data with a delay
-    setTimeout(() => {
+    // setTimeout(() => {
       // Extract unique categories, brands, and specs for filters
+      console.log('this.allProducts()', this.allProducts());
+      
      this.categories.set([
         ...new Set(
           this.allProducts()
@@ -129,17 +139,16 @@ export class ProductList implements OnInit{
             .filter(Boolean)
         )
       ]);
+      console.log(this.categories());
+      
       this.brands.set([...new Set(this.allProducts().map(p => p?.brand?.name ))]);      
       // this.ramOptions = [...new Set(this.allProducts.map(p => p.variants.ram))];
       // this.storageOptions = [...new Set(this.allProducts.map(p => p.variants.ssd))];
       // this.processorOptions = [...new Set(this.allProducts.map(p => p.variants.processor))];
-      
-      // Apply initial filters
-      this.filterProducts();
-      
+    
       // Set loading to false once data is ready
       this.isLoading.set(false);
-    }, 1000); // 1 second delay to simulate network request
+    // }, 1000); // 1 second delay to simulate network request
     
     // Subscribe to query params for search functionality
   
@@ -183,84 +192,33 @@ export class ProductList implements OnInit{
     }
   }
   
-  // Filter toggles
-  toggleCategory(category: string): void {
+toggleCategory(category: string): void {
     if (this.selectedCategories().includes(category)) {
-      this.selectedCategories.set(this.selectedCategories().filter(c => c !== category));
+      this.selectedCategories.set(
+        this.selectedCategories().filter(c => c !== category)
+      );
     } else {
-      this.selectedCategories.update(categories => [...categories, category]);
+      this.selectedCategories.update(cats => [...cats, category]);
     }
-    
-    if (!this.isMobileView()) {
-      this.filterProducts();
-    }
+     if (!this.isMobileView()) this.filterProducts();
   }
-  
+
   toggleBrand(brand: string): void {
     if (this.selectedBrands().includes(brand)) {
-      this.selectedBrands.set(this.selectedBrands().filter(b => b !== brand));
+      this.selectedBrands.set(
+        this.selectedBrands().filter(b => b !== brand)
+      );
     } else {
       this.selectedBrands.update(brands => [...brands, brand]);
     }
-    
-    if (!this.isMobileView) {
-      this.filterProducts();
-    }
+    if (!this.isMobileView()) this.filterProducts();
   }
-  
   // Main filter function
-  filterProducts(): void {
-    this.filteredProducts.set(this.allProducts().filter(product => {
-      // Search query filter
-      if (this.searchQuery) {
-        const query = this.searchQuery().toLowerCase().trim();
-        const matchesSearch = 
-          product.name?.toLowerCase().includes(query) || 
-          product?.brand?.name?.toLowerCase().includes(query) || 
-          // product.category?.toLowerCase().includes(query) ||
-          product.description?.toLowerCase().includes(query) ||
-          product.sku.toLowerCase().includes(query);
-        
-        if (!matchesSearch) {
-          return false;
-        }
-      }
-      
-      // Category filter
-      // if (this.selectedCategories.length > 0 && !this.selectedCategories().includes(product.category)) {
-      //   return false;
-      // }
-      
-      // Brand filter
-      if (this.selectedBrands().length > 0 && !this.selectedBrands()?.includes(product?.brand?.name)) {
-        return false;
-      }
-      // Price range filter
-      if (product.price < this.priceRange()[0] || product.price > this.priceRange()[1]) {
-        return false;
-      }
-      
-      // // RAM filter
-      // if (this.selectedRAM && product.variants.ram !== this.selectedRAM) {
-      //   return false;
-      // }
-      
-      // // Storage filter
-      // if (this.selectedStorage && product.variants.ssd !== this.selectedStorage) {
-      //   return false;
-      // }
-      
-      // // Processor filter
-      // if (this.selectedProcessor && product.variants.processor !== this.selectedProcessor) {
-      //   return false;
-      // }
-      
-      return true;
-    }));
-    
-    // Apply sorting after filtering
-    this.sortProducts();
-  }
+filterProducts(): void {
+  this.productService.filterProduct(this.selectedCategories(), this.selectedBrands(), this.minPrice(), this.maxPrice()).subscribe((res: any) => {
+      this.filteredProducts.set(res.data);
+    });  
+}
   
   // Sort products based on selected option
   sortProducts(): void {

@@ -15,13 +15,14 @@
       <div class="cart-login">
         <a routerLink="/cart" class="cart-icon">
           <i class="bi bi-cart3"></i>
+          <pre>{{cartService.cartCount() }}</pre>
           @if(cartService.cartCount()) {
             <span class="cart-count">{{ cartService.cartCount() }}</span>
           } @else {
             <span class="cart-count">0</span>
           }
         </a>
-        @if (false) {
+        @if (authService.isLoggedIn()) {
           <span (click)="logout()" class="logout-btn">
             <!-- <i class="bi bi-box-arrow-right"></i> -->
           <span class="logout-text">Logout</span>

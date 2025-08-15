@@ -244,31 +244,34 @@
     <!-- Category Filter -->  
     <div class="filter-section mb-4">  
       <h6>Category</h6>  
+      @for (category of categories(); track $index) {
       <div class="form-check">  
-        @for (category of categories(); track $index) {
+        
             <input class="form-check-input" type="checkbox" [id]="'mobile-category-' + category"   
                [checked]="selectedCategories().includes(category)"  
                (change)="toggleCategory(category)">  
             <label class="form-check-label" [for]="'mobile-category-' + category">  
               {{ category }}  
             </label>  
-        }
         
       </div>  
+        }
+
     </div>  <!-- Brand Filter -->  
 <div class="filter-section mb-4">  
   <h6>Brand</h6>  
+  @for ( brand of brands(); track $index) {
   <div class="form-check"> 
-    @for ( brand of brands(); track $index) {
+    
         <input class="form-check-input" type="checkbox" [id]="'mobile-brand-' + brand"  
             [checked]="selectedBrands().includes(brand)"  
             (change)="toggleBrand(brand)">  
         <label class="form-check-label" [for]="'mobile-brand-' + brand">  
           {{ brand }}  
         </label>  
-    } 
       
   </div>  
+}
 </div>  
 
 <!-- Price Range Filter -->  
