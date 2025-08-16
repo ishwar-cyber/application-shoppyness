@@ -10,11 +10,15 @@ interface Login {
 })
 export class Auth {
 
-  BASE_URL = `${environment.apiUrl}/auth/sign-in`;
+  BASE_URL = `${environment.apiUrl}/auth`;
   isLoggedIn = signal<boolean>(false);
   private readonly http =inject(HttpClient);
 
   login(payload: Login){
-    return this.http.post(`${this.BASE_URL}/user`, payload);
+    return this.http.post(`${this.BASE_URL}/sign-in/user`, payload);
+  }
+
+  signUp(payload: any){
+    return this.http.post(`${this.BASE_URL}/sign-up`, payload);
   }
 }

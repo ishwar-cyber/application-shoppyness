@@ -48,7 +48,7 @@ export class Cart implements OnInit{
   couponError = signal<boolean>(false);
   
   // Services
-  private readonly cartService = inject(CartService);
+  public cartService = inject(CartService);
   private readonly seoService = inject(Seo);
   private readonly router = inject(Router);
   private readonly authService = inject(Auth);
@@ -86,32 +86,12 @@ export class Cart implements OnInit{
         }
       });
   }
-  
-  updateQuantity(id: string, newQuantity: number): void {
-    if (newQuantity < 1) return;
-    // Set updating state
-    this.updatingItemId = id;
-    this.cartService.updateQuantity(id, newQuantity)
-      .subscribe({
-        next: (response: any) => {
-            this.updateRes(response);
-
-        },
-        error: (err) => {
-          console.error('Error updating cart item:', err);
-          this.updatingItemId = null;
-          // Reload cart to ensure consistency
-          this.loadCartItems();
-        }
-      });
-  }
-  
   removeItem(id: string): void {
-    // Set updating state
+    // Set updating state    
     this.cartService.removeFromCart(id)
       .subscribe({
         next: (response: any) => {
-           this.updateRes(response);
+          
         },
         error: (err) => {
           console.error('Error removing cart item:', err);
@@ -124,14 +104,8 @@ export class Cart implements OnInit{
 
   updateRes(item:any) {
     // Update cart items and totals
-          this.cartItems.set(item.items);
-          this.subtotal.set(item.subTotal);
-          this.tax.set(item.tax || 0);
-          this.shipping.set(item.shipping);
-          this.discount.set(item.discount);
-          this.couponCode.set(item.couponCode);
-          this.total.set(item.total || item.subTotal);
-          this.updatingItemId = null;
+      this.cartService.cartItems.set(item.data.items);
+      this.cartService.cartCount.set(item.data.itemCount)
   }
   
   clearCart(): void {
@@ -184,7 +158,7 @@ export class Cart implements OnInit{
     this.couponError.set(false);
     this.couponMessage.set(null);
 
-    this.cartService.applyCoupon(code, 1000)
+    this.cartService.applyCoupon(code)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {

@@ -55,7 +55,8 @@
         <div class="col-md-6">
             <h1 class="product-title" itemprop="name">{{ product()!.name }}</h1>
             <p class="product-brand text-muted" itemprop="brand">
-                <span class="fw-bold">Brand:</span> {{ product()!.brand }}
+            
+                <span class="fw-bold">Brand:</span> {{ product()!.brand.name }}
             </p>
             <p class="product-sku text-muted">
                 <span class="fw-bold">SKU:</span> {{ product()!.sku }}
@@ -73,22 +74,32 @@
         <!-- Check Delivery Availability -->
         <div class="delivery-check mb-3">
             <button class="btn btn-link delivery-check-btn p-0" (click)="toggleLocationPopup()">
-            <i class="bi bi-geo-alt me-1"></i> 
-            <span *ngIf="!userLocation()">Check delivery availability</span>
-            <span *ngIf="userLocation()">Delivery to: {{ userLocation() }}</span>
+              <i class="bi bi-geo-alt me-1"></i> 
+              @if(!userLocation()){
+              <span >Check delivery availability</span>
+              } @else {
+                <span>Delivery to: {{ userLocation() }}</span>
+              } 
             </button>
-            <div *ngIf="deliveryChecking()" class="delivery-info mt-2 text-muted">
-            <div class="spinner-border spinner-border-sm me-1" aria-hidden="true">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-            Checking delivery availability...
-            </div>
-            <div *ngIf="userLocation() && deliveryAvailable() && !deliveryChecking()" class="delivery-info mt-2 text-success">
-            <i class="bi bi-check-circle me-1"></i> Delivery available by {{ deliveryDate() }}
-            </div>
-            <div *ngIf="userLocation() && !deliveryAvailable() && !deliveryChecking()" class="delivery-info mt-2 text-danger">
-            <i class="bi bi-x-circle me-1"></i> Sorry, delivery not available to this location
-            </div>
+            @if(deliveryChecking()){
+              <div class="delivery-info mt-2 text-muted">
+                <div class="spinner-border spinner-border-sm me-1" aria-hidden="true">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                Checking delivery availability...
+              </div>
+            }
+            @if(userLocation() && deliveryAvailable() && !deliveryChecking()){
+              <div class="delivery-info mt-2 text-success">
+                <i class="bi bi-check-circle me-1"></i> Delivery available by {{ deliveryDate() }}
+              </div>
+            }
+            @if(userLocation() && !deliveryAvailable() && !deliveryChecking()){
+              <div  class="delivery-info mt-2 text-danger">
+                <i class="bi bi-x-circle me-1"></i> Sorry, delivery not available to this location
+              </div>
+            }
+            
         </div>
         @if(product()?.variants && product()?.variants?.length > 0){
              <div class="product-variant mt-4">
@@ -108,7 +119,7 @@
             </div>
         }
         <div class="product-actions">
-            <div class="quantity-controls mb-3">
+            <!-- <div class="quantity-controls mb-3">
                   @if ((product()?.stock ?? 0 ) > 0) {
                     <div class="d-flex align-items-center">
                         <button class="btn btn-outline-secondary" 
@@ -130,17 +141,18 @@
                         
                     </div>
                 }
-            </div>
+            </div> -->
             <div class="d-flex flex-wrap">
-            <button class="btn btn-primary btn-lg me-2 mb-2" 
+            <button class="btn btn-primary btn-lg  mb-2" 
                     (click)="addToCart(product())" 
                     [disabled]="isAddingToCart() || (product()?.stock ?? 0) <= 0">
-                <span *ngIf="!isAddingToCart()">
-                <i class="bi bi-cart-plus me-2"></i>Add to Cart
-                </span>
-                <span *ngIf="isAddingToCart()">
-                <i class="bi bi-arrow-repeat spin me-2"></i>Adding...
-                </span>
+                @if(!isAddingToCart()){
+                  <span><i class="bi bi-cart-plus me-2"></i>Add to Cart </span>
+                }
+                @if(isAddingToCart()){
+                  <span><i class="bi bi-arrow-repeat spin me-2"></i>Adding... </span>
+                }
+                
             </button>
             <button class="btn btn-outline-secondary btn-lg mb-2">
                 <i class="bi bi-heart me-2"></i>Add to Wishlist
@@ -155,26 +167,49 @@
              }
             
         </div>
-        <div class="product-description mb-4" itemprop="description">
-            <h2 class="h5">Description</h2>
-            <p>{{ product()!.description }}</p>
-        </div>
-        @if(product()!.specifications > 0){
-            <div class="product-specs mb-4">
-                    <h2 class="h5">Specifications</h2>
-                    <ul class="list-group">
-                        @for (item of product()?.specifications; track $index) {
-                            <li class="list-group-item d-flex justify-content-between">
-                                <span class="fw-bold">{{item.name}}</span>
-                                <span>{{ item.value }}</span>
-                            </li>
-                        }
-                    </ul>
-            </div>
-        }
-
         </div>
     </div>
+    <!-- Product Details Tabs -->
+<div class="product-details-tabs mt-4">
+  <ul class="nav nav-tabs" id="productDetailsTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description"
+        type="button" role="tab" aria-controls="description" aria-selected="true">
+        Description
+      </button>
+    </li>
+    @if(product().specifications.length >0){
+       <li class="nav-item" role="presentation">
+      <button class="nav-link" id="specifications-tab" data-bs-toggle="tab" data-bs-target="#specifications"
+        type="button" role="tab" aria-controls="specifications" aria-selected="false">
+        Specifications
+      </button>
+    </li>
+    }
+   
+  </ul>
+  <div class="tab-content p-3 border border-top-0 rounded-bottom" id="productDetailsTabContent">
+    <!-- Description -->
+    <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
+      <p>{{ product()?.description }}</p>
+    </div>
+    
+    <!-- Specifications -->
+      @if(product().specifications.length >0){
+        <div class="tab-pane fade" id="specifications" role="tabpanel" aria-labelledby="specifications-tab">
+          <ul class="list-group">
+            @for (item of product()?.specifications; track $index) {
+              <li class="list-group-item d-flex justify-content-between">
+                <span class="fw-bold">{{ item.name }}</span>
+                <span>{{ item.value }}</span>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+  </div>
+</div>
+
     <!-- Related Products Section -->
     @if(relatedProducts().length > 0){
         <section class="related-products mt-5">
@@ -192,6 +227,7 @@
             <div class="related-products-scroll-container">
                 <div class="related-products-scroll" #relatedProductsScroll>
                     @for (productItem of relatedProducts(); track $index) {
+                      
                         <div class="related-product-card">
                             <app-product-card [product]="productItem"></app-product-card>
                         </div>
@@ -223,13 +259,16 @@
 </div> -->
 
 <!-- Not Found State -->
-<div class="container mt-4 text-center" *ngIf="!product() && !loading() && !error()">
+ @if(!product() && !loading() && !error()){
+  <div class="container mt-4 text-center">
   <div class="alert alert-warning">
     <h2>Product Not Found</h2>
     <p>Sorry, the product you are looking for does not exist or has been removed.</p>
     <a routerLink="/products" class="btn btn-primary mt-3">Browse All Products</a>
   </div>
 </div>
+ }
+
 
 <!-- Location Popup Modal -->
 <div class="location-popup" [class.active]="showLocationPopup()" (click)="toggleLocationPopup()" (keydown.escape)="toggleLocationPopup()">
@@ -248,30 +287,36 @@
                (ngModelChange)="onDeliveryPincodeChange($event)">
       </div>
       
-      <div *ngIf="deliveryChecking()" class="delivery-result">
-        <div class="d-flex align-items-center">
-          <div class="spinner-border spinner-border-sm me-2" aria-hidden="true">
-            <span class="visually-hidden">Checking...</span>
+      @if(deliveryChecking()){
+         <div class="delivery-result">
+          <div class="d-flex align-items-center">
+            <div class="spinner-border spinner-border-sm me-2" aria-hidden="true">
+              <span class="visually-hidden">Checking...</span>
+            </div>
+            <span>Checking delivery availability...</span>
           </div>
-          <span>Checking delivery availability...</span>
         </div>
-      </div>
-      
-      <div *ngIf="userLocation().trim() && deliveryAvailable() && !deliveryChecking()" class="delivery-result success">
-        <i class="bi bi-check-circle-fill me-2"></i>
-        <div>
-          <p class="mb-1">Delivery available to {{ userLocation() }}</p>
-          <p class="delivery-date mb-0">Estimated delivery: {{ deliveryDate() }}</p>
+      }
+     
+      @if(userLocation().trim() && deliveryAvailable() && !deliveryChecking()){
+         <div class="delivery-result success">
+          <i class="bi bi-check-circle-fill me-2"></i>
+          <div>
+            <p class="mb-1">Delivery available to {{ userLocation() }}</p>
+            <p class="delivery-date mb-0">Estimated delivery: {{ deliveryDate() }}</p>
+          </div>
         </div>
-      </div>
-      
-      <div *ngIf="userLocation().trim() && !deliveryAvailable() && !deliveryChecking()" class="delivery-result error">
-        <i class="bi bi-x-circle-fill me-2"></i>
-        <div>
-          <p class="mb-1">We're sorry!</p>
-          <p class="mb-0">Delivery is currently not available to {{ userLocation() }}</p>
+      }
+     
+       @if(userLocation().trim() && !deliveryAvailable() && !deliveryChecking()){
+        <div  class="delivery-result error">
+          <i class="bi bi-x-circle-fill me-2"></i>
+          <div>
+            <p class="mb-1">We're sorry!</p>
+            <p class="mb-0">Delivery is currently not available to {{ userLocation() }}</p>
+          </div>
         </div>
-      </div>
+      }
     </div>
   </div>
 </div>

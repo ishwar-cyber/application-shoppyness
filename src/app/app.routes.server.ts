@@ -2,7 +2,6 @@ import { RenderMode, ServerRoute } from '@angular/ssr';
 
 const getProductIds = async () => {
   try {
-    console.log('get prodic t ios');
     
     const res = await fetch('https://shoppyness-backend.onrender.com/api/v1/products');
     if (!res.ok) {

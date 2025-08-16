@@ -3,76 +3,48 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { catchError, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
-
-export interface ResponseModel {
-  success: boolean
-  message: string
-  data: CartResponse
-}
-export interface CartItem {
-  _id: string;         // cart item id from backend
-  product: any;        // product object (id, name, price, image, etc.)
-  quantity: number;
-}
-export interface CartResponse {
-  visitorId: string
-  items: Item[]
-  isActive: boolean
-  expiresAt?: string
-  createdAt?: string
-  updatedAt?: string
-  itemCount?: number
-  subTotal?: number
-  id: string
-}
-
-export interface Item {
-  product: Product
-  name: string
-  price: number
-  discount: number
-  quantity: number
-  _id: string
-  createdAt: string
-  updatedAt: string
-}
-
-export interface Product {
-  _id: string
-  name: string
-  price: number
-  stock: string
-  id: string
-}
+import { CartResponse, Item } from '../commons/models/cart.model';
 
 
+// ------------------- Service -------------------
 @Injectable({ providedIn: 'root' })
 export class CartService {
-  private apiUrl = `${environment.apiUrl}/cart`;
+  apiUrl = `${environment.apiUrl}/cart`;
 
   // Signals for cart state
-  cartItems = signal<CartItem[]>([]);
-  totalItems = signal<number>(0);
-  totalPrice = signal<number>(0);
+  cartItems = signal<Item[]>([]);
   cartCount = signal<number>(0);
+  totalPrice = signal<number>(0);
+  subTotal = signal<number>(0);
+  cartItems$ = this.cartItems.asReadonly();
+
   constructor(private http: HttpClient) {}
 
-  /** 🛒 Load cart from backend */
- 
-loadCart() {
-  return this.http.get<CartResponse>(`${this.apiUrl}`, {withCredentials: true}).pipe(
-    tap((res: any) => {
-      const newCount = res.itemCount || 0;
-      this.cartCount.update(current => current + newCount);      
-    })
-  );
-}
+  /** 🛒 Load cart */
+  loadCart() {
+    return this.http.get<CartResponse>(`${this.apiUrl}`, { withCredentials: true }).pipe(
+      tap(res => {
+        if (res.success) {
+          this.cartItems.set(res.data.items); 
+          this.cartCount.set(res.data.itemCount || res.data.items.length);
+          this.subTotal.set(res.data.subTotal);
+          this.totalPrice.set(res.data.total)
+        }
+      })
+    );
+  }
 
   /** ➕ Add item to cart */
   addToCart(productId: string, quantity: number = 1) {
-    return this.http.post<ResponseModel>(`${this.apiUrl}`, { productId, quantity }).pipe(
-      tap((res:ResponseModel) => {
-        this.cartCount.set(res?.data?.itemCount || 0);
+    return this.http.post<CartResponse>(`${this.apiUrl}`, { productId, quantity }).pipe(
+      tap(res => {
+        if (res.success) {
+          // this.cartItems.set(res.data.items);
+          this.cartItems.set(res.data.items);
+          this.cartCount.set(res.data.itemCount);
+          this.subTotal.set(res.data.subTotal);
+          this.totalPrice.set(res.data.total);
+        }
       }),
       catchError(err => {
         console.error('Error adding to cart:', err);
@@ -81,19 +53,40 @@ loadCart() {
     );
   }
 
-  /** ✏️ Update item quantity */
-  updateQuantity(id: string, quantity: number) {    
-    return this.http.put<CartResponse>(`${this.apiUrl}/update/${id}`,  { quantity }, {withCredentials: true});
-     
+  /** ✏️ Update quantity (optimistic + rollback) */
+  updateQuantity(itemId: string, quantity: number) { 
+    const oldItems = [...this.cartItems()];
+
+    // optimistic update
+    this.cartItems.update(items =>
+      items.map(i => (i._id === itemId ? { ...i, quantity } : i))
+    );    
+    this.http.put<CartResponse>(`${this.apiUrl}/update/${itemId}/quantity`, { quantity }).subscribe({
+      next: res => {
+        if (res.success) {
+          this.cartItems.set(res.data.items);
+          this.cartCount.set(res.data.itemCount);
+          this.subTotal.set(res.data.subTotal);
+          this.totalPrice.set(res.data.total)
+        }
+      },
+      error: () => {
+        this.cartItems.set(oldItems); // rollback
+        alert('Failed to update quantity. Please try again.');
+      },
+    });
   }
 
-  /** ❌ Remove item from cart */
-  removeFromCart(id: string) {
-    return this.http.delete<ResponseModel>(`${this.apiUrl}/remove/${id}`).pipe(
+  /** ❌ Remove item */
+  removeFromCart(itemId: string) {
+    return this.http.delete<CartResponse>(`${this.apiUrl}/${itemId}/remove`).pipe(
       tap(res => {
-        // this.cartItems.set(res.items);
-        // this.totalItems.set(res.totalItems);
-        // this.totalPrice.set(res.totalPrice);
+        if (res.success) {
+          this.cartItems.set(res.data.items);
+          this.cartCount.set(res.data.itemCount);
+           this.subTotal.set(res.data.subTotal);
+          this.totalPrice.set(res.data.total)
+        }
       }),
       catchError(err => {
         console.error('Error removing item:', err);
@@ -102,13 +95,15 @@ loadCart() {
     );
   }
 
-  /** 🎟 Apply coupon code */
-  applyCoupon(code: string, subTotal: number) {
-    return this.http.post<ResponseModel>(`${this.apiUrl}/apply-coupon`, { code }).pipe(
-      tap((res: ResponseModel) => {
-        this.cartItems.set(res?.data?.items);
-        // this.totalItems.set(res.data?.totalItems);
-        // this.totalPrice.set(res.data?.totalPrice);
+  /** 🎟 Apply coupon */
+  applyCoupon(code: string) {
+    return this.http.post<CartResponse>(`${this.apiUrl}/apply-coupon`, { code }).pipe(
+      tap(res => {
+        if (res.success) {
+          this.cartItems.set(res.data.items);
+          this.cartCount.set(res.data.itemCount);
+          this.totalPrice.set(res.data.subTotal);
+        }
       }),
       catchError(err => {
         console.error('Error applying coupon:', err);
@@ -121,9 +116,11 @@ loadCart() {
   clearCart() {
     return this.http.delete<CartResponse>(`${this.apiUrl}/clear`).pipe(
       tap(res => {
-        this.cartItems.set([]);
-        this.totalItems.set(0);
-        this.totalPrice.set(0);
+        if (res.success) {
+          this.cartItems.set([]);
+          this.cartCount.set(0);
+          this.totalPrice.set(0);
+        }
       }),
       catchError(err => {
         console.error('Error clearing cart:', err);
@@ -132,7 +129,8 @@ loadCart() {
     );
   }
 
+  /** ❌ Remove coupon */
   removeCoupon(code: string) {
-    return this.http.delete(`${this.apiUrl}/remove-coupon/${code}`)
+    return this.http.delete<CartResponse>(`${this.apiUrl}/remove-coupon/${code}`);
   }
 }

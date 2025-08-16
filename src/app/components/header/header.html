@@ -2,9 +2,11 @@
   <!-- Top Navbar with Logo, Search, Cart & Login -->
   <div class="navbar-top" (mouseenter)="hideMegaMenu()">
     <!-- Logo for Desktop -->
-    <div class="logo-container desktop-only">
-      <a routerLink="/" class="logo-link">
-        <img src="assets/images/logo.svg" alt="shoppyness Logo" class="logo-image">
+    <div class="logo-container desktop-only ">
+      <a routerLink="/" class="logo-link d-flex flex-column column-gap-0">
+        <!-- <img src="assets/images/logo.svg" alt="shoppyness Logo" class="logo-image"> -->
+         <h5 class="p-0 m-0">SHOPPYNESS</h5><br>
+         <h6 class="p-0">TECHNOLOGY</h6>
       </a>
     </div>
     <div class="search-container">
@@ -15,7 +17,6 @@
       <div class="cart-login">
         <a routerLink="/cart" class="cart-icon">
           <i class="bi bi-cart3"></i>
-          <pre>{{cartService.cartCount() }}</pre>
           @if(cartService.cartCount()) {
             <span class="cart-count">{{ cartService.cartCount() }}</span>
           } @else {
@@ -106,15 +107,15 @@
   
   <!-- Mobile Bottom Navigation (Fixed at Bottom) -->
   <div class="mobile-navbar mobile-only">
-    <a routerLink="/home" class="mobile-nav-item">
+    <a routerLink="/home" class="mobile-nav-item" (click)="selectBottomMenu('home')" [class.selected]="selectedBottomMenu() === 'home'">
       <i class="bi bi-house"></i>
       <span>Home</span>
     </a>
-    <a routerLink="/products" class="mobile-nav-item">
+    <a routerLink="/products" class="mobile-nav-item"  (click)="selectBottomMenu('products')" [class.selected]="selectedBottomMenu() === 'products'">
       <i class="bi bi-grid"></i>
       <span>Products</span>
     </a>
-    <a routerLink="/cart" class="mobile-nav-item">
+    <a routerLink="/cart" class="mobile-nav-item"  (click)="selectBottomMenu('cart')" [class.selected]="selectedBottomMenu() === 'cart'">
       <i class="bi bi-cart3"></i>
       <span>Cart</span>
       @if(cartService.cartCount()) {
@@ -123,7 +124,7 @@
           <span class="cart-count">{{ cartService.cartCount() }}</span>
         }
     </a>
-    <a routerLink="/login" class="mobile-nav-item">
+    <a routerLink="/login" class="mobile-nav-item"  (click)="selectBottomMenu('account')" [class.selected]="selectedBottomMenu() === 'account'">
       <i class="bi bi-person"></i>
       <span>Account</span>
     </a>

@@ -87,7 +87,6 @@ export class ProductDetail implements OnInit{
 
       this.productService.getProductById(productId).subscribe({
         next: (res: ResponsePayload) => {
-          console.log('Product fetched:', res.data);
           this.loading.set(false);
           this.loading.set(false);
 
@@ -118,7 +117,6 @@ export class ProductDetail implements OnInit{
   private loadRelatedProducts(productId: string): void {
     this.productService.getRelatedProducts(productId).subscribe((products: any) => {
       this.relatedProducts.set(products);
-      console.log('relatedProducts',this.relatedProducts());
       
       // Preload images for better performance
       if (products.length > 0) {
@@ -140,14 +138,11 @@ export class ProductDetail implements OnInit{
 
   // Add product to cart
   addToCart(product: any): void {
+    this.isAddingToCart.set(true);
     // Add product to cart through CartService
-    const cartPayload = {
-      productId: product.id,
-      quantity: this.quantity()
-    }
-    this.cartService.addToCart( product.id, this.quantity()).subscribe({
+    this.cartService.addToCart(product.id, this.quantity()).subscribe({
       next: (res: any) => {
-       cartSignal.set(res.data.itemCount);
+        this.isAddingToCart.set(false);
         // Clear success message after 3 seconds
         setTimeout(() => {
           this.addedToCartMessage.set('');
@@ -359,8 +354,6 @@ prevImage(): void {
   // Navigate to related product with smooth scroll
   navigateToProduct(productId: number): void {
     // Log analytics event
-    console.log(`Product clicked: ${productId}`);
-
     // Smooth scroll to top before navigation
     if (isPlatformBrowser(this.platformId)) {
       window.scrollTo({ top: 0, behavior: 'smooth' });

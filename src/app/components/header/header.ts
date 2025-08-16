@@ -28,6 +28,7 @@ interface SubcategoryItem {
 export class Header implements OnInit{
   searchQuery = '';
   isSearchFocused = false;
+  selectedBottomMenu = signal<string>('home')
   filteredProducts = signal<any>([]);
   private readonly router = inject(Router);
   public authService = inject(Auth); // Assuming AuthService is available for login state
@@ -132,5 +133,8 @@ export class Header implements OnInit{
   logout(): void {
     // this.authService.userLoggedIn.set(false);
     // this.authService.logout();
+  }
+  selectBottomMenu(menu: string){
+    this.selectedBottomMenu.set(menu);
   }
 }

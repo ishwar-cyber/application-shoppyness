@@ -78,7 +78,7 @@
         
         <div class="form-actions">
           <div class="forgot-password">
-            <a routerLink="/auth/forgot-password">Forgot Password?</a>
+            <a>Forgot Password?</a>
           </div>
           
           <button 
@@ -101,12 +101,29 @@
     @if (activeTab() === 'register') {
       <form [formGroup]="registerForm" class="auth-form">
         <div class="form-group">
+          <label for="register-name">Name</label>
+          <input 
+            type="text" 
+            id="register-name" 
+            formControlName="name" 
+            placeholder="Rajesh Patil"
+            [class.invalid]="registerForm.get('name')?.invalid && registerForm.get('name')?.touched"
+          >
+          @if (registerForm.get('name')?.invalid && registerForm.get('name')?.touched) {
+            <div class="error-text">
+              @if (registerForm.get('name')?.errors?.['required']) {
+                Name is required
+              } 
+            </div>
+          }
+        </div>
+        <div class="form-group">
           <label for="register-email">Email</label>
           <input 
             type="email" 
             id="register-email" 
             formControlName="email" 
-            placeholder="Enter your email"
+            placeholder="Ex. rajesh@gmail.com"
             [class.invalid]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
           >
           @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
@@ -119,7 +136,25 @@
             </div>
           }
         </div>
-        
+
+        <div class="form-group">
+          <label for="register-phone">Phone</label>
+          <input 
+            type="tel" 
+            id="register-phone" 
+            formControlName="phone" 
+            placeholder="Ex. 9809890987"
+            [class.invalid]="registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched"
+          >
+          @if (registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched) {
+            <div class="error-text">
+              @if (registerForm.get('phone')?.errors?.['required']) {
+                Phone is required
+              }
+            </div>
+          }
+        </div>
+
         <div class="form-group">
           <label for="register-password">Password</label>
           <input 

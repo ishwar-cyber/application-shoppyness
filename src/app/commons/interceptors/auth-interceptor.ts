@@ -21,7 +21,6 @@ export const authInterceptor: HttpInterceptorFn = (
 
   // Get token from localStorage (or any storage service)
   const token = cookiesService.get('authToken');
-  console.log('token', token);
   
   if(token){
     authService.isLoggedIn.set(true);

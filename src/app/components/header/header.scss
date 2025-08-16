@@ -550,6 +550,13 @@
   }
 }
 
+.selected {
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+  border-radius: 4px;
+  padding: 4px 8px;
+}
 // Responsive Styles
 @media (max-width: 768px) {
   .search-container {

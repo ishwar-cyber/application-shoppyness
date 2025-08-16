@@ -413,3 +413,11 @@ $image-bg: #fff;
   border-radius: 50%;
   animation: spin 0.75s linear infinite;
 }
+
+.product-details-tabs .nav-tabs .nav-link {
+  font-size: 0.95rem;
+  padding: 0.5rem 1rem;
+}
+.product-details-tabs .tab-content {
+  background-color: #f9f9f9;
+}

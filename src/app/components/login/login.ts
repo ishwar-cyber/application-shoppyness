@@ -52,7 +52,9 @@ export class Login implements OnInit{
     });
 
     this.registerForm = this.formBuilder.group({
+      name: ['', [Validators.required]],
       email: ['',[Validators.required, Validators.email]],
+      phone: ['',[Validators.required,Validators.pattern(/^[6-9]\d{9}$/)]],
       password: ['', [Validators.required,Validators.minLength(6)]],
       confirmPassword: ['', [Validators.required]]
     })
@@ -81,8 +83,6 @@ export class Login implements OnInit{
           this.toastr.success(`${login.user?.name}`, 'Logged in');
           this.cookiesService.set('authToken', login.token, { path: '/', secure: true, sameSite: 'Lax' });
           this.authService.isLoggedIn.set(true);
-          console.log('return url', this.returnUrl);
-          
          this.router.navigateByUrl(this.returnUrl);
         }
       })
@@ -91,15 +91,29 @@ export class Login implements OnInit{
     }
   }
   register(){
-
+    if(this.registerForm.valid){
+      let value = this.registerForm.value;
+      const payload = {
+        username: value.name,
+        email: value.email,
+        phone: value.phone,
+        password: value.password,
+        confirmPassword: value.confirmPassword
+      };
+      this.authService.signUp(payload).subscribe({
+        next : (res)=>{
+            this.switchTab('login' )
+          console.log('login', res);
+          this.toastr.success('Register successfully')
+        }
+      })
+    }
   }
 
   getPasswordMatchError(): boolean{
-
     const passwordControl = this.registerForm.controls['password'];
     const confirmPasswordControl = this.registerForm.controls['confirmPassword'];
     if(!passwordControl || !confirmPasswordControl) return false;
-
     return (
       passwordControl.value !== confirmPasswordControl.value && confirmPasswordControl.touched
     );

@@ -92,7 +92,6 @@ export class ProductList implements OnInit{
     if(!this.isCategoryRoute()){
         this.productService.getProduct().subscribe({
           next:(product: any) =>{
-            console.log('listed product', product);
             
             this.allProducts.set(product.data)
             this.filteredProducts.set(product.data);
@@ -128,8 +127,6 @@ export class ProductList implements OnInit{
     // Simulate loading data with a delay
     // setTimeout(() => {
       // Extract unique categories, brands, and specs for filters
-      console.log('this.allProducts()', this.allProducts());
-      
      this.categories.set([
         ...new Set(
           this.allProducts()
@@ -139,7 +136,6 @@ export class ProductList implements OnInit{
             .filter(Boolean)
         )
       ]);
-      console.log(this.categories());
       
       this.brands.set([...new Set(this.allProducts().map(p => p?.brand?.name ))]);      
       // this.ramOptions = [...new Set(this.allProducts.map(p => p.variants.ram))];
