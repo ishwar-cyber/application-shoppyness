@@ -11,7 +11,7 @@ import { Product } from '../../services/product';
 })
 export class Search {
   searchQuery = '';
-  isSearchFocused = false;
+  isSearchFocused =signal<boolean>(false);
   filteredProducts = signal<any>([]);
   private readonly router = inject(Router);
   private readonly product = inject(Product);
@@ -45,7 +45,7 @@ export class Search {
   
   selectProduct(product: any): void {
     this.router.navigate(['/product/', product.id]);
-    this.isSearchFocused = false;
+    this.isSearchFocused.set(false);
     this.clearSearch();
   }
 

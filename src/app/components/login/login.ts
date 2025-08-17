@@ -80,10 +80,25 @@ export class Login implements OnInit{
       }
       this.authService.login(payload).subscribe({
         next: (login: any) =>{
-          this.toastr.success(`${login.user?.name}`, 'Logged in');
+          this.authService.userName.set(login.user.username);
+          if(login.success && this.cookiesService.get('visitorId')){
+            const payload = {
+              visitorId : this.cookiesService.get('visitorId')
+            }
+              this.authService.margeCartToUser(payload).subscribe({
+                next: ()=>{
+
+                }
+              })
+          }
+         this.success.set(`${login.user.name} login successfully`)
           this.cookiesService.set('authToken', login.token, { path: '/', secure: true, sameSite: 'Lax' });
           this.authService.isLoggedIn.set(true);
          this.router.navigateByUrl(this.returnUrl);
+        },
+        error :(err)=>{
+          console.log(err);
+          this.error.set(err.error.message);
         }
       })
     } else{

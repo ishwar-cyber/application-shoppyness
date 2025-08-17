@@ -28,6 +28,7 @@ interface SubcategoryItem {
 export class Header implements OnInit{
   searchQuery = '';
   isSearchFocused = false;
+  toggleUserDropdown =signal<boolean>(false)
   selectedBottomMenu = signal<string>('home')
   filteredProducts = signal<any>([]);
   private readonly router = inject(Router);

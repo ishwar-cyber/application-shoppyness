@@ -30,12 +30,17 @@ export const authInterceptor: HttpInterceptorFn = (
     ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
     : req;
 
-  return next(authReq).pipe(
-   catchError((error: unknown) => {
+return next(req).pipe(
+    catchError((error: unknown) => {
       if (error instanceof HttpErrorResponse && error.status === 401) {
         cookiesService.delete('authToken');
         router.navigate(['/login']);
+      } else if (error instanceof Error) {
+        console.error("General Error:", error.message);
+      } else {
+        console.error("Unknown Error:", error);
       }
+
       return throwError(() => error);
     })
   );

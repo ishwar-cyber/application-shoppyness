@@ -24,7 +24,6 @@ export interface Item {
   product: Product;
   name: string;
   price: number;
-  discount: number;
   quantity: number;
   createdAt: string;
   updatedAt: string;

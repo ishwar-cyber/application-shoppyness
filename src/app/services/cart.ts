@@ -5,8 +5,6 @@ import { catchError, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { CartResponse, Item } from '../commons/models/cart.model';
 
-
-// ------------------- Service -------------------
 @Injectable({ providedIn: 'root' })
 export class CartService {
   apiUrl = `${environment.apiUrl}/cart`;
@@ -20,13 +18,12 @@ export class CartService {
 
   constructor(private http: HttpClient) {}
 
-  /** 🛒 Load cart */
   loadCart() {
     return this.http.get<CartResponse>(`${this.apiUrl}`, { withCredentials: true }).pipe(
       tap(res => {
         if (res.success) {
           this.cartItems.set(res.data.items); 
-          this.cartCount.set(res.data.itemCount || res.data.items.length);
+          this.cartCount.set(res.data.itemCount);
           this.subTotal.set(res.data.subTotal);
           this.totalPrice.set(res.data.total)
         }
@@ -34,24 +31,26 @@ export class CartService {
     );
   }
 
-  /** ➕ Add item to cart */
-  addToCart(productId: string, quantity: number = 1) {
-    return this.http.post<CartResponse>(`${this.apiUrl}`, { productId, quantity }).pipe(
-      tap(res => {
-        if (res.success) {
-          // this.cartItems.set(res.data.items);
-          this.cartItems.set(res.data.items);
-          this.cartCount.set(res.data.itemCount);
-          this.subTotal.set(res.data.subTotal);
-          this.totalPrice.set(res.data.total);
-        }
-      }),
-      catchError(err => {
-        console.error('Error adding to cart:', err);
-        return of(null);
-      })
-    );
-  }
+addToCart(productId: string, quantity: number = 1) {
+  return this.http.post<any>(`${this.apiUrl}/add`, { productId, quantity },
+    { withCredentials: true } // if backend uses cookies
+  ).pipe(
+    tap(res => {
+      if (res?.success && res?.data) {
+        this.cartItems.set([...res.data.items]); // replace reference
+        this.cartCount.set(res.data.itemCount);
+        this.subTotal.set(res.data.subTotal);
+        this.totalPrice.set(res.data.total);
+      } else {
+        console.warn('Add to cart failed, invalid response:', res);
+      }
+    }),
+    catchError(err => {
+      console.error('Error adding to cart:', err);
+      return of(null);
+    })
+  );
+}
 
   /** ✏️ Update quantity (optimistic + rollback) */
   updateQuantity(itemId: string, quantity: number) { 
@@ -79,7 +78,7 @@ export class CartService {
 
   /** ❌ Remove item */
   removeFromCart(itemId: string) {
-    return this.http.delete<CartResponse>(`${this.apiUrl}/${itemId}/remove`).pipe(
+    return this.http.delete<CartResponse>(`${environment.apiUrl}/${itemId}/remove`).pipe(
       tap(res => {
         if (res.success) {
           this.cartItems.set(res.data.items);
@@ -97,7 +96,7 @@ export class CartService {
 
   /** 🎟 Apply coupon */
   applyCoupon(code: string) {
-    return this.http.post<CartResponse>(`${this.apiUrl}/apply-coupon`, { code }).pipe(
+    return this.http.post<CartResponse>(`${environment.apiUrl}/coupons/apply-coupon`, { code }).pipe(
       tap(res => {
         if (res.success) {
           this.cartItems.set(res.data.items);

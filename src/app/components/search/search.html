@@ -5,7 +5,7 @@
           class="search-input" 
           placeholder="Search products..." 
           [(ngModel)]="searchQuery" 
-          (focus)="isSearchFocused = true"
+          (focus)="isSearchFocused.set(true)"
           (input)="onSearchInput()"
         />
         <span class="search-icon">
@@ -22,7 +22,7 @@
       </div>
       
       <!-- Search Results Dropdown -->
-       @if(isSearchFocused && filteredProducts().length > 0){
+       @if(isSearchFocused() && filteredProducts().length > 0){
          <div class="search-results">
           <div class="search-results-container">
             @for (product of filteredProducts(); track $index) {
@@ -42,7 +42,7 @@
           </div>
           @if(filteredProducts().length >= 5){
             <div class="search-results-footer">
-              <a [routerLink]="['/products']" [queryParams]="{search: searchQuery}" (click)="isSearchFocused = false">
+              <a [routerLink]="['/products']" [queryParams]="{search: searchQuery}" (click)="isSearchFocused.set(false)">
                 View all results
               </a>
             </div>
@@ -50,17 +50,17 @@
        </div>
       }
       <!-- No Results Message -->
-       @if(isSearchFocused && searchQuery && filteredProducts().length === 0){
+       @if(isSearchFocused() && searchQuery && filteredProducts().length === 0){
           <div class="search-no-results">
             No results found for "{{ searchQuery }}"
           </div>
        }
     
       <!-- Overlay for closing search results -->
-       @if(isSearchFocused && filteredProducts().length > 0){
+       @if(isSearchFocused() && filteredProducts().length > 0){
         <button 
             class="search-overlay"
-            (click)="isSearchFocused = false"
+            (click)="isSearchFocused.set(false)"
             aria-label="Close search results"
         ></button>
         }

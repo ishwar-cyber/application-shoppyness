@@ -34,18 +34,12 @@ export class Cart implements OnInit{
   subtotal = signal<number>(0);
   tax = signal<number>(0);
   shipping = signal<number>(0);
-  discount = signal<any>(0);
-  couponCode = signal<any>(null);
   total = signal<number>(0);
   
   // Loading state for quantity updates
   updatingItemId: string | null = '';
   
-  // Coupon state
-  couponInput = signal<string>('');
-  isCouponLoading = signal<boolean>(false);
-  couponMessage = signal<string | null>(null);
-  couponError = signal<boolean>(false);
+
   
   // Services
   public cartService = inject(CartService);
@@ -122,8 +116,6 @@ export class Cart implements OnInit{
           this.subtotal.set(0);
           this.tax.set(response.tax);
           this.shipping.set(response.shipping);
-          this.discount.set(response.discount);
-          this.couponCode.set(response.couponCode);
           this.total.set(response.total);
           this.updatingItemId = null;
         },
@@ -136,75 +128,8 @@ export class Cart implements OnInit{
       });
   }
   
-  /**
-   * Apply a coupon code to the cart
-   * 
-   * This method validates the entered coupon code and applies it to the cart.
-   * Valid coupon codes will result in a discount being applied to the order.
-   * For this demo, coupon validation happens locally for guest users and
-   * via API for logged-in users.
-   * 
-   * Available demo coupons: WELCOME10, FLAT500, SUMMER25
-   */
-  applyCoupon(): void {
-    const code = this.couponInput();
-    if (!code) {
-      this.couponError.set(true);
-      this.couponMessage.set('Please enter a valid coupon code to receive a discount');
-      return;
-    }
-    
-    this.isCouponLoading.set(true);
-    this.couponError.set(false);
-    this.couponMessage.set(null);
-
-    this.cartService.applyCoupon(code)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (response: any) => {
-          this.isCouponLoading.set(false);
-          
-          if (response.success) {
-            this.couponError.set(false);
-            this.couponMessage.set(response.message);
-            this.loadCartItems(); // Refresh cart to reflect discount
-          } else {
-            this.couponError.set(true);
-            this.couponMessage.set(response.message);
-          }
-        },
-        error: (err) => {
-          console.error('Error applying coupon:', err);
-          this.isCouponLoading.set(false);
-          this.couponError.set(true);
-          this.couponMessage.set('Failed to apply coupon. Please try again.');
-        }
-      });
-  }
+ 
   
-  /**
-   * Remove the applied coupon from the cart
-   */
-  removeCoupon(code: string): void {
-    this.isCouponLoading.set(true);
-    
-    this.cartService.removeCoupon(code).subscribe({
-        next: () => {
-          this.isCouponLoading.set(false);
-          this.couponCode.set(null);
-          this.couponInput.set('');
-          this.couponMessage.set('Coupon removed');
-          this.couponError.set(false);
-          this.loadCartItems(); // Refresh cart
-        },
-        error: (err) => {
-          console.error('Error removing coupon:', err);
-          this.isCouponLoading.set(false);
-          this.couponError.set(true);
-          this.couponMessage.set('Failed to remove coupon. Please try again.');
-        }
-      });
-  }
   
   // Format currency for display
   formatCurrency(value: number): string {

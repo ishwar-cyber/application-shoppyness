@@ -3,11 +3,11 @@
   <meta itemprop="mpn" [content]="product.id" />
   
   @if(product.images && product.images.length > 0) {
-    <img [src]="product.images[0].url" class="card-img-top" width="auto" height="200px" (click)="navigateToProduct(product._id)" [alt]="product.name" itemprop="image" />
+    <img [src]="product.images[0].url" class="card-img-top" (click)="navigateToProduct(product._id)" [alt]="product.name" itemprop="image" />
   }
 
   <div class="card-body d-flex flex-column" (click)="navigateToProduct(product._id)">
-    <h5 class="card-title  text-truncate" itemprop="name" data-bs-toggle="tooltip">{{ product.name }}</h5>
+    <h5 class="card-title text-truncate" itemprop="name" data-bs-toggle="tooltip">{{ product.name }}</h5>
     <p class="card-text" itemprop="brand"><span class="">SKU</span>: {{ product.sku }}</p>
     <p class="card-text"><span itemprop="brand">{{ product.brand.name }}</span></p>
 
@@ -19,6 +19,6 @@
         <meta itemprop="priceCurrency" content="INR" />
         <span itemprop="price">₹{{ product.price }}</span>
       </span>
-      <button class="btn btn-outline-primary btn-sm" (click)="cartService.addToCart(product._id, 1)">Add to Cart</button>
+      <button class="btn btn-outline-primary btn-sm" (click)="addToCart(product._id)">Add to Cart</button>
     </div>
 </div>
