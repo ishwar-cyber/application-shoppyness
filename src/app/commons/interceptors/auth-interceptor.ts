@@ -17,7 +17,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   }
 
   // 2. Add JWT token
-  const authToken = cookieService.get('authToken') || localStorage.getItem('authToken');
+  const authToken = cookieService.get('authToken')
   if (authToken) {
     headers['Authorization'] = `Bearer ${authToken}`;
   }
