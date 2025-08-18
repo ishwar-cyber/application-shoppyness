@@ -27,7 +27,7 @@ export const authInterceptor: HttpInterceptorFn = (
   }
   // Clone request to add Authorization header
   const authReq = token
-    ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
+    ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }, withCredentials:true)
     : req;
 
 return next(req).pipe(
