@@ -31,7 +31,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         if (error.status === 401 || error.status === 403) {
           // Remove invalid token
           cookieService.delete('authToken');
-          localStorage.removeItem('authToken');
 
           // Redirect to login
           router.navigate(['/login']);
