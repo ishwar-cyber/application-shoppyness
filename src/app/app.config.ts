@@ -14,7 +14,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
     provideHttpClient(withInterceptors([authInterceptor,CredentialsInterceptor])),
-    provideHttpClient(withFetch(), {withCredentials: true});
+    provideHttpClient(withFetch(), {withCredentials: true}),
     provideRouter(routes), provideClientHydration(withEventReplay()),
     provideAnimations(), // required animations providers
     provideToastr(), // Toastr providers
