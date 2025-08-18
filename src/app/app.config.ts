@@ -13,7 +13,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(withInterceptors([authInterceptor,CredentialsInterceptor])),
     provideRouter(routes), provideClientHydration(withEventReplay()),
     provideAnimations(), // required animations providers
     provideToastr(), // Toastr providers
