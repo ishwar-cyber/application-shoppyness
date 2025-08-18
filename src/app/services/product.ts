@@ -12,23 +12,23 @@ export class Product {
 
 
   getProduct(){
-    return this.http.get(`${this.URL}/products`);
+    return this.http.get(`${this.URL}/products`, { withCredentials: true});
   }
 
   getProductById(id: string){
-    return this.http.get<ResponsePayload>(`${this.URL}/products/${id}`)
+    return this.http.get<ResponsePayload>(`${this.URL}/products/${id}`, { withCredentials: true})
   }
 
   getRelatedProducts(id: string){
-    return this.http.get(`${this.URL}/products/${id}/related`)
+    return this.http.get(`${this.URL}/products/${id}/related`, { withCredentials: true})
   }
   search(query: string) {
      const params = new HttpParams().set('products', query);
-     return this.http.get(`${this.URL}/products/search?${ params }`, );
+     return this.http.get(`${this.URL}/products/search?${ params }`, { withCredentials: true} );
   }
 
   getProductByCategoryId(id: string){
-    return this.http.get(`${this.URL}/products/category/${id}`)
+    return this.http.get(`${this.URL}/products/category/${id}`, { withCredentials: true})
   }
 
   filterProduct(categorys: any, brands: any, minPrice: number, maxPrice: number){

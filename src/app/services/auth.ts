@@ -18,13 +18,13 @@ export class Auth {
   private readonly cookiesService = inject(CookieService);
 
   login(payload: Login){
-     return this.http.post(`${this.BASE_URL}/sign-in/user`, payload);
+     return this.http.post(`${this.BASE_URL}/sign-in/user`, payload, { withCredentials: true});
   }
 
   margeCartToUser(visitorId:{ visitorId: string}){
-      return this.http.post(`${this.BASE_URL}/marge-cart`, visitorId);
+      return this.http.post(`${this.BASE_URL}/marge-cart`, visitorId, { withCredentials: true});
   }
   signUp(payload: any){
-    return this.http.post(`${this.BASE_URL}/sign-up`, payload);
+    return this.http.post(`${this.BASE_URL}/sign-up`, payload, { withCredentials: true});
   }
 }

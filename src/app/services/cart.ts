@@ -32,8 +32,7 @@ export class CartService {
   }
 
 addToCart(productId: string, quantity: number = 1) {
-  return this.http.post<any>(`${this.apiUrl}/add`, { productId, quantity },
-    { withCredentials: true } // if backend uses cookies
+  return this.http.post<any>(`${this.apiUrl}/add`, { productId, quantity }, { withCredentials: true}
   ).pipe(
     tap(res => {
       if (res?.success && res?.data) {
@@ -96,7 +95,7 @@ addToCart(productId: string, quantity: number = 1) {
 
   /** 🎟 Apply coupon */
   applyCoupon(code: string) {
-    return this.http.post<CartResponse>(`${environment.apiUrl}/coupons/apply-coupon`, { code }).pipe(
+    return this.http.post<CartResponse>(`${environment.apiUrl}/coupons/apply-coupon`, { code }, { withCredentials: true}).pipe(
       tap(res => {
         if (res.success) {
           this.cartItems.set(res.data.items);
@@ -113,7 +112,7 @@ addToCart(productId: string, quantity: number = 1) {
 
   /** 🔄 Clear cart */
   clearCart() {
-    return this.http.delete<CartResponse>(`${this.apiUrl}/clear`).pipe(
+    return this.http.delete<CartResponse>(`${this.apiUrl}/clear`, { withCredentials: true}).pipe(
       tap(res => {
         if (res.success) {
           this.cartItems.set([]);
@@ -130,6 +129,6 @@ addToCart(productId: string, quantity: number = 1) {
 
   /** ❌ Remove coupon */
   removeCoupon(code: string) {
-    return this.http.delete<CartResponse>(`${this.apiUrl}/remove-coupon/${code}`);
+    return this.http.delete<CartResponse>(`${this.apiUrl}/remove-coupon/${code}`, { withCredentials: true});
   }
 }
