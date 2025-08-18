@@ -20,31 +20,25 @@ export const authInterceptor: HttpInterceptorFn = (
   const authService = inject(Auth);
 
   // Get token from localStorage (or any storage service)
-  const token = cookiesService.get('authToken');
-  
-  if(token){
-    authService.isLoggedIn.set(true);
-  }
-  // Clone request to add Authorization header
-  
-const authReq = req.clone({
-  withCredentials: true,
-  setHeaders: token ? { Authorization: `Bearer ${token}` } : {}
-});
-  
-return next(req).pipe(
-    catchError((error: unknown) => {
-      if (error instanceof HttpErrorResponse && error.status === 401) {
-        cookiesService.delete('authToken');
-        router.navigate(['/login']);
-      } else if (error instanceof Error) {
-        console.error("General Error:", error.message);
-      } else {
-        console.error("Unknown Error:", error);
-      }
+    let headers: Record<string, string> = {};
 
-      return throwError(() => error);
-    })
-  );
-};
+    // 1. Add visitorId from cookie
+    const visitorId = this.cookieService.get('visitorId');
+    if (visitorId) {
+      headers['X-Visitor-ID'] = visitorId;
+    }
+
+    // 2. Add JWT token from cookie/localStorage
+    const authToken = this.cookieService.get('authToken') || localStorage.getItem('authToken');
+    if (authToken) {
+      headers['Authorization'] = `Bearer ${authToken}`;
+    }
+
+    // Clone request with extra headers
+    if (Object.keys(headers).length > 0) {
+      request = request.clone({ setHeaders: headers });
+    }
+
+    return next.handle(request);
+  };
 
