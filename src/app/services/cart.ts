@@ -60,7 +60,7 @@ addToCart(productId: string, quantity: number = 1) {
     this.cartItems.update(items =>
       items.map(i => (i._id === itemId ? { ...i, quantity } : i))
     );    
-    this.http.put<CartResponse>(`${this.apiUrl}/update/${itemId}/quantity`, { quantity }).subscribe({
+    this.http.put<CartResponse>(`${this.apiUrl}/update/${itemId}/quantity`, { quantity }, { withCredentials: true }).subscribe({
       next: res => {
         if (res.success) {
           this.cartItems.set(res.data.items);
@@ -78,7 +78,7 @@ addToCart(productId: string, quantity: number = 1) {
 
   /** ❌ Remove item */
   removeFromCart(itemId: string) {
-    return this.http.delete<CartResponse>(`${environment.apiUrl}/${itemId}/remove`).pipe(
+    return this.http.delete<CartResponse>(`${environment.apiUrl}/${itemId}/remove`, { withCredentials: true }).pipe(
       tap(res => {
         if (res.success) {
           this.cartItems.set(res.data.items);

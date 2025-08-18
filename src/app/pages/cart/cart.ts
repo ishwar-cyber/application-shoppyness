@@ -54,7 +54,7 @@ export class Cart implements OnInit{
       title: 'Your Cart | Computer Shop',
       description: 'Review and checkout your selected computer products. Secure payment and fast delivery options available.',
       keywords: 'shopping cart, checkout, computer purchase, ecommerce',
-      url: 'https://computershop.com/cart'
+      url: 'https://shoppyness.com/cart'
     });
     
     // Load cart items from service

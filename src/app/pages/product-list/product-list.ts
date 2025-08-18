@@ -119,7 +119,7 @@ export class ProductList implements OnInit{
       title: 'Shop Computers, Laptops & Accessories | Computer Shop',
       description: 'Browse our selection of high-quality laptops, desktops, and computer accessories. Filter by brand, category, and specifications to find the perfect computer for your needs.',
       keywords: 'computers, laptops, accessories, gaming PC, business laptops, shop computers',
-      url: 'https://computershop.com/products'
+      url: 'https://shoppyness.com/products'
     });
      if(isPlatformBrowser(this.platformId)){
       window.scrollTo({top:0, behavior:'smooth'})
