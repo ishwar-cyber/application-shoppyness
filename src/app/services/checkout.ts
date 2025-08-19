@@ -9,6 +9,6 @@ export class CheckoutService {
   private readonly http = inject(HttpClient);
 
   placeOrder(payload: any){
-    return this.http.post('',payload);
+    return this.http.post('',payload, { withCredentials: true});
   }
 }

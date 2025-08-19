@@ -1,30 +1,69 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal, PLATFORM_ID } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { CookieService } from 'ngx-cookie-service';
+import { isPlatformBrowser } from '@angular/common';
+
 interface Login {
-  email: string,
-  password: string
+  email: string;
+  password: string;
 }
+
 @Injectable({
   providedIn: 'root'
 })
 export class Auth {
 
   BASE_URL = `${environment.apiUrl}/auth`;
-  isLoggedIn = signal<boolean>(false);
-  userName = signal<string>('')
-  private readonly http =inject(HttpClient);
+
+  // 🔹 Reactive signals
+  userName = signal<string>('');
+  isLoggedInSignal = signal<boolean>(false);
+
+  // 🔹 Injected dependencies
+  private readonly http = inject(HttpClient);
   private readonly cookiesService = inject(CookieService);
+  private readonly platformId = inject(PLATFORM_ID) as Object;
 
-  login(payload: Login){
-     return this.http.post(`${this.BASE_URL}/sign-in/user`, payload, { withCredentials: true});
+  constructor() {
+    // Sync the signal with actual cookie status on service initialization
+    this.updateLoginStatus();
   }
 
-  margeCartToUser(visitorId:{ visitorId: string}){
-      return this.http.post(`${this.BASE_URL}/marge-cart`, visitorId, { withCredentials: true});
+  // 🔹 Method: check login status from cookies
+  isLoggedIn(): boolean {
+    if (isPlatformBrowser(this.platformId)) {
+      const token = this.cookiesService.get('authToken');
+      return !!token;
+    }
+    return false;
   }
-  signUp(payload: any){
-    return this.http.post(`${this.BASE_URL}/sign-up`, payload, { withCredentials: true});
+
+  // 🔹 Update reactive signal
+  updateLoginStatus(): void {
+    this.isLoggedInSignal.set(this.isLoggedIn());
+  }
+
+  // 🔹 Login API
+  login(payload: Login) {
+    return this.http.post(`${this.BASE_URL}/sign-in/user`, payload, { withCredentials: true });
+  }
+
+  // 🔹 Merge visitor cart to logged-in user
+  mergeCartToUser(visitorId: { visitorId: string }) {
+    return this.http.post(`${this.BASE_URL}/merge-cart`, visitorId, { withCredentials: true });
+  }
+
+  // 🔹 Signup API
+  signUp(payload: any) {
+    return this.http.post(`${this.BASE_URL}/sign-up`, payload, { withCredentials: true });
+  }
+
+  // 🔹 Logout helper
+  logout(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      this.cookiesService.delete('authToken');
+      this.updateLoginStatus();
+    }
   }
 }
