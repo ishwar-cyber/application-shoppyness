@@ -27,6 +27,7 @@ export class ProductDetail implements OnInit{
   public cartService = inject(CartService);
   private readonly platformId = inject(PLATFORM_ID);
   
+  selectedVaraint = signal<string>('')
   relatedProductsScroll = viewChild<ElementRef>('relatedProductsScroll');
   // Product signals
   product = signal<any| null>(null);
@@ -381,7 +382,7 @@ prevImage(): void {
     this.preloadImages(relatedImages);
   }
 
-  selectVariant(varaint:Variant){
-
+  selectVariant(variant:Variant){
+    this.selectedVaraint.set(variant.name);
   }
 }

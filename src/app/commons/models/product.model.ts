@@ -38,6 +38,7 @@ export interface ProductModel {
 }
 
 export interface Variant {
+  name:string
   sku: string
   price: number
   stock: number
