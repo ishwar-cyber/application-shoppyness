@@ -8,6 +8,9 @@ import { provideAppInitializer } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
 import { provideToastr } from 'ngx-toastr';
 import { CartService } from './services/cart';
+import { firstValueFrom } from 'rxjs':
+import { tap } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
 import { authInterceptor } from './commons/interceptors/auth-interceptor';
 import { isPlatformBrowser } from '@angular/common';
 // ✅ Startup function
