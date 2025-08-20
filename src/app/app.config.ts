@@ -23,7 +23,7 @@ function loadCartOnInit() {
         tap((cart: any) => {
           cartService.setCart(cart); // store in signals/store
         })
-      )
+      ));
 }
 
 export const appConfig: ApplicationConfig = {
