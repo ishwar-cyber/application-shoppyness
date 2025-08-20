@@ -18,14 +18,12 @@ function loadCartOnInit() {
   const http = inject(HttpClient);
   const cartService = inject(CartService);
 
-  return () =>
-    firstValueFrom(
-      http.get('https://your-api.com/api/v1/cart', { withCredentials: true }).pipe(
+  return firstValueFrom(
+      http.get('https://shoppyness-backend.onrender.com/api/v1', { withCredentials: true }).pipe(
         tap((cart: any) => {
           cartService.setCart(cart); // store in signals/store
         })
       )
-    ).then(() => void 0);
 }
 
 export const appConfig: ApplicationConfig = {
