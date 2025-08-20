@@ -20,6 +20,7 @@ export class CartService {
   totalPrice = signal<number>(0);
   subTotal = signal<number>(0);
   cartItems$ = this.cartItems.asReadonly();
+  cart = computed(()=> this.cartItems());
 
   /** 🔄 Load cart (SSR-safe) */
   loadCart() {
@@ -35,6 +36,10 @@ export class CartService {
         return of(null);
       })
     );
+  }
+
+  serCart(cart: any) {
+    this.cartItems.set(cart);
   }
 
   /** ➕ Add product */
