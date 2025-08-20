@@ -15,7 +15,7 @@ import { authInterceptor } from './commons/interceptors/auth-interceptor';
 import { isPlatformBrowser } from '@angular/common';
 
 export function appLoadCard(cartService:CartService){
-  return ()=> cartService.loadCard();
+  return ()=> cartService.loadCart();
 }
 
 export const appConfig: ApplicationConfig = {
