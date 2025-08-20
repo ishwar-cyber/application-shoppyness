@@ -38,7 +38,7 @@ export class CartService {
     );
   }
 
-  serCart(cart: any) {
+  setCart(cart: any) {
     this.cartItems.set(cart);
   }
 
