@@ -1,4 +1,4 @@
-import { ApplicationConfig, inject, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
+import { ApplicationConfig, APP_INITIALIZER, inject, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { routes } from './app.routes';
@@ -14,6 +14,10 @@ import { HttpClient } from '@angular/common/http';
 import { authInterceptor } from './commons/interceptors/auth-interceptor';
 import { isPlatformBrowser } from '@angular/common';
 
+export function appLoadCard(cartService:CartService){
+  return ()=> cartService.loadCard();
+}
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
@@ -25,12 +29,14 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(), // required animations providers
     provideToastr(), // Toastr providers
     CookieService,
+    CartService,
     // ✅ New Angular 20 way
-    provideAppInitializer(() => {
-      const cartService = inject(CartService);
-      setTimeout(() => cartService.loadCart());
-      return;
-    }),
+    {
+      provide: APP_INITIALIZER,
+      useFactory: appLoadCard,
+      deps:[CartService],
+      multi: true
+    }
 ],
 }
 
