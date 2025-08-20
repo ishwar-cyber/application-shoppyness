@@ -24,6 +24,7 @@ export class CartService {
 
   /** 🔄 Load cart (SSR-safe) */
   loadCart() {
+    console.log('working');
     if (!this.isBrowser) return of(null); // SSR safety
     return this.http.get<CartResponse>(this.apiUrl, { withCredentials: true }).pipe(
       tap(res => {
