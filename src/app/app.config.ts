@@ -40,7 +40,7 @@ export const appConfig: ApplicationConfig = {
     provideToastr(), // Toastr providers
     CookieService,
     // ✅ New Angular 20 way
-    provideAppInitializer(loadCartOnInit),
+    provideAppInitializer(() => loadCartOnInit())
   ]
 };
 
