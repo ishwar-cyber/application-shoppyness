@@ -13,18 +13,6 @@ import { tap } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { authInterceptor } from './commons/interceptors/auth-interceptor';
 import { isPlatformBrowser } from '@angular/common';
-// ✅ Startup function
-function loadCartOnInit() {
-  const http = inject(HttpClient);
-  const cartService = inject(CartService);
-
-  return firstValueFrom(
-      http.get('https://shoppyness-backend.onrender.com/api/v1', { withCredentials: true }).pipe(
-        tap((cart: any) => {
-          cartService.setCart(cart); // store in signals/store
-        })
-      ));
-}
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -38,7 +26,11 @@ export const appConfig: ApplicationConfig = {
     provideToastr(), // Toastr providers
     CookieService,
     // ✅ New Angular 20 way
-    provideAppInitializer(() => loadCartOnInit())
-  ]
-};
+    provideAppInitializer(() => {
+      const cartService = inject(CartService);
+      setTimeout(() => cartService.loadCart());
+      return;
+    }),
+],
+}
 
