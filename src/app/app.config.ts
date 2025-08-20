@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
+import { ApplicationConfig, inject, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { routes } from './app.routes';
@@ -8,7 +8,7 @@ import { provideAppInitializer } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
 import { provideToastr } from 'ngx-toastr';
 import { CartService } from './services/cart';
-import { firstValueFrom } from 'rxjs':
+import { firstValueFrom } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { authInterceptor } from './commons/interceptors/auth-interceptor';
@@ -41,7 +41,6 @@ export const appConfig: ApplicationConfig = {
     CookieService,
     // ✅ New Angular 20 way
     provideAppInitializer(loadCartOnInit),
-  ],
   ]
 };
 
