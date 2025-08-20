@@ -25,7 +25,7 @@ function loadCartOnInit() {
           cartService.setCart(cart); // store in signals/store
         })
       )
-    );
+    ).then(() => void 0);
 }
 
 export const appConfig: ApplicationConfig = {
