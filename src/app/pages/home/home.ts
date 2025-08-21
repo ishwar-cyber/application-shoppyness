@@ -44,6 +44,12 @@ export class Home implements OnInit{
       image: '/assets/og-image.jpg',
       url: 'https://shoppyness.com'
     });
+    this.home.getCategoryAndSubcategory().subscribe({
+      next: (res)=>{
+        console.log('get hader', res);
+        
+      }
+    })
     forkJoin({
       product: this.product.getProduct(),
       brand: this.home.getBrand(),

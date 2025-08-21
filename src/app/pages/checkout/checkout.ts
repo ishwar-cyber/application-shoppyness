@@ -2,12 +2,11 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { Shipping } from './shipping/shipping';
-import { Billing } from './billing/billing';
+import { Address, Billing } from './billing/billing';
 import { Payment } from './payment/payment';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CartService } from '../../services/cart';
 import { CheckoutService } from '../../services/checkout';
-import { takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-checkout',
@@ -22,7 +21,7 @@ export class Checkout implements OnInit{
   sameAsBilling = signal(false);
   cartItems = signal<any[]>([]);
   shipping = signal(0);
-  paymentMethods = signal<string[]>(['card', 'upi', 'cod']);
+  paymentMethod = signal<'online'>('online');
   selectedPaymentMethod = signal<string>('card');
   isProcessingPayment = signal(false);
   paymentError = signal<string | null>(null);
@@ -41,14 +40,39 @@ export class Checkout implements OnInit{
   billingForm!: FormGroup;
   paymentForm!: FormGroup;
 
-  ngOnInit(): void {
-     this.initForms();
-    this.loadCart();
-  }
   private readonly formBuilder = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly checkoutService = inject(CheckoutService);
   public cartService = inject(CartService);
+  totalAmount = signal<number>(this.cartService.subTotal());
+
+  selectedAddressId = signal<number | null>(1);
+    // State (signals)
+  addresses = signal<Address[]>([
+    {
+      id: 1,
+      name: 'Rahul Sharma',
+      phone: '9876543210',
+      addressLine1: 'Flat 12B, Green View Apartments',
+      addressLine2: 'Sector 21',
+      landmark: 'Near HDFC Bank',
+      city: 'Mumbai',
+      state: 'Maharashtra',
+      pincode: '400001',
+      country: 'India'
+    },
+  ]);
+    // Useful derived state
+  selectedAddress = computed(() =>
+    this.addresses().find(a => a.id === this.selectedAddressId()!) || null
+  );
+
+  ngOnInit(): void {
+     this.initForms();
+     this.totalAmount.set(this.cartService.subTotal());
+    this.loadCart();
+  }
+  
 
   private initForms() {
     this.shippingForm = this.formBuilder.group({
@@ -71,6 +95,10 @@ export class Checkout implements OnInit{
     });
   }
 
+  setAddress(id: number) {
+    this.selectedAddressId.set(id);
+  }
+
   private loadCart() {
     this.cartService.loadCart().subscribe({
       next: (items:any) => {
@@ -83,6 +111,8 @@ export class Checkout implements OnInit{
       },
     });
   }
+
+  
 
   updateBillingForm() {
     if (this.sameAsBilling()) {
@@ -103,12 +133,17 @@ export class Checkout implements OnInit{
     }
   }
 
+
   prevStep() {
     if (this.currentStep() > 1) {
       this.currentStep.set(this.currentStep() - 1);
     }
   }
 
+  addAddress(newAddr: Address) {
+    this.addresses.update(list => [...list, newAddr]);
+    this.selectedAddressId.set(newAddr.id);
+  }
   selectPaymentMethod(method: any) {
     this.selectedPaymentMethod.set(method);
   }

@@ -20,26 +20,26 @@ export class Product {
 
     if (saved) return of(saved);
 
-    return this.http.get<ProductModel[]>(`${this.URL}/products`, { withCredentials: true }).pipe(
+    return this.http.get<ProductModel[]>(`${this.URL}/products`).pipe(
       tap(data => this.state.set(KEY, data))
     );
   }
 
   getProductById(id: string) {
-    return this.http.get<ResponsePayload>(`${this.URL}/products/${id}`, { withCredentials: true });
+    return this.http.get<ResponsePayload>(`${this.URL}/products/${id}`);
   }
 
   getRelatedProducts(id: string) {
-    return this.http.get(`${this.URL}/products/${id}/related`, { withCredentials: true });
+    return this.http.get(`${this.URL}/products/${id}/related`);
   }
 
   search(query: string) {
     const params = new HttpParams().set('products', query);
-    return this.http.get(`${this.URL}/products/search`, { params, withCredentials: true });
+    return this.http.get(`${this.URL}/products/search`, { params });
   }
 
   getProductByCategoryId(id: string) {
-    return this.http.get(`${this.URL}/products/category/${id}`, { withCredentials: true });
+    return this.http.get(`${this.URL}/products/category/${id}`);
   }
 
   filterProduct(categorys: string[], brands: string[], minPrice: number, maxPrice: number) {
@@ -58,6 +58,6 @@ export class Product {
       params = params.set('maxPrice', maxPrice.toString());
     }
 
-    return this.http.get<any[]>(`${this.URL}/products/filter`, { params, withCredentials: true });
+    return this.http.get<any[]>(`${this.URL}/products/filter`, { params });
   }
 }

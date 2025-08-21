@@ -14,4 +14,8 @@ export class HomeService {
   getCategories(){
     return this.http.get(`${this.url}/category`)
   }
+
+  getCategoryAndSubcategory(){
+    return this.http.get(`${this.url}/products/header`);
+  }
 }

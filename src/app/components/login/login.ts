@@ -95,6 +95,7 @@ export class Login implements OnInit {
     this.authService.login(payload).subscribe({
       next: (login: any) => {
         this.authService.userName.set(login.user.username);
+        sessionStorage.setItem('userName', login.user.username)
         this.authService.isLoggedInSignal.set(true);
 
         if (isPlatformBrowser(this.platformId)) {

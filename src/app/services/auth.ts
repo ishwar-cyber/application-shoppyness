@@ -46,23 +46,23 @@ export class Auth {
 
   // 🔹 Login API
   login(payload: Login) {
-    return this.http.post(`${this.BASE_URL}/sign-in/user`, payload, { withCredentials: true });
+    return this.http.post(`${this.BASE_URL}/sign-in/user`, payload,);
   }
 
   // 🔹 Merge visitor cart to logged-in user
   mergeCartToUser(visitorId: { visitorId: string }) {
-    return this.http.post(`${this.BASE_URL}/merge-cart`, visitorId, { withCredentials: true });
+    return this.http.post(`${this.BASE_URL}/merge-cart`, visitorId,);
   }
 
   // 🔹 Signup API
   signUp(payload: any) {
-    return this.http.post(`${this.BASE_URL}/sign-up`, payload, { withCredentials: true });
+    return this.http.post(`${this.BASE_URL}/sign-up`, payload,);
   }
 
   // 🔹 Logout helper
   logout(): void {
     if (isPlatformBrowser(this.platformId)) {
-      this.cookiesService.delete('authToken');
+      this.cookiesService.deleteAll();
       this.updateLoginStatus();
     }
   }

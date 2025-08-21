@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, computed, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { Router, RouterLink, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Auth } from '../../services/auth';
@@ -35,11 +35,12 @@ export class Header implements OnInit{
   public authService = inject(Auth); // Assuming AuthService is available for login state
   private readonly product = inject(Product);
   public cartService = inject(CartService);
+  private readonly platformId = inject(PLATFORM_ID);
   
   // Active Category for Mega Menu
   activeCategory: string | null = null;
   cartCount = signal<number>(0);
-  
+  userName = signal<any>('');
   // Categories data with subcategories
   categories: CategoryItem[] = [
     {
@@ -112,15 +113,14 @@ export class Header implements OnInit{
   
   ngOnInit(): void {
     this.isMobileView();
+    if(isPlatformBrowser(this.platformId)){
+      this.userName.set(this.authService.userName() || sessionStorage.getItem('userName'));
+    }
   }
 
   isMobileView(): boolean {
     return typeof window !== 'undefined' && window.innerWidth <= 768;
   }
-  // Get cart count
-  // get cartCount(): number {
-  //   return cartSignal().length;
-  // }
   // Megamenu functions
   showMegaMenu(slug: string): void {
     this.activeCategory = slug;
@@ -132,8 +132,8 @@ export class Header implements OnInit{
   
 
   logout(): void {
-    // this.authService.userLoggedIn.set(false);
-    // this.authService.logout();
+    this.authService.isLoggedInSignal.set(false);
+    this.authService.logout();
   }
   selectBottomMenu(menu: string){
     this.selectedBottomMenu.set(menu);
