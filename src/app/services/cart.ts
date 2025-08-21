@@ -1,4 +1,4 @@
-import { Injectable, signal, inject, PLATFORM_ID } from '@angular/core';
+import { Injectable, signal, inject, PLATFORM_ID, computed} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { catchError, tap } from 'rxjs/operators';
@@ -20,9 +20,11 @@ export class CartService {
   totalPrice = signal<number>(0);
   subTotal = signal<number>(0);
   cartItems$ = this.cartItems.asReadonly();
+  cart = computed(()=> this.cartItems());
 
   /** 🔄 Load cart (SSR-safe) */
   loadCart() {
+    console.log('working');
     if (!this.isBrowser) return of(null); // SSR safety
     return this.http.get<CartResponse>(this.apiUrl, { withCredentials: true }).pipe(
       tap(res => {
@@ -35,6 +37,10 @@ export class CartService {
         return of(null);
       })
     );
+  }
+
+  setCart(cart: any) {
+    this.cartItems.set(cart);
   }
 
   /** ➕ Add product */
