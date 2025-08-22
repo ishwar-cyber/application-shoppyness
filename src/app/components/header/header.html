@@ -12,39 +12,37 @@
     <div class="search-container">
       <app-search/>
     </div>
-    <!-- Cart and Login Buttons -->
-     @if(isMobileView()) {
-      <div class="cart-login">
-        <a routerLink="/cart" class="cart-icon">
-          <i class="bi bi-cart3"></i>
-          @if(cartService.cartCount()) {
-            <span class="cart-count">{{ cartService.cartCount() }}</span>
-          } @else {
-            <span class="cart-count">0</span>
-          }
-        </a>
-       @if (authService.isLoggedIn()) {
-  <div 
-    class="user-dropdown" 
-    (mouseenter)="toggleUserDropdown.set(true)" 
-    (mouseleave)="toggleUserDropdown.set(false)"
-  >
-    <span class="user-name">{{authService.userName() }} <i class="bi bi-chevron-down small"></i>
-    </span>
-    <ul class="dropdown-menu" [class.show]="toggleUserDropdown()">
-      <li><a class="dropdown-item" routerLink="/profile">Profile</a></li>
-      <li><a class="dropdown-item" (click)="logout()">Logout</a></li>
-    </ul>
-  </div>
+    @if(!isMobileView()) {
+    <div class="cart-login">
+      <a routerLink="/cart" class="cart-icon">
+        <i class="bi bi-cart3"></i>
+        @if(cartService.cartCount()) {
+          <span class="cart-count">{{ cartService.cartCount() }}</span>
         } @else {
-          <a routerLink="/login" class="login-btn">
-            <span class="login-text">Login</span>
-            <i class="bi bi-person"></i>
-          </a>
-}
+          <span class="cart-count">0</span>
+        }
+      </a>
+      @if (authService.isLoggedIn()) {
+      <div 
+        class="user-dropdown" 
+        (mouseenter)="toggleUserDropdown.set(true)" 
+        (mouseleave)="toggleUserDropdown.set(false)"
+      >
+        <span class="user-name">{{authService.userName() ? authService.userName() :  userName() }} <i class="bi bi-chevron-down small"></i>
+        </span>
+        <ul class="dropdown-menu" [class.show]="toggleUserDropdown()">
+          <li><a class="dropdown-item" routerLink="/profile">Profile</a></li>
+          <li><a class="dropdown-item" (click)="logout()">Logout</a></li>
+        </ul>
       </div>
-     }
-  
+      } @else {
+        <a routerLink="/login" class="login-btn">
+          <span class="login-text">Login</span>
+          <i class="bi bi-person"></i>
+        </a>
+}
+    </div>
+    }
   </div>
   
   <!-- Bottom Navbar with Categories (Desktop Only) -->
@@ -115,26 +113,42 @@
   
   <!-- Mobile Bottom Navigation (Fixed at Bottom) -->
   <div class="mobile-navbar mobile-only">
-    <a routerLink="/home" class="mobile-nav-item" (click)="selectBottomMenu('home')" [class.selected]="selectedBottomMenu() === 'home'">
+    <a routerLink="/home" class="mobile-nav-item" [class.active]="selectBottomMenu('home')">
       <i class="bi bi-house"></i>
       <span>Home</span>
     </a>
-    <a routerLink="/products" class="mobile-nav-item"  (click)="selectBottomMenu('products')" [class.selected]="selectedBottomMenu() === 'products'">
+    <a routerLink="/products" class="mobile-nav-item"  [class.active]="selectBottomMenu( 'products')">
       <i class="bi bi-grid"></i>
       <span>Products</span>
     </a>
-    <a routerLink="/cart" class="mobile-nav-item"  (click)="selectBottomMenu('cart')" [class.selected]="selectedBottomMenu() === 'cart'">
+    <a routerLink="/cart" class="mobile-nav-item" [class.active]="selectBottomMenu('cart')">
       <i class="bi bi-cart3"></i>
       <span>Cart</span>
-      @if(cartService.cartCount()) {
+       @if(cartService.cartCount()) {
           <span class="cart-count">{{ cartService.cartCount() }}</span>
         } @else {
-          <span class="cart-count">{{ cartService.cartCount() }}</span>
+          <span class="cart-count">0</span>
         }
     </a>
-    <a routerLink="/login" class="mobile-nav-item"  (click)="selectBottomMenu('account')" [class.selected]="selectedBottomMenu() === 'account'">
-      <i class="bi bi-person"></i>
-      <span>Account</span>
-    </a>
+
+     @if (authService.isLoggedIn()) {
+      <div 
+        class="user-dropdown" 
+        (mouseenter)="toggleUserDropdown.set(true)" 
+        (mouseleave)="toggleUserDropdown.set(false)"
+      >
+        <span class="user-name">{{authService.userName() ? authService.userName() :  userName() }} <i class="bi bi-chevron-down small"></i>
+        </span>
+        <ul class="dropdown-menu" [class.show]="toggleUserDropdown()">
+          <li><a class="dropdown-item" routerLink="/profile">Profile</a></li>
+          <li><a class="dropdown-item" (click)="logout()">Logout</a></li>
+        </ul>
+      </div>
+      } @else {
+        <a routerLink="/login" class="login-btn">
+          <span class="login-text">Login</span>
+          <i class="bi bi-person"></i>
+        </a>
+}
   </div>
 </nav>

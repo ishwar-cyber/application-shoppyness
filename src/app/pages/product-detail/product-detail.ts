@@ -10,10 +10,11 @@ import { ProductModel, ResponsePayload, Variant } from '../../commons/models/pro
 import { FormsModule } from '@angular/forms';
 import { cartSignal } from '../../commons/store';
 import { ProductCard } from "../../components/product-card/product-card";
+import { CheckPincode } from '../../components/check-pincode/check-pincode';
 
 @Component({
   selector: 'app-product-detail',
-  imports: [CommonModule, FormsModule, ProductCard],
+  imports: [CommonModule, FormsModule, ProductCard, CheckPincode],
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -39,44 +40,8 @@ export class ProductDetail implements OnInit{
   isAddingToCart = signal<boolean>(false);
   quantity = signal<number>(1);
   addedToCartMessage = signal<string>('');
-  
-  // Location popup states
-  showLocationPopup = signal<boolean>(false);
-  userLocation = signal<string>('');
-  deliveryCheckInput$ = new Subject<string>();
-  punePincodes = signal<string[]>([
-    '411001', // Pune City Central
-    '411002', // Camp, Pune
-    '411004', // Shivaji Nagar
-    '411005', // Deccan Gymkhana
-    '411006', // Kothrud
-    '411007', // Aundh
-    '411009', // Viman Nagar
-    '411014', // Hadapsar
-    '411027', // Hinjewadi
-    '411028'  // Baner
-  ]);
-  deliveryAvailable = signal<boolean>(true);
-  deliveryDate = signal<string>('');
-  deliveryChecking = signal<boolean>(false);
-  
-  // Image gallery states
   selectedImageIndex = signal<number>(0);
-  
-  // Product cache to improve navigation performance
   private readonly productCache = new Map<number, Product>();
-  
-  constructor() {
-    // Initialize delivery check with debounce
-    this.deliveryCheckInput$.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      tap(() => this.deliveryChecking.set(true)),
-      takeUntil(this.destroy$)
-    ).subscribe(pincode => {
-      this.checkDeliveryAvailability(pincode);
-    });
-  }
 
   ngOnInit(): void {
     this.loading.set(true);
@@ -167,130 +132,14 @@ export class ProductDetail implements OnInit{
       scrollElement.scrollBy({left: scrollAmount, behavior: 'smooth'});
 
     }
-  }
-  // Location popup methods
-  toggleLocationPopup(): void {
-    this.showLocationPopup.update(val => !val);
-  }
-
-  // Handle input change for delivery check
-  onDeliveryPincodeChange(pincode: string): void {
-    this.userLocation.set(pincode);
-    
-    if (!pincode.trim() || pincode.length !== 6) {
-      this.deliveryAvailable.set(false);
-      this.deliveryDate.set('');
-      return;
-    }
-    
-    // Push to subject for debounced processing
-    this.deliveryCheckInput$.next(pincode);
-  }
-
-  // Check delivery availability
-  private checkDeliveryAvailability(pincode: string): void {
-    if (!pincode || pincode.length !== 6) {
-      this.deliveryChecking.set(false);
-      this.deliveryAvailable.set(false);
-      this.deliveryDate.set('');
-      return;
-    }
-    
-    // Mock validation - assume valid pincodes are 6 digits
-    const isValidPincode = /^\d{6}$/.test(pincode);
-    
-    if (!isValidPincode) {
-      this.deliveryChecking.set(false);
-      this.deliveryAvailable.set(false);
-      this.deliveryDate.set('');
-      return;
-    }
-    
-    // Simulate API call with timeout
-    setTimeout(() => {
-      // For Pune pincodes, use a more realistic availability check
-      const isPunePincode = this.punePincodes().includes(pincode);
-      
-      // For Pune pincodes, all are available except 411004 and 411028
-      if (isPunePincode) {
-        const unavailablePincodes = ['411004', '411028'];
-        const isAvailable = !unavailablePincodes.includes(pincode);
-        
-        this.deliveryAvailable.set(isAvailable);
-        
-        if (isAvailable) {
-          // Calculate a faster delivery date for Pune (1-3 days)
-          const days = Math.floor(Math.random() * 3) + 1; // Random number between 1-3
-          const deliveryDate = new Date();
-          deliveryDate.setDate(deliveryDate.getDate() + days);
-          
-          // Format the date
-          const options: Intl.DateTimeFormatOptions = { 
-            weekday: 'long', 
-            month: 'long', 
-            day: 'numeric' 
-          };
-          this.deliveryDate.set(deliveryDate.toLocaleDateString('en-US', options));
-        } else {
-          this.deliveryDate.set('');
-        }
-      } else {
-        // For non-Pune pincodes, use the original logic (odd/even)
-        const lastDigit = parseInt(pincode.charAt(pincode.length - 1));
-        const isAvailable = lastDigit % 2 === 0;
-        
-        this.deliveryAvailable.set(isAvailable);
-        
-        if (isAvailable) {
-          // Calculate a delivery date (2-5 days from now)
-          const days = Math.floor(Math.random() * 3) + 2; // Random number between 2-4
-          const deliveryDate = new Date();
-          deliveryDate.setDate(deliveryDate.getDate() + days);
-          
-          // Format the date
-          const options: Intl.DateTimeFormatOptions = { 
-            weekday: 'long', 
-            month: 'long', 
-            day: 'numeric' 
-          };
-          this.deliveryDate.set(deliveryDate.toLocaleDateString('en-US', options));
-        } else {
-          this.deliveryDate.set('');
-        }
-      }
-      
-      this.deliveryChecking.set(false);
-    }, 800); // Simulate network delay
-  }
-  
-  // Get delivery date estimate for a pincode - memoized for performance
-  getDeliveryEstimate(pincode: string): string {
-    const isPunePincode = this.punePincodes().includes(pincode);
-    
-    // Calculate delivery date
-    const days = isPunePincode ? 
-      (Math.floor(Math.random() * 3) + 1) : // 1-3 days for Pune
-      (Math.floor(Math.random() * 3) + 2);  // 2-4 days for others
-      
-    const deliveryDate = new Date();
-    deliveryDate.setDate(deliveryDate.getDate() + days);
-    
-    // Format the date
-    const options: Intl.DateTimeFormatOptions = { 
-      weekday: 'long', 
-      month: 'long', 
-      day: 'numeric' 
-    };
-    return deliveryDate.toLocaleDateString('en-US', options);
-  }
-  
+  }   
   // Get the currently selected image
-get selectedImage(): string {
-  const images = this.product()?.images;
-  
-  // If no images exist at all
-  if (!images || images.length === 0) {
-    return '';
+  get selectedImage(): string {
+    const images = this.product()?.images;
+    
+    // If no images exist at all
+    if (!images || images.length === 0) {
+      return '';
   }
 
   // Handle case where images is an array
@@ -318,49 +167,27 @@ get selectedImage(): string {
       this.selectedImageIndex.set(index);
     }
   }
-  
-  // Navigate to the next image
-  // nextImage(): void {
-  //   const product = this.product();
-  //   if (!product?.images?.length || product.images.length <= 1) return;
-  //   const nextIndex = (this.selectedImageIndex() + 1) % product.images.length;
-  //   this.selectedImageIndex.set(nextIndex);
-  // }
-  
-  // // Navigate to the previous image
-  // prevImage(): void {
-  //   const product = this.product();
-  //   if (!product?.images?.length || product.images.length <= 1) return;
-  //   const prevIndex = (this.selectedImageIndex() - 1 + product.images.length) % product.images.length;
-  //   this.selectedImageIndex.set(prevIndex);
-  // }
+  private updateImageIndex(offset: number): void {
+    const images = this.product()?.images ?? [];
+    if (images.length <= 1) return;
 
-private updateImageIndex(offset: number): void {
-  const images = this.product()?.images ?? [];
-  if (images.length <= 1) return;
+    const currentIndex = this.selectedImageIndex();
+    const newIndex = (currentIndex + offset + images.length) % images.length;
+    this.selectedImageIndex.set(newIndex);
+  }
 
-  const currentIndex = this.selectedImageIndex();
-  const newIndex = (currentIndex + offset + images.length) % images.length;
-  this.selectedImageIndex.set(newIndex);
-}
+  nextImage(): void {
+    this.updateImageIndex(1);
+  }
 
-nextImage(): void {
-  this.updateImageIndex(1);
-}
+  prevImage(): void {
+    this.updateImageIndex(-1);
+  }
 
-prevImage(): void {
-  this.updateImageIndex(-1);
-}
-
-  // Navigate to related product with smooth scroll
   navigateToProduct(productId: number): void {
-    // Log analytics event
-    // Smooth scroll to top before navigation
     if (isPlatformBrowser(this.platformId)) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-    
-    // Navigate to product detail page
     this.router.navigate(['/products', productId]);
   }
   

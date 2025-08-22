@@ -1,0 +1,216 @@
+/* ========== Delivery Check (inline trigger + status) ========== */
+.delivery-check {
+  .delivery-check-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .375rem;
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover,
+    &:focus {
+      text-decoration: underline;
+      outline: none;
+    }
+  }
+
+  .delivery-info {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: .95rem;
+
+    .spinner-border {
+      width: 1rem;
+      height: 1rem;
+      border-width: .15rem;
+    }
+  }
+}
+
+/* ========== Popup / Modal ========== */
+.location-popup {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, .5); /* soft dark overlay */
+  backdrop-filter: saturate(120%) blur(2px);
+  z-index: 1060; /* above navbar/offcanvas (Bootstrap) */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s ease;
+
+  &.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Center the modal content */
+  display: grid;
+  place-items: center;
+
+  .location-popup-content {
+    width: min(560px, 92vw);
+    background: #fff;
+    border-radius: 14px;
+    box-shadow:
+      0 10px 15px -3px rgba(0,0,0,.1),
+      0 4px 6px -2px rgba(0,0,0,.05);
+    transform: translateY(10px);
+    opacity: 0;
+    transition: transform .22s ease, opacity .22s ease;
+  }
+
+  &.active .location-popup-content {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .location-popup-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .9rem 1rem;
+    border-bottom: 1px solid #eef0f3;
+
+    h3 {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .location-popup-close {
+      border: none;
+      background: transparent;
+      padding: .25rem;
+      line-height: 1;
+      border-radius: 8px;
+      color: #6b7280;
+
+      &:hover,
+      &:focus {
+        background: #f3f4f6;
+        color: #111827;
+        outline: none;
+      }
+    }
+  }
+
+  .location-popup-body {
+    padding: 1rem;
+
+    p {
+      margin-bottom: .75rem;
+      color: #4b5563;
+    }
+
+    .input-group .form-control {
+      height: 44px;
+      font-size: 1rem;
+
+      /* numeric-only feel on mobile */
+      &::placeholder { color: #9ca3af; }
+    }
+
+    /* Results block */
+    .delivery-result {
+      margin-top: .75rem;
+      padding: .75rem .9rem;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+      display: flex;
+      align-items: flex-start;
+      gap: .5rem;
+
+      &.success {
+        border-color: #d1fae5;
+        background: #ecfdf5;
+        color: #065f46;
+      }
+
+      &.error {
+        border-color: #fee2e2;
+        background: #fef2f2;
+        color: #991b1b;
+      }
+
+      .delivery-date {
+        font-weight: 600;
+      }
+    }
+
+    /* Inline loader (matches Bootstrap size but lighter) */
+    .spinner-border {
+      width: 1rem;
+      height: 1rem;
+      border-width: .15rem;
+    }
+  }
+}
+
+/* ========== Small Enhancements ========== */
+
+/* Better click target for the trigger */
+.delivery-check .delivery-check-btn {
+  border-radius: 8px;
+  padding: .125rem .25rem;
+}
+
+/* Keyboard focus ring */
+.delivery-check .delivery-check-btn:focus-visible,
+.location-popup .location-popup-close:focus-visible {
+  box-shadow: 0 0 0 .2rem rgba(59,130,246,.35);
+}
+
+/* Make icons align nicely with text */
+.bi {
+  vertical-align: -0.125em;
+}
+
+/* ========== Responsive tweaks ========== */
+@media (max-width: 480px) {
+  .location-popup .location-popup-content {
+    border-radius: 12px;
+  }
+
+  .location-popup .location-popup-header {
+    padding: .75rem .875rem;
+
+    h3 { font-size: 1rem; }
+  }
+
+  .location-popup .location-popup-body {
+    padding: .875rem;
+  }
+}
+
+/* ========== Optional: Dark mode (if you add .dark on <body>) ========== */
+.dark .location-popup {
+  background: rgba(0,0,0,.6);
+}
+.dark .location-popup .location-popup-content {
+  background: #0f172a;
+  color: #e5e7eb;
+}
+.dark .location-popup .location-popup-header {
+  border-bottom-color: #1f2937;
+
+  h3 { color: #e5e7eb; }
+  .location-popup-close:hover,
+  .location-popup-close:focus { background: #1f2937; color: #fff; }
+}
+.dark .location-popup .location-popup-body p { color: #9ca3af; }
+.dark .location-popup .delivery-result {
+  border-color: #1f2937;
+  background: #0b1222;
+}
+.dark .location-popup .delivery-result.success {
+  border-color: rgba(16,185,129,.25);
+  background: rgba(16,185,129,.08);
+  color: #a7f3d0;
+}
+.dark .location-popup .delivery-result.error {
+  border-color: rgba(239,68,68,.25);
+  background: rgba(239,68,68,.08);
+  color: #fecaca;
+}

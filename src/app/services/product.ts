@@ -42,7 +42,7 @@ export class Product {
     return this.http.get(`${this.URL}/products/category/${id}`);
   }
 
-  filterProduct(categorys: string[], brands: string[], minPrice: number, maxPrice: number) {
+  filterProduct(categorys: string[], brands: string[], price: any) {
     let params = new HttpParams();
 
     if (categorys.length) {
@@ -51,13 +51,11 @@ export class Product {
     if (brands.length) {
       params = params.set('brands', brands.join(','));
     }
-    if (minPrice) {
-      params = params.set('minPrice', minPrice.toString());
+    if (price) {
+      params = params.set('minPrice', price[0].toString());
+      params = params.set('maxPrice', price[1].toString());
     }
-    if (maxPrice) {
-      params = params.set('maxPrice', maxPrice.toString());
-    }
-
+    
     return this.http.get<any[]>(`${this.URL}/products/filter`, { params });
   }
 }

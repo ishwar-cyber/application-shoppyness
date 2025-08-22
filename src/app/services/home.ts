@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -7,6 +7,7 @@ import { environment } from '../../environments/environment';
 })
 export class HomeService {
   private readonly http =inject(HttpClient);
+  categoriesHeader = signal<any[]>([]);
   url = environment.apiUrl;
   getBrand(){
     return this.http.get(`${this.url}/brands`);

@@ -44,12 +44,12 @@ export class Home implements OnInit{
       image: '/assets/og-image.jpg',
       url: 'https://shoppyness.com'
     });
-    this.home.getCategoryAndSubcategory().subscribe({
-      next: (res)=>{
-        console.log('get hader', res);
+    // this.home.getCategoryAndSubcategory().subscribe({
+    //   next: (res)=>{
+    //     console.log('get hader', res);
         
-      }
-    })
+    //   }
+    // })
     forkJoin({
       product: this.product.getProduct(),
       brand: this.home.getBrand(),
@@ -59,6 +59,8 @@ export class Home implements OnInit{
         this.products.set(res.product.data);
         this.brands.set(res.brand.data);
         this.categories.set(res.category.data);
+        console.log('categories', res.category.data)
+        this.home.categoriesHeader.set(this.categories());
       },
       error: (err) => {
         console.error('Error fetching data', err);

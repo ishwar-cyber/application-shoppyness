@@ -397,8 +397,11 @@
   }
   
   &.active {
-    color: #0d6efd;
-  }
+  background-color: #3f51b5;
+  color: #fff !important;
+  font-weight: 600;
+  border-radius: 8px;
+}
 }
 
 // Mega Menu Styles

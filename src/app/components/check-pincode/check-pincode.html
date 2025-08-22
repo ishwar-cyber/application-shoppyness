@@ -1,0 +1,81 @@
+<!-- Trigger Button -->
+<div class="delivery-check mb-3">
+  <button class="btn btn-link delivery-check-btn p-0" (click)="toggleLocationPopup()">
+    <i class="bi bi-geo-alt me-1"></i> 
+    @if(!userLocation()){
+      <span>Check delivery availability</span>
+    } @else {
+      <span>Delivery to: {{ userLocation() }}</span>
+    }
+  </button>
+
+  @if(deliveryChecking()){
+    <div class="delivery-info mt-2 text-muted">
+      <div class="spinner-border spinner-border-sm me-1"></div>
+      Checking delivery availability...
+    </div>
+  }
+
+  @if(userLocation() && deliveryAvailable() && !deliveryChecking()){
+    <div class="delivery-info mt-2 text-success">
+      <i class="bi bi-check-circle me-1"></i> Delivery available by {{ deliveryDate() }}
+    </div>
+  }
+
+  @if(userLocation() && !deliveryAvailable() && !deliveryChecking()){
+    <div class="delivery-info mt-2 text-danger">
+      <i class="bi bi-x-circle me-1"></i> Sorry, delivery not available
+    </div>
+  }
+</div>
+
+<!-- Popup Modal -->
+<div class="location-popup" [class.active]="showLocationPopup()" 
+     (click)="toggleLocationPopup()" (keydown.escape)="toggleLocationPopup()">
+  <div class="location-popup-content" (click)="$event.stopPropagation()">
+    <div class="location-popup-header">
+      <h3>Check Delivery Availability</h3>
+      <button class="location-popup-close" (click)="toggleLocationPopup()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="location-popup-body">
+      <p>Enter your PIN code to check delivery availability and estimated delivery time.</p>
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="Enter PIN code"
+               [ngModel]="userLocation()" maxlength="6" pattern="[0-9]*"
+               (ngModelChange)="onDeliveryPincodeChange($event)">
+      </div>
+
+      @if(deliveryChecking()){
+        <div class="delivery-result">
+          <div class="d-flex align-items-center">
+            <div class="spinner-border spinner-border-sm me-2"></div>
+            <span>Checking delivery availability...</span>
+          </div>
+        </div>
+      }
+
+      @if(userLocation().trim() && deliveryAvailable() && !deliveryChecking()){
+        <div class="delivery-result success">
+          <i class="bi bi-check-circle-fill me-2"></i>
+          <div>
+            <p class="mb-1">Delivery available to {{ userLocation() }}</p>
+            <p class="delivery-date mb-0">Estimated delivery: {{ deliveryDate() }}</p>
+          </div>
+        </div>
+      }
+
+      @if(userLocation().trim() && !deliveryAvailable() && !deliveryChecking()){
+        <div class="delivery-result error">
+          <i class="bi bi-x-circle-fill me-2"></i>
+          <div>
+            <p class="mb-1">We're sorry!</p>
+            <p class="mb-0">Delivery not available to {{ userLocation() }}</p>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

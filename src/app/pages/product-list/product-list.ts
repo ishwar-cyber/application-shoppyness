@@ -222,7 +222,7 @@ export class ProductList implements OnInit {
 
   filterProducts(): void {
     this.productService
-      .filterProduct(this.selectedCategories(), this.selectedBrands(), this.minPrice(), this.maxPrice())
+      .filterProduct(this.selectedCategories(), this.selectedBrands(), this.priceRangeValue)
       .subscribe((res: any) => {
         this.filteredProducts.set(res.data);
       });

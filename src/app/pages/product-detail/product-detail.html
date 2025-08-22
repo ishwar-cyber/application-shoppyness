@@ -72,35 +72,8 @@
         </div>
 
         <!-- Check Delivery Availability -->
-        <div class="delivery-check mb-3">
-            <button class="btn btn-link delivery-check-btn p-0" (click)="toggleLocationPopup()">
-              <i class="bi bi-geo-alt me-1"></i> 
-              @if(!userLocation()){
-              <span >Check delivery availability</span>
-              } @else {
-                <span>Delivery to: {{ userLocation() }}</span>
-              } 
-            </button>
-            @if(deliveryChecking()){
-              <div class="delivery-info mt-2 text-muted">
-                <div class="spinner-border spinner-border-sm me-1" aria-hidden="true">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                Checking delivery availability...
-              </div>
-            }
-            @if(userLocation() && deliveryAvailable() && !deliveryChecking()){
-              <div class="delivery-info mt-2 text-success">
-                <i class="bi bi-check-circle me-1"></i> Delivery available by {{ deliveryDate() }}
-              </div>
-            }
-            @if(userLocation() && !deliveryAvailable() && !deliveryChecking()){
-              <div  class="delivery-info mt-2 text-danger">
-                <i class="bi bi-x-circle me-1"></i> Sorry, delivery not available to this location
-              </div>
-            }
-            
-        </div>
+        <app-check-pincode/>
+
         @if(product()?.variants && product()?.variants?.length > 0){
              <div class="product-variant mt-4">
                 <h2 class="h5">Available Varaint</h2>
@@ -170,32 +143,46 @@
         </div>
     </div>
     <!-- Product Details Tabs -->
-<div class="product-details-tabs mt-4">
-  <ul class="nav nav-tabs" id="productDetailsTab" role="tablist">
-    <li class="nav-item" role="presentation">
-      <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description"
-        type="button" role="tab" aria-controls="description" aria-selected="true">
-        Description
-      </button>
-    </li>
-    @if(product().specifications.length > 0){
-      <li class="nav-item" role="presentation">
-        <button class="nav-link" id="specifications-tab" data-bs-toggle="tab" data-bs-target="#specifications"
-          type="button" role="tab" aria-controls="specifications" aria-selected="false">
-          Specifications
-        </button>
-      </li>
-    }
-   
-  </ul>
-  <div class="tab-content p-3 border border-top-0 rounded-bottom" id="productDetailsTabContent">
-    <!-- Description -->
-    <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
-      <p>{{ product()?.description }}</p>
-    </div>
-    
-    <!-- Specifications -->
-      @if(product().specifications.length > 0){
+    <div class="product-details-tabs mt-4">
+      <ul class="nav nav-tabs" id="productDetailsTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button 
+            class="nav-link active fw-bolder" 
+            id="description-tab" 
+            data-bs-toggle="tab" 
+            data-bs-target="#description"
+            type="button" 
+            role="tab" 
+            aria-controls="description" 
+            aria-selected="true">
+            Description
+          </button>
+        </li>
+
+        @if (product()?.specifications?.length > 0) {
+          <li class="nav-item" role="presentation">
+            <button 
+              class="nav-link fw-bolder" 
+              id="specifications-tab" 
+              data-bs-toggle="tab" 
+              data-bs-target="#specifications"
+              type="button" 
+              role="tab" 
+              aria-controls="specifications" 
+              aria-selected="false">
+              Specifications
+            </button>
+          </li>
+        }
+      </ul>
+
+      <div class="tab-content p-3 border border-top-0 rounded-bottom" id="productDetailsTabContent">
+        <!-- Description -->
+        <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
+          <p>{{ product()?.description }}</p>
+        </div>
+        
+        <!-- Specifications -->
         <div class="tab-pane fade" id="specifications" role="tabpanel" aria-labelledby="specifications-tab">
           <ul class="list-group">
             @for (item of product()?.specifications; track $index) {
@@ -206,10 +193,8 @@
             }
           </ul>
         </div>
-      }
-  </div>
-</div>
-
+      </div>
+    </div>
     <!-- Related Products Section -->
     @if(relatedProducts().length > 0){
         <section class="related-products mt-5">
@@ -248,16 +233,6 @@
     <p class="mt-3" aria-live="polite">Loading product details...</p>
     </div>
 }
-
-<!-- Error State 
-<div class="container mt-4 text-center" *ngIf="error()">
-  <div class="alert alert-danger">
-    <h2>Error</h2>
-    <p>{{ error() }}</p>
-    <a routerLink="/products" class="btn btn-primary mt-3">Browse All Products</a>
-  </div>
-</div> -->
-
 <!-- Not Found State -->
  @if(!product() && !loading() && !error()){
   <div class="container mt-4 text-center">
@@ -268,55 +243,3 @@
   </div>
 </div>
  }
-
-
-<!-- Location Popup Modal -->
-<div class="location-popup" [class.active]="showLocationPopup()" (click)="toggleLocationPopup()" (keydown.escape)="toggleLocationPopup()">
-  <div class="location-popup-content" (click)="$event.stopPropagation()" (keydown.escape)="toggleLocationPopup()">
-    <div class="location-popup-header">
-      <h3>Check Delivery Availability</h3>
-      <button class="location-popup-close" (click)="toggleLocationPopup()" aria-label="Close">
-        <i class="bi bi-x-lg"></i>
-      </button>
-    </div>
-    <div class="location-popup-body">
-      <p>Enter your PIN code to check delivery availability and estimated delivery time.</p>
-      <div class="input-group mb-3">
-        <input type="text" class="form-control" placeholder="Enter PIN code" 
-               [ngModel]="userLocation()" maxlength="6" pattern="[0-9]*"
-               (ngModelChange)="onDeliveryPincodeChange($event)">
-      </div>
-      
-      @if(deliveryChecking()){
-         <div class="delivery-result">
-          <div class="d-flex align-items-center">
-            <div class="spinner-border spinner-border-sm me-2" aria-hidden="true">
-              <span class="visually-hidden">Checking...</span>
-            </div>
-            <span>Checking delivery availability...</span>
-          </div>
-        </div>
-      }
-     
-      @if(userLocation().trim() && deliveryAvailable() && !deliveryChecking()){
-         <div class="delivery-result success">
-          <i class="bi bi-check-circle-fill me-2"></i>
-          <div>
-            <p class="mb-1">Delivery available to {{ userLocation() }}</p>
-            <p class="delivery-date mb-0">Estimated delivery: {{ deliveryDate() }}</p>
-          </div>
-        </div>
-      }
-     
-       @if(userLocation().trim() && !deliveryAvailable() && !deliveryChecking()){
-        <div  class="delivery-result error">
-          <i class="bi bi-x-circle-fill me-2"></i>
-          <div>
-            <p class="mb-1">We're sorry!</p>
-            <p class="mb-0">Delivery is currently not available to {{ userLocation() }}</p>
-          </div>
-        </div>
-      }
-    </div>
-  </div>
-</div>

@@ -1,12 +1,13 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, computed, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
-import { Router, RouterLink, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Auth } from '../../services/auth';
 import { cartSignal } from '../../commons/store';
 import { Product } from '../../services/product';
 import { Search } from "../search/search";
 import { CartService } from '../../services/cart';
+import { HomeService } from '../../services/home';
 
 interface CategoryItem {
   name: string;
@@ -32,10 +33,12 @@ export class Header implements OnInit{
   selectedBottomMenu = signal<string>('home')
   filteredProducts = signal<any>([]);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   public authService = inject(Auth); // Assuming AuthService is available for login state
   private readonly product = inject(Product);
   public cartService = inject(CartService);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly home =inject(HomeService);
   
   // Active Category for Mega Menu
   activeCategory: string | null = null;
@@ -112,9 +115,9 @@ export class Header implements OnInit{
   ];
   
   ngOnInit(): void {
-    this.isMobileView();
+    console.log('categories', this.home.categoriesHeader());
     if(isPlatformBrowser(this.platformId)){
-      this.userName.set(this.authService.userName() || sessionStorage.getItem('userName'));
+      this.userName.set(sessionStorage.getItem('userName'));
     }
   }
 
@@ -136,6 +139,8 @@ export class Header implements OnInit{
     this.authService.logout();
   }
   selectBottomMenu(menu: string){
-    this.selectedBottomMenu.set(menu);
+    // this.selectedBottomMenu.set(menu);
+     // check if current URL starts with path
+    return this.router.url.startsWith(menu);
   }
 }
