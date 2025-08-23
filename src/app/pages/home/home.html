@@ -93,9 +93,11 @@
             <div class="col-6 col-md-3" [routerLink]="['/products/']"   [queryParams]="{category: category.slug}">
                 <div class="category-card" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
                 <meta itemprop="position" content="{{$index+1}}" />
+                @if(category?.image?.url) {
                 <div class="category-icon" [ngClass]="'category-' + category.name.toLowerCase()">
                     <img [src]="category?.image?.url" loading="lazy" [alt]="category.name.toLowerCase()">
                 </div>
+              }
                 <div class="category-name" itemprop="name">{{ category.name }}</div>
               
                 </div>
