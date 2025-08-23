@@ -8,4 +8,4 @@ Disallow: /cart
 Disallow: /checkout
 
 # Point to your sitemap (update with your actual domain)
-# Sitemap: https://www.yourdomain.com/sitemap.xml
+Sitemap: https://application-shoppyness.vercel.app/sitemap.xml
