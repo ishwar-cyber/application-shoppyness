@@ -210,7 +210,7 @@
             <div class="list-product-item card mb-3" > 
               <div class="row g-0">  
                 <div class="col-md-3" [routerLink]="['/product', product?._id]">  
-                  <img [src]="product.images[0].url" class="img-fluid rounded-start list-product-image" [alt]="product.name">  
+                  <img [src]="product.images[0].url" class="img-fluid rounded-start list-product-image" loading="lazy" [alt]="product.name">  
                 </div>  
                 <div class="col-md-9">  
                   <div class="card-body">  

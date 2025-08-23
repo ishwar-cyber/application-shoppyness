@@ -94,7 +94,7 @@
                 <div class="category-card" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
                 <meta itemprop="position" content="{{$index+1}}" />
                 <div class="category-icon" [ngClass]="'category-' + category.name.toLowerCase()">
-                    <img [src]="category?.image?.url" [alt]="category.name.toLowerCase()">
+                    <img [src]="category?.image?.url" loading="lazy" [alt]="category.name.toLowerCase()">
                 </div>
                 <div class="category-name" itemprop="name">{{ category.name }}</div>
               
@@ -126,7 +126,7 @@
             </div>
             <a routerLink="/products/gaming" class="btn btn-light">Shop Now</a>              </div>
               <div class="offer-image">
-                <img src="assets/images/logo.svg" alt="Gaming Laptop" class="placeholder-img" />
+                <img src="assets/images/logo.svg" alt="Gaming Laptop" class="placeholder-img" loading="lazy" />
               </div>
             </div>
           </div>
@@ -141,7 +141,7 @@
                 <a routerLink="/products/bundles" class="btn btn-sm btn-light">View Deal</a>
               </div>
               <div class="offer-image small-image">
-                <img src="assets/images/logo.svg" alt="Desktop Bundle" class="placeholder-img" />
+                <img src="assets/images/logo.svg" alt="Desktop Bundle" class="placeholder-img" loading="lazy" />
               </div>
             </div>
           </div>
@@ -154,7 +154,7 @@
                 <a routerLink="/products/clearance" class="btn btn-sm btn-dark">Shop Sale</a>
               </div>
               <div class="offer-image small-image">
-                <img src="assets/images/logo.svg" alt="Clearance Sale" class="placeholder-img" />
+                <img src="assets/images/logo.svg" alt="Clearance Sale" class="placeholder-img" loading="lazy"/>
               </div>
             </div>
           </div>
