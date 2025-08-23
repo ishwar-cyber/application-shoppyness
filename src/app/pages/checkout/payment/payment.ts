@@ -35,7 +35,7 @@ export class Payment {
         'http://localhost:8000/api/v1/payment/create-order',
         {
           orderId: 'order_' + Date.now(),
-          amount: 500,
+          amount: 1,
           customerName: 'Ishwar',
           customerPhone: '9876543210',
           customerEmail: 'ishwar@test.com',
