@@ -24,12 +24,11 @@
 }
 
 <!-- Main Checkout -->
-@if (!isLoading() && !error() && !isOrderComplete()) {
+@if (!isLoading() && !error()) {
   <div class="container py-4">
     <div class="row">
       <div class="col-12">
         <h1 class="mb-4">Checkout</h1>
-
         <!-- Checkout Progress -->
         <div class="checkout-progress mb-4">
           <div class="step" [class.active]="currentStep() >= 1" [class.completed]="currentStep() > 1">
@@ -57,7 +56,6 @@
           <div class="card-body">
             @if (currentStep() === 1) {
               <app-shipping
-                [paymentMethod]="paymentMethod()"
                 (continue)="nextStep()">
               </app-shipping>
             }
@@ -70,143 +68,152 @@
                 (continue)="nextStep()">
               </app-billing>
             }
+          
             @if (currentStep() === 3) {
-              <app-payment (back)="prevStep()" [amount]="totalAmount()" ></app-payment>
-            }
-          </div>
-        </div>
-      </div>
+                <!-- Order Summary -->
+                <div class="col-lg-4">
+                  <div class="card order-summary-card mb-4">
+                    <div class="card-header">
+                      <h5 class="mb-0">Order Summary</h5>
+                    </div>
+                    <div class="card-body">
+                      <div class="cart-items-summary">
+                          <div class="cart-item-summary">
+                        @for(item of cartService.cartItems(); track $index){
 
-      <!-- Order Summary -->
-      <div class="col-lg-4">
-        <div class="card order-summary-card mb-4">
-          <div class="card-header">
-            <h5 class="mb-0">Order Summary</h5>
-          </div>
-          <div class="card-body">
-            
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                  <div class="item-details d-flex align-items-center">
+                                    <img [src]="item.product.images[0].url" width="100px" height="100px" [alt]="item.name" class="item-thumbnail me-2" loading="lazy">
+                                    <div>
+                                      <div class="item-name">{{ item.name }}</div>
+                                      <div class="item-quantity text-muted small">Qty: {{ item.quantity }}</div>
+                                    </div>
+                                  </div>
+                                  <div class="item-price">₹{{ formatCurrency(item.price * item.quantity) }}</div>
+                                </div>
+                            }
 
-            <div class="cart-items-summary">
-                <div class="cart-item-summary">
-               @for(item of cartService.cartItems(); track $index){
-
-                      <div class="d-flex justify-content-between align-items-center mb-2">
-                        <div class="item-details d-flex align-items-center">
-                          <img [src]="item.product.images[0].url" width="100px" height="100px" [alt]="item.name" class="item-thumbnail me-2">
-                          <div>
-                            <div class="item-name">{{ item.name }}</div>
-                            <div class="item-quantity text-muted small">Qty: {{ item.quantity }}</div>
                           </div>
-                        </div>
-                        <div class="item-price">₹{{ formatCurrency(item.price * item.quantity) }}</div>
+
                       </div>
-                  }
 
+                      <hr>
+
+                      <!-- Pricing Breakdown -->
+                      <div class="price-summary">
+                          <!-- Coupon Section -->
+                        <!-- Coupon section allows users to apply discount codes to their order -->
+                        <div class="coupon-section mb-3">
+                          <!-- Coupon Input Form - Shown when no coupon is applied -->
+                          @if(true){
+                          <div class="coupon-form">
+                            <div class="input-group">
+                              <input 
+                                type="text" 
+                                class="form-control" 
+                                placeholder="Enter coupon code" 
+                                [value]="couponInput()"
+                                (input)="couponInput.set($any($event.target).value)"
+                                [disabled]="isCouponLoading()"
+                                (keyup.enter)="applyCoupon()"
+                              >
+                              <button 
+                                class="btn btn-outline-primary" 
+                                type="button" 
+                                [disabled]="isCouponLoading() || !couponInput()"
+                                (click)="applyCoupon()"
+                              >
+                              @if(!isCouponLoading()){
+                                <span >Apply</span>
+                              }
+                              @if(isCouponLoading()){
+                                  <span >
+                                  <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                                  <span class="visually-hidden">Loading...</span>
+                                </span>
+                              }
+                                
+                              </button>
+                            </div>
+                            @if(couponMessage() && !couponCode()){
+                              <div class="coupon-message mt-2" [class.text-danger]="couponError()" [class.text-success]="!couponError()">
+                              {{ couponMessage() }}
+                            </div>
+                            }
+                            
+                          </div>
+                          }
+                        
+                          
+                          <!-- Applied Coupon Display - Shown when a coupon is successfully applied -->
+                          @if(couponCode()){
+                              <div  class="applied-coupon">
+                            <div class="d-flex justify-content-between align-items-center">
+                              <div>
+                                <span class="badge bg-success me-2">
+                                  <i class="bi bi-tag-fill me-1"></i>{{ couponCode() }}
+                                </span>
+                                <span class="text-success">Coupon applied</span>
+                              </div>
+                              <button class="btn btn-sm btn-link text-danger p-0" (click)="removeCoupon(couponCode())">
+                                <i class="bi bi-x-circle"></i> Remove
+                              </button>
+                            </div>
+                            @if(discount() > 0) {
+                              <div class="summary-item d-flex justify-content-between mt-2 text-success">
+                              <span>Discount</span>
+                              <span>-₹{{ formatCurrency(discount()) }}</span>
+                            </div>
+                            }
+                          
+                          </div>
+                          }
+                          
+                        </div>
+                        <div class="summary-item d-flex justify-content-between mb-2">
+                          <span>Subtotal</span>
+                          <span>₹{{ formatCurrency(cartService.subTotal()) }}</span>
+                        </div>
+                        <div class="summary-item d-flex justify-content-between mb-2">
+                          <span>Shipping Charges  </span>
+                          @if (shipping() > 0) {
+                            <span>₹{{ formatCurrency(shipping()) }}</span>
+                          }
+                        </div>
+                        @if (selectedPaymentMethod() === 'cod' && currentStep() === 3) {
+                          <div class="summary-item d-flex justify-content-between mb-2">
+                            <span>Cash on Delivery Fee</span>
+                            <span>₹50</span>
+                          </div>
+                        }
+                        <hr>
+                        <div class="summary-total d-flex justify-content-between align-items-center">
+                          <span>Total</span>
+                          <span class="total-price">
+                            ₹{{ formatCurrency(cartService.subTotal() + (selectedPaymentMethod() === 'cod' && currentStep() === 3 ? 50 : 0)) }}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-
-            </div>
-
-            <hr>
-
-            <!-- Pricing Breakdown -->
-            <div class="price-summary">
-                <!-- Coupon Section -->
-              <!-- Coupon section allows users to apply discount codes to their order -->
-              <div class="coupon-section mb-3">
-                <!-- Coupon Input Form - Shown when no coupon is applied -->
-                @if(true){
-                <div class="coupon-form">
-                  <div class="input-group">
-                    <input 
-                      type="text" 
-                      class="form-control" 
-                      placeholder="Enter coupon code" 
-                      [value]="couponInput()"
-                      (input)="couponInput.set($any($event.target).value)"
-                      [disabled]="isCouponLoading()"
-                      (keyup.enter)="applyCoupon()"
-                    >
-                    <button 
-                      class="btn btn-outline-primary" 
-                      type="button" 
-                      [disabled]="isCouponLoading() || !couponInput()"
-                      (click)="applyCoupon()"
-                    >
-                    @if(!isCouponLoading()){
-                      <span >Apply</span>
-                    }
-                    @if(isCouponLoading()){
-                        <span >
+                <!-- <app-payment (back)="prevStep()" [amount]="totalAmount()" ></app-payment> -->
+                <div class="d-flex justify-content-between">
+                  <button class="btn btn-outline-secondary" (click)="prevStep()" [disabled]="isProcessing()">
+                    &larr; Back
+                  </button>
+                  <button class="btn btn-primary" (click)="placeOrder()" [disabled]="isProcessing() || !selectedAddressId()">
+                    @if(!isProcessing()){
+                      Place Order &rarr;
+                    } @else if(isProcessing()){
+                      <span >
                         <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
                         <span class="visually-hidden">Loading...</span>
                       </span>
                     }
-                      
-                    </button>
-                  </div>
-                  @if(couponMessage() && !couponCode()){
-                    <div class="coupon-message mt-2" [class.text-danger]="couponError()" [class.text-success]="!couponError()">
-                    {{ couponMessage() }}
-                  </div>
-                  }
-                  
-                </div>
-                }
-              
-                
-                <!-- Applied Coupon Display - Shown when a coupon is successfully applied -->
-                @if(couponCode()){
-                    <div  class="applied-coupon">
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                      <span class="badge bg-success me-2">
-                        <i class="bi bi-tag-fill me-1"></i>{{ couponCode() }}
-                      </span>
-                      <span class="text-success">Coupon applied</span>
-                    </div>
-                    <button class="btn btn-sm btn-link text-danger p-0" (click)="removeCoupon(couponCode())">
-                      <i class="bi bi-x-circle"></i> Remove
-                    </button>
-                  </div>
-                  @if(discount() > 0) {
-                    <div class="summary-item d-flex justify-content-between mt-2 text-success">
-                    <span>Discount</span>
-                    <span>-₹{{ formatCurrency(discount()) }}</span>
-                  </div>
-                  }
-                
-                </div>
-                }
-                
-              </div>
-              <div class="summary-item d-flex justify-content-between mb-2">
-                <span>Subtotal</span>
-                <span>₹{{ formatCurrency(cartService.subTotal()) }}</span>
-              </div>
-              <!-- <div class="summary-item d-flex justify-content-between mb-2">
-                <span>GST (18%)</span>
-                <span>₹{{ formatCurrency(tax()) }}</span>
-              </div> -->
-              <div class="summary-item d-flex justify-content-between mb-2">
-                <span>Shipping Charges  </span>
-                @if (shipping() > 0) {
-                  <span>₹{{ formatCurrency(shipping()) }}</span>
-                }
-              </div>
-              @if (selectedPaymentMethod() === 'cod' && currentStep() === 3) {
-                <div class="summary-item d-flex justify-content-between mb-2">
-                  <span>Cash on Delivery Fee</span>
-                  <span>₹50</span>
+                  </button>
                 </div>
               }
-              <hr>
-              <div class="summary-total d-flex justify-content-between align-items-center">
-                <span>Total</span>
-                <span class="total-price">
-                  ₹{{ formatCurrency(cartService.subTotal() + (selectedPaymentMethod() === 'cod' && currentStep() === 3 ? 50 : 0)) }}
-                </span>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -214,55 +221,12 @@
   </div>
 }
 
+
 <!-- Order Confirmation -->
 @if (isOrderComplete() && orderResponse()) {
-  <div class="container py-5">
-    <div class="row justify-content-center">
-      <div class="col-md-8 col-lg-6">
-        <div class="card order-success-card">
-          <div class="card-body text-center">
-            <div class="order-success-icon">
-              <i class="bi bi-check-circle"></i>
-            </div>
-            <h2 class="my-4">Order Placed Successfully!</h2>
-            <p class="mb-4">Thank you for your purchase. Your order has been received and is being processed.</p>
-
-            <div class="order-details text-start mb-4">
-              <div class="row mb-3">
-                <div class="col-5 fw-bold">Order Number:</div>
-                <div class="col-7">{{ orderResponse()?.orderNumber }}</div>
-              </div>
-              <div class="row mb-3">
-                <div class="col-5 fw-bold">Order Date:</div>
-                <div class="col-7">{{ orderResponse()?.createdAt | date:'medium' }}</div>
-              </div>
-              <div class="row mb-3">
-                <div class="col-5 fw-bold">Payment Method:</div>
-                <div class="col-7">{{ orderResponse()?.paymentMethod }}</div>
-              </div>
-              <div class="row mb-3">
-                <div class="col-5 fw-bold">Payment Status:</div>
-                <div class="col-7" 
-                     [ngClass]="{
-                       'text-success': orderResponse()?.paymentStatus === 'PAID',
-                       'text-warning': orderResponse()?.paymentStatus === 'PENDING'
-                     }">
-                  {{ orderResponse()?.paymentStatus }}
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-5 fw-bold">Total Amount:</div>
-                <div class="col-7">₹{{ formatCurrency(orderResponse()?.total || 0) }}</div>
-              </div>
-            </div>
-
-            <div class="d-grid gap-3">
-              <a routerLink="/profile/orders" class="btn btn-primary">View Order Details</a>
-              <a routerLink="/" class="btn btn-outline-secondary">Continue Shopping</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <app-order-success 
+    [show]="isOrderComplete()"
+    [order]="orderResponse()"
+    (close)="isOrderComplete.set(false)">
+  </app-order-success>
 }

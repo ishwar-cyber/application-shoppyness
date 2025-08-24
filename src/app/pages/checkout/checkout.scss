@@ -229,69 +229,67 @@ font-size: 0.9rem;
 }
 }
 
-// Order confirmation styling
 .order-confirmation {
-text-align: center;
-padding: 2rem 0;
+  text-align: center;
+  padding: 2rem 0;
 
-.order-confirmation-icon {
-font-size: 5rem;
-color: #198754;
-margin-bottom: 1.5rem;
+  &__icon {
+    font-size: 5rem;
+    color: #198754;
+    margin-bottom: 1.5rem;
+  }
+
+  &__title {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  &__number {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #0d6efd;
+    margin-bottom: 1.5rem;
+  }
+
+  &__message {
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    color: #6c757d;
+  }
+
+  &__details {
+    max-width: 768px;
+    margin: 0 auto 2rem;
+    text-align: left;
+
+    h2 {
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+  }
+
+  &__shipping {
+    max-width: 768px;
+    margin: 0 auto 2rem;
+    text-align: left;
+
+    h3 {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+
+    address {
+      font-style: normal;
+      line-height: 1.6;
+    }
+  }
+
+  &__actions {
+    margin-top: 2rem;
+  }
 }
 
-h1 {
-font-size: 2rem;
-margin-bottom: 0.5rem;
-}
-
-.order-number {
-font-size: 1.2rem;
-font-weight: 600;
-color: #0d6efd;
-margin-bottom: 1.5rem;
-}
-
-.order-message {
-font-size: 1.1rem;
-max-width: 600px;
-margin: 0 auto 2rem;
-color: #6c757d;
-}
-
-.order-details {
-max-width: 768px;
-margin: 0 auto 2rem;
-text-align: left;
-
-h2 {  
-  margin-bottom: 1rem;  
-  font-size: 1.5rem;  
-}
-
-}
-
-.shipping-info {
-max-width: 768px;
-margin: 0 auto 2rem;
-text-align: left;
-
-h3 {  
-  font-size: 1.2rem;  
-  margin-bottom: 1rem;  
-}  
-  
-address {  
-  font-style: normal;  
-  line-height: 1.6;  
-}
-
-}
-
-.order-actions {
-margin-top: 2rem;
-}
-}
 
 // Mobile responsiveness
 @media (max-width: 767.98px) {

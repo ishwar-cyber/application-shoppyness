@@ -31,7 +31,7 @@
                 (click)="selectProduct(product)"
                 aria-label="Select product"
               >
-              <img [src]="product.images[0].url" [alt]="product.name" class="search-result-image" />
+              <img [src]="product.images[0].url" [alt]="product.name" loading="lazy" class="search-result-image" />
               <div class="search-result-info">
                 <div class="search-result-name">{{ product.name }}</div>
                 <div class="search-result-price">₹{{ product.price }}</div>

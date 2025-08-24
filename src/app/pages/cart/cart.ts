@@ -35,12 +35,9 @@ export class Cart implements OnInit{
   tax = signal<number>(0);
   shipping = signal<number>(0);
   total = signal<number>(0);
-  
+
   // Loading state for quantity updates
   updatingItemId: string | null = '';
-  
-
-  
   // Services
   public cartService = inject(CartService);
   private readonly seoService = inject(Seo);
@@ -104,10 +101,6 @@ export class Cart implements OnInit{
   
   clearCart(): void {
     if (this.cartItems().length === 0) return;
-    
-    // Mark all items as updating
-    // this.updatingItemId = -1; // Special value to indicate all items
-    
     this.cartService.clearCart()
       .subscribe({
         next: (response: any) => {

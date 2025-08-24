@@ -199,16 +199,18 @@
     <meta itemprop="itemListOrder" content="Unordered" />
     <meta itemprop="numberOfItems" content="{{brands().length}}" />
     <div class="brands-container">
-      <div class="brand-logo" *ngFor="let brand of brands(); let i = index" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-        <meta itemprop="position" content="{{i+1}}" />
-        <div class="brand-img-container">
-          <!-- Using fallback since brand logos might not exist -->
-          <div class="brand-fallback">
-            <i class="bi bi-laptop"></i>
+      @for(brand of brands(); track $index) {
+        <div class="brand-logo" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <meta itemprop="position" content="{{ $index + 1 }}" />
+          <div class="brand-img-container">
+            <!-- Using fallback since brand logos might not exist -->
+            <div class="brand-fallback">
+              <i class="bi bi-laptop"></i>
+            </div>
           </div>
+          <span class="brand-name" itemprop="name">{{ brand.name }}</span>
         </div>
-        <span class="brand-name" itemprop="name">{{ brand.name }}</span>
-      </div>
+      }
     </div>
   </div>
 </section>

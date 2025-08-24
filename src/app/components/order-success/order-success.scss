@@ -1,0 +1,63 @@
+/* order-success-popup.component.scss */
+.order-success-popup {
+  border-radius: 1rem;
+  padding: 1.5rem;
+
+  .success-icon {
+    font-size: 4rem;
+    color: #198754;
+  }
+
+  h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+  }
+
+  .order-summary {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: .75rem;
+
+    .row {
+      font-size: 0.95rem;
+    }
+  }
+
+  /* ✅ Responsive styles */
+  @media (max-width: 576px) {
+    padding: 1rem;
+
+    .success-icon {
+      font-size: 3rem;
+    }
+
+    h2 {
+      font-size: 1.4rem;
+    }
+
+    p {
+      font-size: 0.9rem;
+    }
+
+    .order-summary {
+      font-size: 0.85rem;
+      padding: 0.75rem;
+    }
+
+    .btn {
+      font-size: 0.9rem;
+      padding: 0.4rem 0.8rem;
+    }
+
+    /* Stack buttons vertically on small screens */
+    .d-flex {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .modal-dialog {
+      margin: 1rem;
+      max-width: 100%;
+    }
+  }
+}

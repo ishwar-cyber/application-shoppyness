@@ -115,7 +115,6 @@ export class Header implements OnInit{
   ];
   
   ngOnInit(): void {
-    console.log('categories', this.home.categoriesHeader());
     if(isPlatformBrowser(this.platformId)){
       this.userName.set(sessionStorage.getItem('userName'));
     }

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, inject, input, signal } from '@angular/core';
 import { load } from '@cashfreepayments/cashfree-js';
-import { PaymentService } from '../../../services/payment';
+import { CheckoutService } from '../../../services/payment';
 @Component({
   selector: 'app-payment',
   imports: [],
@@ -12,7 +12,7 @@ export class Payment {
 
   isProcessing = signal(false);
   amount = input.required<number>();
-  private readonly paymentService = inject(PaymentService);
+  private readonly paymentService = inject(CheckoutService);
   private readonly http = inject(HttpClient);
   private createOrder(amount: number) {
     const payload = {

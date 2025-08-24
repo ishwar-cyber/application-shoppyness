@@ -10,7 +10,7 @@ interface CreateOrderResponse {
 @Injectable({
   providedIn: 'root'
 })
-export class PaymentService {
+export class CheckoutService {
   
   private http = inject(HttpClient);
 

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, signal } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
@@ -10,12 +10,6 @@ import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 })
 export class Shipping {
 // default = 'online'
-  paymentMethod = input<'online' | 'cod'>('online');
-
-  methodChange = output<'online' | 'cod'>();
+  paymentMethod = signal<string>('online');
   continue = output<void>();
-
-  select(method: 'online') {
-    this.methodChange.emit(method);
-  }
 }

@@ -56,10 +56,9 @@ export class Home implements OnInit{
       category: this.home.getCategories()
     }).subscribe({
       next: (res: any) => {
-        this.products.set(res.product.data);
-        this.brands.set(res.brand.data);
-        this.categories.set(res.category.data);
-        console.log('categories', res.category.data)
+        this.products.set(res.product?.data);
+        this.brands.set(res.brand?.data);
+        this.categories.set(res.category?.data);
         this.home.categoriesHeader.set(this.categories());
       },
       error: (err) => {

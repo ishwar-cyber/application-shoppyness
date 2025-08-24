@@ -172,7 +172,8 @@
       <!-- List View - Loading State -->  
       @if (isLoading() && viewMode() === 'list') {
           <div class="list-view">  
-            <div class="list-product-item card mb-3" *ngFor="let i of [1,2,3,4]">  
+            @for (i of [1,2,3,4]; track $index) {
+            <div class="list-product-item card mb-3">  
               <div class="row g-0">  
                 <div class="col-md-3">  
                   <div class="skeleton-loader animated-bg" style="height: 180px; width: 100%; border-radius: 0.25rem;"></div>  
@@ -199,6 +200,7 @@
                 </div>  
               </div>  
             </div>  
+          }
           </div>
       }
         
@@ -210,7 +212,7 @@
             <div class="list-product-item card mb-3" > 
               <div class="row g-0">  
                 <div class="col-md-3" [routerLink]="['/product', product?._id]">  
-                  <img [src]="product.images[0].url" class="img-fluid rounded-start list-product-image" loading="lazy" [alt]="product.name">  
+                  <img [src]="product.images[0].url" class="img-fluid rounded-start list-product-image" loading="lazy" [alt]="product.slug">  
                 </div>  
                 <div class="col-md-9">  
                   <div class="card-body">  

@@ -22,6 +22,7 @@ export interface CartData {
 export interface Item {
   _id: string;
   product: Product;
+  slug: string;
   name: string;
   price: number;
   quantity: number;

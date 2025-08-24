@@ -7,10 +7,11 @@ import { Payment } from './payment/payment';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CartService } from '../../services/cart';
 import { CheckoutService } from '../../services/checkout';
+import { OrderSuccess } from '../../components/order-success/order-success';
 
 @Component({
   selector: 'app-checkout',
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, Shipping, Billing, Payment],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, Shipping, Billing, OrderSuccess],
   templateUrl: './checkout.html',
   styleUrl: './checkout.scss'
 })
@@ -21,7 +22,6 @@ export class Checkout implements OnInit{
   sameAsBilling = signal(false);
   cartItems = signal<any[]>([]);
   shipping = signal(0);
-  paymentMethod = signal<'online'>('online');
   selectedPaymentMethod = signal<string>('card');
   isProcessingPayment = signal(false);
   paymentError = signal<string | null>(null);
@@ -35,11 +35,14 @@ export class Checkout implements OnInit{
   isCouponLoading = signal<boolean>(false);
   couponMessage = signal<string | null>(null);
   couponError = signal<boolean>(false);
-  // Forms
-  shippingForm!: FormGroup;
-  billingForm!: FormGroup;
-  paymentForm!: FormGroup;
+  isProcessing = signal(false);
 
+  selectedPaymentTab = signal<'card' | 'upi'>('card');
+
+  // Selected payment tab
+  selectPaymentTab(tab: 'card' | 'upi') {
+    this.selectedPaymentTab.set(tab);
+  }
   private readonly formBuilder = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly checkoutService = inject(CheckoutService);
@@ -68,32 +71,12 @@ export class Checkout implements OnInit{
   );
 
   ngOnInit(): void {
-     this.initForms();
-     this.totalAmount.set(this.cartService.subTotal());
+    this.totalAmount.set(this.cartService.subTotal());
     this.loadCart();
   }
   
 
-  private initForms() {
-    this.shippingForm = this.formBuilder.group({
-      name: ['', Validators.required],
-      address: ['', Validators.required],
-      city: ['', Validators.required],
-      pincode: ['', Validators.required],
-    });
 
-    this.billingForm = this.formBuilder.group({
-      name: ['', Validators.required],
-      address: ['', Validators.required],
-      city: ['', Validators.required],
-      pincode: ['', Validators.required],
-    });
-
-    this.paymentForm = this.formBuilder.group({
-      cardNumber: [''],
-      upiId: [''],
-    });
-  }
 
   setAddress(id: number) {
     this.selectedAddressId.set(id);
@@ -112,28 +95,11 @@ export class Checkout implements OnInit{
     });
   }
 
-  
-
-  updateBillingForm() {
-    if (this.sameAsBilling()) {
-      this.billingForm.patchValue(this.shippingForm.value);
-    }
-  }
-
-  toggleSameAsBilling() {
-    this.sameAsBilling.set(!this.sameAsBilling());
-    if (this.sameAsBilling()) {
-      this.updateBillingForm();
-    }
-  }
-
   nextStep() {
     if (this.currentStep() < 3) {
       this.currentStep.set(this.currentStep() + 1);
     }
   }
-
-
   prevStep() {
     if (this.currentStep() > 1) {
       this.currentStep.set(this.currentStep() - 1);
@@ -144,49 +110,9 @@ export class Checkout implements OnInit{
     this.addresses.update(list => [...list, newAddr]);
     this.selectedAddressId.set(newAddr.id);
   }
-  selectPaymentMethod(method: any) {
-    this.selectedPaymentMethod.set(method);
-  }
-
-  processPayment() {
-    this.isProcessingPayment.set(true);
-    this.paymentError.set(null);
-
-    const payload = {
-      shipping: this.shippingForm.value,
-      billing: this.billingForm.value,
-      payment: {
-        method: this.selectedPaymentMethod(),
-        ...this.paymentForm.value,
-      },
-      items: this.cartService.cartItems(),
-      total:
-        this.cartService.subTotal() +
-        (this.selectedPaymentMethod() === 'cod' ? 50 : 0),
-    };
-
-    this.checkoutService.placeOrder(payload).subscribe({
-      next: (res) => {
-        this.isProcessingPayment.set(false);
-        this.isOrderComplete.set(true);
-        this.orderResponse.set(res);
-      },
-      error: (err) => {
-        this.isProcessingPayment.set(false);
-        this.paymentError.set(
-          err.error?.message || 'Payment failed. Please try again.'
-        );
-      },
-    });
-  }
-
   formatCurrency(amount: number): string {
     return amount.toLocaleString('en-IN');
   }
-
-  /**
-   * Remove the applied coupon from the cart
-   */
   removeCoupon(code: string): void {
     this.isCouponLoading.set(true);
     
@@ -207,16 +133,7 @@ export class Checkout implements OnInit{
         }
       });
   }
-   /**
-   * Apply a coupon code to the cart
-   * 
-   * This method validates the entered coupon code and applies it to the cart.
-   * Valid coupon codes will result in a discount being applied to the order.
-   * For this demo, coupon validation happens locally for guest users and
-   * via API for logged-in users.
-   * 
-   * Available demo coupons: WELCOME10, FLAT500, SUMMER25
-   */
+
   applyCoupon(): void {
     const code = this.couponInput();
     if (!code) {
@@ -252,4 +169,28 @@ export class Checkout implements OnInit{
       });
   }
 
+  placeOrder() {
+    if (this.isProcessing()) return; // Prevent multiple submissions
+    this.isProcessing.set(true);
+    this.error.set(null);
+    const orderPayload = {
+      shippingAddress: this.addresses().find(a => a.id === this.selectedAddressId()),
+      paymentMethod: 'online',
+      items: this.cartService.cartItems(),
+      totalAmount: this.cartService.subTotal() + this.shipping(),
+      coupon: this.couponCode() || null
+    };
+    this.checkoutService.createOrder(orderPayload).subscribe({
+      next: (res) => {
+        this.isProcessing.set(false);
+        this.isOrderComplete.set(true);
+        this.orderResponse.set(res);
+      },
+      error: (err) => {
+        console.error('Order placement failed:', err);
+        this.error.set('Failed to place order. Please try again.');
+        this.isProcessing.set(false);
+      }
+    }); 
+  }
 }
