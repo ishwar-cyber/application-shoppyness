@@ -34,13 +34,12 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   // ✅ Handle errors only in browser
   return next(cloned).pipe(
-    catchError((error: unknown) => {
+    catchError((err: unknown) => {
+      // Always treat error as Error instance for safety
+      const error = err instanceof HttpErrorResponse ? err : new Error(String(err));
       if (isPlatformBrowser(platformId) && error instanceof HttpErrorResponse) {
         if (error.status === 401 || error.status === 403) {
-          // Remove invalid token
           cookieService.delete('authToken', '/');
-
-          // Redirect to login (if not already there)
           if (router.url !== '/login') {
             router.navigate(['/login']);
           }
