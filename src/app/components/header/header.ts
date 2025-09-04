@@ -1,5 +1,5 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, computed, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { AfterViewInit, Component, computed, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Auth } from '../../services/auth';
@@ -26,20 +26,23 @@ interface SubcategoryItem {
   templateUrl: './header.html',
   styleUrl: './header.scss'
 })
-export class Header implements OnInit{
+export class Header implements OnInit, AfterViewInit{
+
   searchQuery = '';
   isSearchFocused = false;
   toggleUserDropdown =signal<boolean>(false)
   selectedBottomMenu = signal<string>('home')
   filteredProducts = signal<any>([]);
+  
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   public authService = inject(Auth); // Assuming AuthService is available for login state
   private readonly product = inject(Product);
   public cartService = inject(CartService);
   private readonly platformId = inject(PLATFORM_ID);
-  private readonly home =inject(HomeService);
-  
+  public readonly home = inject(HomeService);
+
+
   // Active Category for Mega Menu
   activeCategory: string | null = null;
   cartCount = signal<number>(0);
@@ -114,6 +117,10 @@ export class Header implements OnInit{
     }
   ];
   
+  ngAfterViewInit(): void {
+ 
+  }
+
   ngOnInit(): void {
     if(isPlatformBrowser(this.platformId)){
       this.userName.set(sessionStorage.getItem('userName'));

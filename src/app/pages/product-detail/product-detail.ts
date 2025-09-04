@@ -1,25 +1,34 @@
-import { ChangeDetectionStrategy, Component, ElementRef, inject, OnInit, PLATFORM_ID, signal, viewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  inject,
+  OnDestroy,
+  OnInit,
+  PLATFORM_ID,
+  signal,
+  ViewChild
+} from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Subject, debounceTime, distinctUntilChanged, tap, takeUntil, switchMap, EMPTY, catchError, of, finalize, Observable } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { Product } from '../../services/product';
 import { Seo } from '../../services/seo';
-import { CommonModule } from '@angular/common';
-import { isPlatformBrowser } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { CartService } from '../../services/cart';
 import { ProductModel, ResponsePayload, Variant } from '../../commons/models/product.model';
 import { FormsModule } from '@angular/forms';
-import { cartSignal } from '../../commons/store';
-import { ProductCard } from "../../components/product-card/product-card";
+import { ProductCard } from '../../components/product-card/product-card';
 import { CheckPincode } from '../../components/check-pincode/check-pincode';
 
 @Component({
   selector: 'app-product-detail',
-  imports: [CommonModule, FormsModule, ProductCard, CheckPincode],
+  standalone: true,
+  imports: [CommonModule, RouterLink, FormsModule, ProductCard, CheckPincode],
   templateUrl: './product-detail.html',
-  styleUrl: './product-detail.scss',
+  styleUrls: ['./product-detail.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProductDetail implements OnInit{
+export class ProductDetail implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -27,189 +36,223 @@ export class ProductDetail implements OnInit{
   private readonly productService = inject(Product);
   public cartService = inject(CartService);
   private readonly platformId = inject(PLATFORM_ID);
-  
-  selectedVaraint = signal<string>('')
-  relatedProductsScroll = viewChild<ElementRef>('relatedProductsScroll');
-  // Product signals
-  product = signal<any| null>(null);
+
+  // signals
+  product = signal<any | null>(null);
   relatedProducts = signal<any[]>([]);
   loading = signal<boolean>(false);
   error = signal<string>('');
-  
-  // Add to cart states
+
+  selectedVariant = signal<Variant | null>(null);
   isAddingToCart = signal<boolean>(false);
   quantity = signal<number>(1);
   addedToCartMessage = signal<string>('');
   selectedImageIndex = signal<number>(0);
-  private readonly productCache = new Map<number, Product>();
+
+  @ViewChild('relatedProductsScroll', { static: false }) relatedProductsScroll!: ElementRef<HTMLElement> | undefined;
 
   ngOnInit(): void {
     this.loading.set(true);
-    this.route.params.subscribe((params) => {
-      const productId = params['id'];
+
+    // subscribe to route params for product id
+    this.route.params.pipe(takeUntil(this.destroy$)).subscribe(params => {
+      const productId = params['slug'];
       if (!productId) return;
-
-      this.loading.set(true);
-
-      this.productService.getProductById(productId).subscribe({
-        next: (res: ResponsePayload) => {
-          this.loading.set(false);
-          this.loading.set(false);
-
-          this.product.set(res.data)
-          // this.product.set(res.data);
-          this.loadRelatedProducts(productId);
-          if (this.product()) {
-            this.updateSeoTags(this.product());
-          }
-        },
-        error: (err) => {
-          console.error('Failed to fetch product:', err);
-          this.loading.set(false);
-        }
-      });
+      this.loadProduct(productId);
     });
-    if(isPlatformBrowser(this.platformId)){
-      window.scrollTo({top:0, behavior:'smooth'})
+    // scroll to top on browser
+    if (isPlatformBrowser(this.platformId)) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }
-  
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
-  
-  // Load related products from API
-  private loadRelatedProducts(productId: string): void {
-    this.productService.getRelatedProducts(productId).subscribe((products: any) => {
-      this.relatedProducts.set(products);
-      
-      // Preload images for better performance
-      if (products.length > 0) {
-        this.preloadRelatedProductImages();
+
+  private loadProduct(productId: string) {
+    this.loading.set(true);
+    this.productService.getProductById(productId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (res: ResponsePayload) => {
+        this.loading.set(false);
+        this.product.set(res.data);
+        this.selectedImageIndex.set(0);
+        this.loadRelatedProducts(productId);
+        this.updateSeoTags(res.data);
+
+        // preselect variant logic:
+        this.applyVariantSelectionFromQueryOrDefault();
+      },
+      error: (err) => {
+        console.error('Failed to fetch product:', err);
+        this.loading.set(false);
+        this.error.set('Failed to load product');
       }
     });
   }
-  
-  // Update SEO tags
+ // ✅ Helper computed signal to generate display names
+  getVariantName = (product: any, variant: any): string => {
+    if (!product) return '';
+    if (!variant || !variant.name) return product?.name || '';
+    // If name is array, join, else use as string
+    const variantName = Array.isArray(variant.name)   ? variant.name.join(' ') : variant.name;
+    return `${product?.name || ''}${variantName ? ' - ' + variantName : ''}`;
+  };
+  private applyVariantSelectionFromQueryOrDefault(): void {
+    const prod = this.product();
+    if (!prod) return;
+
+    // try query param variantId or route param variantId
+    const queryVariantId = this.route.snapshot.queryParamMap.get('variantId');
+    const routeVariantId = this.route.snapshot.paramMap.get('variantId');
+
+    const preselectId = queryVariantId ?? routeVariantId ?? null;
+
+    if (prod.variants && prod.variants.length > 0) {
+      // prefer passed id if matched, else first variant
+      const matched = preselectId ? prod.variants.find((v: Variant) => v._id === preselectId || v.sku === preselectId) : null;
+      this.selectedVariant.set(matched || prod.variants[0]);
+    } else {
+      this.selectedVariant.set(null);
+    }
+  }
+
+  // Related products
+  private loadRelatedProducts(productId: string): void {
+    this.productService.getRelatedProducts(productId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (products: any) => {
+        this.relatedProducts.set(products || []);
+        if (products?.length) this.preloadRelatedProductImages();
+      },
+      error: (err) => {
+        console.warn('Failed to load related products', err);
+      }
+    });
+  }
+
   private updateSeoTags(product: any): void {
+    if (!product) return;
     this.seoService.updateMetaTags({
-      title: `${product.name} - ${product.brand} | Computer Shop`,
+      title: `${product.name} - ${product.brand?.name ?? product.brand} | Computer Shop`,
       description: product.description,
-      keywords: `${product.name}, ${product.brand}, ${product.category}, computer, laptop, desktop`,
-      image: product.image,
+      keywords: `${product.name}, ${product.brand?.name ?? product.brand}, ${product.category}`,
+      image: product.image ?? (product.images && product.images[0]?.url),
       url: `https://shoppyness.com/products/${product.id}`
     });
   }
 
-  // Add product to cart
-  addToCart(product: any): void {
-    this.isAddingToCart.set(true);
-    // Add product to cart through CartService
-    this.cartService.addToCart(product.id, this.quantity()).subscribe({
-      next: (res: any) => {
-        this.isAddingToCart.set(false);
-        // Clear success message after 3 seconds
-        setTimeout(() => {
-          this.addedToCartMessage.set('');
-        }, 3000);
-      },
-      error: (error: Error) => {
-        console.error('Error adding to cart:', error);
-        this.addedToCartMessage.set('Failed to add to cart. Please try again.');
-      }
-    });
-  }
-
-  scrollProducts(direction: 'left' | 'right'){
-    if(!isPlatformBrowser(this.platformId) || !this.relatedProductsScroll) return;
-    const scrollElement = this.relatedProductsScroll()?.nativeElement;
-    const scrollAmount = scrollElement.clientWidth * 0.8;
-
-    if(direction === 'left'){
-      scrollElement.scrollBy({left: -scrollAmount, behavior: 'smooth'});
-    } else {
-      scrollElement.scrollBy({left: scrollAmount, behavior: 'smooth'});
-
-    }
-  }   
-  // Get the currently selected image
+  // UI helpers
   get selectedImage(): string {
     const images = this.product()?.images;
-    
-    // If no images exist at all
-    if (!images || images.length === 0) {
-      return '';
-  }
-
-  // Handle case where images is an array
-  if (Array.isArray(images)) {
-    const index = this.selectedImageIndex();
-    // Ensure index is within bounds
-    const selectedImage = images[Math.max(0, Math.min(index, images.length - 1))];
-    return selectedImage?.url ?? '';
-  }
-
-  // Handle case where images is a single image object
-  if (images.url) {
-    return images.url;
-  }
-
-  // Final fallback
-  return '';
-}
-  
-  // Set the selected image by index
-  selectImage(index: number): void {
-    const product = this.product();
-    if (!product?.images) return;
-    if (index >= 0 && index < product.images.length) {
-      this.selectedImageIndex.set(index);
+    if (!images) return '';
+    if (Array.isArray(images)) {
+      const idx = this.selectedImageIndex();
+      const safeIdx = Math.max(0, Math.min(idx, images.length - 1));
+      return images[safeIdx]?.url ?? '';
     }
+    if ((images as any).url) return (images as any).url;
+    return '';
   }
+
+  selectImage(index: number): void {
+    const imgs = this.product()?.images ?? [];
+    if (!Array.isArray(imgs) || index < 0 || index >= imgs.length) return;
+    this.selectedImageIndex.set(index);
+  }
+
   private updateImageIndex(offset: number): void {
     const images = this.product()?.images ?? [];
-    if (images.length <= 1) return;
-
-    const currentIndex = this.selectedImageIndex();
-    const newIndex = (currentIndex + offset + images.length) % images.length;
-    this.selectedImageIndex.set(newIndex);
+    if (!Array.isArray(images) || images.length <= 1) return;
+    const current = this.selectedImageIndex();
+    const next = (current + offset + images.length) % images.length;
+    this.selectedImageIndex.set(next);
   }
 
-  nextImage(): void {
-    this.updateImageIndex(1);
-  }
+  nextImage(): void { this.updateImageIndex(1); }
+  prevImage(): void { this.updateImageIndex(-1); }
 
-  prevImage(): void {
-    this.updateImageIndex(-1);
-  }
-
-  navigateToProduct(productId: number): void {
-    if (isPlatformBrowser(this.platformId)) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Variant selection
+  selectVariant(variant: Variant) {
+    this.selectedVariant.set(variant);
+    // optionally change main image if variant has image
+    if (variant?.image && this.product()?.images?.length) {
+      // try to find index of variant image in product images
+      const imgs = this.product()!.images as any[];
+      const idx = imgs.findIndex(i => i.url === variant?.image);
+      if (idx >= 0) this.selectedImageIndex.set(idx);
     }
-    this.router.navigate(['/products', productId]);
-  }
-  
-  // Preload images for better performance
-  preloadImages(imageUrls: string[]): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-    
-    imageUrls.forEach(url => {
-      const img = new Image();
-      img.src = url;
-    });
-  }
-  
-  // Preload related product images
-  preloadRelatedProductImages(): void {
-    const relatedImages = this.relatedProducts()
-      .map(product => product.image);
-    
-    this.preloadImages(relatedImages);
   }
 
-  selectVariant(variant:Variant){
-    this.selectedVaraint.set(variant.name);
+// Add to Cart
+addToCart(product: any): void {
+  const hasVariants = product?.variants && product.variants.length > 0;
+  const selectedVariant = hasVariants ? this.selectedVariant() : null;
+
+  // pick stock from variant or product
+  const stock = hasVariants
+    ? (selectedVariant?.stock ?? 0)
+    : (product?.stock ?? 0);
+
+  // prevent add if out of stock
+  if (stock <= 0) {
+    this.addedToCartMessage.set('Selected item is out of stock.');
+    setTimeout(() => this.addedToCartMessage.set(''), 3000);
+    return;
+  }
+
+  this.isAddingToCart.set(true);
+
+  // build payload
+  const payload: any = {
+    productId: product.id,
+    quantity: this.quantity(),
+    ...(hasVariants
+      ? { variantId: selectedVariant?._id}
+      : { product })
+  };
+
+  this.cartService.addToCart(payload).pipe(takeUntil(this.destroy$)).subscribe({
+    next: () => {
+      this.isAddingToCart.set(false);
+      this.addedToCartMessage.set('Added to cart successfully.');
+      setTimeout(() => this.addedToCartMessage.set(''), 3000);
+    },
+    error: (err: any) => {
+      console.error('Error adding to cart:', err);
+      this.isAddingToCart.set(false);
+      this.addedToCartMessage.set('Failed to add to cart. Please try again.');
+      setTimeout(() => this.addedToCartMessage.set(''), 3000);
+    }
+  });
+}
+
+  // Related products horizontal scroll
+  scrollProducts(direction: 'left' | 'right') {
+    if (!isPlatformBrowser(this.platformId) || !this.relatedProductsScroll) return;
+    const el = this.relatedProductsScroll.nativeElement;
+    const amount = el.clientWidth * 0.8;
+    if (direction === 'left') el.scrollBy({ left: -amount, behavior: 'smooth' });
+    else el.scrollBy({ left: amount, behavior: 'smooth' });
+  }
+
+  // Preload helpers
+  preloadImages(imageUrls: string[]): void {
+    if (!isPlatformBrowser(this.platformId) || !imageUrls?.length) return;
+    imageUrls.forEach(url => { const i = new Image(); i.src = url; });
+  }
+
+  preloadRelatedProductImages(): void {
+    const imgs = this.relatedProducts().map(p => p.image).filter(Boolean);
+    this.preloadImages(imgs);
+  }
+
+  // small helper for template: computed-like
+  currentPrice(): number {
+    return this.selectedVariant()?.price ?? this.product()?.price ?? 0;
+  }
+
+  currentStock(): number {
+    return this.selectedVariant()?.stock ?? this.product()?.stock ?? 0;
   }
 }

@@ -29,12 +29,12 @@
           <div class="filter-section mb-4">  
             <h6>Category</h6>  
             @for (category of categories(); track $index) {
-            <div class="form-check">  
-                  <input class="form-check-input" type="checkbox" [id]="'category-' + category"   
-                    [checked]="selectedCategories().includes(category)"  
-                    (change)="toggleCategory(category)">  
+              <div class="form-check">  
+                  <input class="form-check-input" type="checkbox" [id]="'category-' + category.id"   
+                    [checked]="selectedCategories().includes(category.name)"  
+                    (change)="toggleCategory(category.name)">  
                   <label class="form-check-label" [for]="'category-' + category">  
-                    {{ category }}  
+                    {{ category.name }}  
                   </label>  
             </div>  
             }
@@ -43,14 +43,13 @@
           <!-- Brand Filter -->  
           <div class="filter-section mb-4">  
             <h6>Brand</h6>  
-            <!-- <pre>{{brands() | json}}</pre> -->
              @for (brand of brands(); track $index) {
             <div class="form-check">  
-                  <input class="form-check-input" type="checkbox" [id]="'brand-' + brand"  
-                    [checked]="selectedBrands().includes(brand)"  
-                    (change)="toggleBrand(brand)">  
-                  <label class="form-check-label" [for]="'brand-' + brand">  
-                    {{ brand }}  
+                  <input class="form-check-input" type="checkbox" [id]="'brand-' + brand.id"  
+                    [checked]="selectedBrands().includes(brand.name)"  
+                    (change)="toggleBrand(brand.name)">  
+                  <label class="form-check-label" [for]="'brand-' + brand.id">  
+                    {{ brand.name }}  
                   </label>  
             </div>  
               }
@@ -211,19 +210,19 @@
             @for (product of filteredProducts(); track $index) {
             <div class="list-product-item card mb-3" > 
               <div class="row g-0">  
-                <div class="col-md-3" [routerLink]="['/product', product?._id]">  
+                <div class="col-md-3" [routerLink]="['/product', product?.slug]">  
                   <img [src]="product.images[0].url" class="img-fluid rounded-start list-product-image" loading="lazy" [alt]="product.slug">  
                 </div>  
                 <div class="col-md-9">  
                   <div class="card-body">  
-                    <div class="d-flex justify-content-between" [routerLink]="['/product', product?._id]">  
+                    <div class="d-flex justify-content-between" [routerLink]="['/product', product?.slug]">  
                       <h5 class="card-title  text-truncate"  data-bs-toggle="tooltip"> {{ product.name }}</h5>  
                       <span class="price-tag">₹{{ product.price }}</span>  
                     </div>  
                     <p class="card-text">{{ product.brand.name }}</p>  
                     <div class="d-flex justify-content-between align-items-center">  
                       <span class="text-muted small">SKU: {{ product.sku }}</span>  
-                      <button class="btn btn-outline-primary btn-sm" (click)="cartService.addToCart(product._id, 1)">Add to Cart</button>  
+                      <button class="btn btn-outline-primary btn-sm" [disabled]="product.stock === 'in' ? '' : product.stock <= 0"  (click)="addToCart(product._id)">Add to Cart</button>  
                     </div>  
                   </div>  
                 </div>  
@@ -247,35 +246,30 @@
     <div class="filter-section mb-4">  
       <h6>Category</h6>  
       @for (category of categories(); track $index) {
-      <div class="form-check">  
-        
-            <input class="form-check-input" type="checkbox" [id]="'mobile-category-' + category"   
-               [checked]="selectedCategories().includes(category)"  
-               (change)="toggleCategory(category)">  
-            <label class="form-check-label" [for]="'mobile-category-' + category">  
-              {{ category }}  
-            </label>  
-        
-      </div>  
-        }
+        <div class="form-check">  
+          <input class="form-check-input" type="checkbox" [id]="'mobile-category-' + category"   
+              [checked]="selectedCategories().includes(category)"  
+              (change)="toggleCategory(category)">  
+          <label class="form-check-label" [for]="'mobile-category-' + category">  
+            {{ category }}  
+          </label>  
+        </div>  
+      }
 
     </div>  <!-- Brand Filter -->  
 <div class="filter-section mb-4">  
   <h6>Brand</h6>  
   @for ( brand of brands(); track $index) {
-  <div class="form-check"> 
-    
-        <input class="form-check-input" type="checkbox" [id]="'mobile-brand-' + brand"  
-            [checked]="selectedBrands().includes(brand)"  
-            (change)="toggleBrand(brand)">  
-        <label class="form-check-label" [for]="'mobile-brand-' + brand">  
-          {{ brand }}  
-        </label>  
-      
-  </div>  
-}
-</div>  
-
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" [id]="'mobile-brand-' + brand"  
+          [checked]="selectedBrands().includes(brand)"  
+          (change)="toggleBrand(brand)">  
+      <label class="form-check-label" [for]="'mobile-brand-' + brand">  
+        {{ brand }}  
+      </label>  
+    </div>  
+  }
+</div>
 <!-- Price Range Filter -->  
 <div class="filter-section mb-4">  
   <h6>Price Range</h6>  

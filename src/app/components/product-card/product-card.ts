@@ -23,7 +23,12 @@ export class ProductCard {
     // Add product to cart
   addToCart(product: any): void {
     // Add product to cart through CartService
-    this.cartService.addToCart(product, 1).subscribe({
+     const payload = {
+      productId: product.id,
+      quantity: 1,
+      variant: null
+    };
+    this.cartService.addToCart(payload).subscribe({
       next: (res: any) => {
         this.toastr.success('Item added on cart')
       },

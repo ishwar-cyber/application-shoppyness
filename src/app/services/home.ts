@@ -7,8 +7,10 @@ import { environment } from '../../environments/environment';
 })
 export class HomeService {
   private readonly http =inject(HttpClient);
-  categoriesHeader = signal<any[]>([]);
+  public category = signal<any[]>([]);
+  public categoriesHeader = signal<any[]>([]);
   url = environment.apiUrl;
+  
   getBrand(){
     return this.http.get(`${this.url}/brands`);
   }
@@ -17,6 +19,6 @@ export class HomeService {
   }
 
   getCategoryAndSubcategory(){
-    return this.http.get(`${this.url}/products/header`);
+    return this.http.get(`${this.url}/category/header`);
   }
 }

@@ -43,9 +43,9 @@ export class CartService {
   }
 
   /** ➕ Add product */
-  addToCart(productId: string, quantity: number = 1) {
+  addToCart(payload: { productId: string; quantity: number; variant?: any }) {
     if (!this.isBrowser) return of(null);
-    return this.http.post<CartResponse>(`${this.apiUrl}/add`, { productId, quantity }, { withCredentials: true }).pipe(
+    return this.http.post<CartResponse>(`${this.apiUrl}/add`, payload, { withCredentials: true }).pipe(
       tap(res => {
         if (res?.success) {
           this.updateSignals(res);

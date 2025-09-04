@@ -25,12 +25,12 @@ export class Product {
     );
   }
 
-  getProductById(id: string) {
-    return this.http.get<ResponsePayload>(`${this.URL}/products/${id}`);
+  getProductById(slug: string) {
+    return this.http.get<ResponsePayload>(`${this.URL}/products/${slug}`);
   }
 
-  getRelatedProducts(id: string) {
-    return this.http.get(`${this.URL}/products/${id}/related`);
+  getRelatedProducts(slug: string) {
+    return this.http.get(`${this.URL}/products/${slug}/related`);
   }
 
   search(query: string) {

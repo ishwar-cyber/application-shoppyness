@@ -7,6 +7,8 @@ import { Seo } from '../../services/seo';
 import { FormsModule } from '@angular/forms';
 import { CartService } from '../../services/cart';
 import { Product } from '../../services/product';
+import { HomeService } from '../../services/home';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-product-list',
@@ -59,6 +61,7 @@ export class ProductList implements OnInit {
   public cartService = inject(CartService);
   private readonly productService = inject(Product);
   private readonly platformId = inject(PLATFORM_ID);
+  public readonly homeService = inject(HomeService);
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event) {
@@ -86,7 +89,7 @@ export class ProductList implements OnInit {
         this.isCategoryRoute.set(true);
       }
     });
-
+    this.loadCategoryAndBrandData();
     if (!this.isCategoryRoute()) {
       this.loadAllProducts();
     } else {
@@ -106,6 +109,20 @@ export class ProductList implements OnInit {
     }
   }
 
+  loadCategoryAndBrandData(): void {
+        forkJoin({
+          brand: this.homeService.getBrand(),
+          category: this.homeService.getCategories()
+        }).subscribe({
+          next: (res: any) => {
+            this.brands.set(res.brand?.data);
+            this.categories.set(res.category?.data);
+          },
+          error: (err) => {
+            console.error('Error fetching data', err);
+          }
+        })
+  }
   private loadAllProducts(): void {
     this.productService.getProduct().subscribe({
       next: (product: any) => {
@@ -116,19 +133,6 @@ export class ProductList implements OnInit {
         this.minPrice.set(Math.min(...prices));
         this.maxPrice.set(Math.max(...prices));
         this.priceRange.set([this.minPrice(), this.maxPrice()]);
-
-        // ✅ extract filters after data load
-        this.categories.set([
-          ...new Set(
-            this.allProducts()
-              .flatMap(p => p?.category?.map(c => c?.name) || [])
-              .filter(Boolean)
-          )
-        ]);
-        this.brands.set([
-          ...new Set(this.allProducts().map(p => p?.brand?.name))
-        ]);
-
         this.isLoading.set(false);
       },
       error: (err) => console.error('Error loading products:', err)
@@ -145,18 +149,6 @@ export class ProductList implements OnInit {
         this.minPrice.set(Math.min(...prices));
         this.maxPrice.set(Math.max(...prices));
         this.priceRange.set([this.minPrice(), this.maxPrice()]);
-
-        this.categories.set([
-          ...new Set(
-            this.allProducts()
-              .flatMap(p => p?.category?.map(c => c?.name) || [])
-              .filter(Boolean)
-          )
-        ]);
-        this.brands.set([
-          ...new Set(this.allProducts().map(p => p?.brand?.name))
-        ]);
-
         this.isLoading.set(false);
       },
       error: (err) => console.error('Error loading category products:', err)
@@ -266,5 +258,27 @@ export class ProductList implements OnInit {
       document.body.classList.remove('filter-drawer-open');
       document.body.style.height = '';
     }
+  }
+
+   // Add product to cart
+  addToCart(product: any): void {
+    const payload = {
+      productId: product.id,
+      quantity: 1,
+      variant: null
+    }
+    // Add product to cart through CartService
+    this.cartService.addToCart(payload).subscribe({
+      next: (res: any) => {
+        // this.isAddingToCart.set(false);
+        // // Clear success message after 3 seconds
+        // setTimeout(() => {
+        //   this.addedToCartMessage.set('');
+        // }, 3000);
+      },
+      error: (error: Error) => {
+        console.error('Error adding to cart:', error);
+      }
+    });
   }
 }
