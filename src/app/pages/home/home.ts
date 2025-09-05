@@ -44,15 +44,6 @@ export class Home implements OnInit{
       image: '/assets/og-image.jpg',
       url: 'https://shoppyness.com'
     });
-      this.home.getCategoryAndSubcategory().subscribe({
-      next: (data:any) => {
-        this.home.category.set(data.data);
-        // this.homeService.subcategory.set(data.subcategories);
-      },
-      error: (err) => {
-        console.error('Failed to load categories:', err);
-      }
-    });
     forkJoin({
       product: this.product.getProduct(),
       brand: this.home.getBrand(),
@@ -62,8 +53,6 @@ export class Home implements OnInit{
         this.products.set(res.product?.data);
         this.brands.set(res.brand?.data);
         this.categories.set(res.category?.data);
-        this.home.category.set(this.categories());
-        this.home.categoriesHeader.set(this.categories());
       },
       error: (err) => {
         console.error('Error fetching data', err);
@@ -85,4 +74,6 @@ export class Home implements OnInit{
         return 'bi-box';
     }
   }
+
+  
 }

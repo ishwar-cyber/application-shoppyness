@@ -44,72 +44,88 @@
     </div>
     }
   </div>
-  
-  <!-- Bottom Navbar with Categories (Desktop Only) -->
-  <div class="navbar-bottom desktop-only">
-    <ul class="nav-menu">
-      @for (category of  this.home.category(); track $index) {
-        <li class="nav-item" (mouseenter)="showMegaMenu(category.slug)">
-          <a routerLink="/products" [queryParams]="{category: category.slug}" class="nav-link">
-            {{ category.name }}
-            <i class="bi bi-chevron-down small ms-1"></i>
-          </a>
-        </li>
-      }
-      <li class="nav-item">
-        <a routerLink="/products" class="nav-link">All Products</a>
+
+ <!-- Bottom Navbar with Categories (Desktop Only) -->
+<div class="navbar-bottom desktop-only">
+  <ul class="nav-menu">
+    @for (category of home.categoriesHeader(); track $index) {
+      <li class="nav-item" (mouseenter)="showMegaMenu(category.slug)">
+        <a routerLink="/products" [queryParams]="{category: category.slug}" class="nav-link">
+          {{ category.name }}
+          <i class="bi bi-chevron-down small ms-1"></i>
+        </a>
       </li>
-    </ul>
-    
-    <!-- Mega Menu Dropdown -->
-     @if(activeCategory){
-          <div class="mega-menu-container" (mouseenter)="showMegaMenu(activeCategory)"  (mouseleave)="hideMegaMenu()">
-          <div class="mega-menu-content">
-            <div class="mega-menu-grid">
-              @for (category of categories; track $index) {
-                <ng-container>
-                  @if(category.slug === activeCategory){
-                  <div class="mega-menu-category">
-                    <h3 class="mega-menu-title">{{ category.name }}</h3>
-                    <div class="mega-menu-subcategories">
-                      @for (subcategory of category.subcategories; track $index) {
-                        <a 
-                          class="mega-menu-item"
-                          routerLink="/products" 
-                          [queryParams]="{category: category.slug, subcategory: subcategory.slug}" 
-                          (click)="hideMegaMenu()">
-                          {{ subcategory.name }}
-                        </a>
-                      }
-                      <a class="mega-menu-item view-all" 
-                        routerLink="/products" 
-                        [queryParams]="{category: category.slug}" 
-                        (click)="hideMegaMenu()">
-                        View All {{ category.name }} <i class="bi bi-arrow-right"></i>
-                      </a>
-                    </div>
-                  </div>
-                }
-                </ng-container>
-              }
-              <!-- Featured Products or Promotions -->
-              <div class="mega-menu-featured">
-                <div class="featured-card">
-                  <div class="featured-label">FEATURED</div>
-                  <img src="assets/products/laptop1.jpg" alt="Featured product" loading="lazy" class="featured-image">
-                  <div class="featured-info">
-                    <h4>Gaming Laptop</h4>
-                    <p class="featured-price">₹1,200</p>
-                    <a routerLink="/products/1" class="featured-btn" (click)="hideMegaMenu()">View Details</a>
-                  </div>
+    }
+    <li class="nav-item">
+      <a routerLink="/products" class="nav-link">All Products</a>
+    </li>
+  </ul>
+  <!-- Mega Menu Dropdown -->
+  @if (activeCategory) {
+    <div class="mega-menu-container" (mouseenter)="showMegaMenu(activeCategory)" (mouseleave)="hideMegaMenu()">
+      <div class="mega-menu-content">
+        <div class="mega-menu-grid">
+          <!-- Category with Subcategories -->
+          @for (category of home.categoriesHeader(); track $index) {
+            @if (category.slug === activeCategory) {
+              <div class="mega-menu-category">
+                <h3 class="mega-menu-title">{{ category.name }}</h3>
+                <div class="mega-menu-subcategories">
+                  @for (subcategory of category.subcategories; track $index) {
+                    <a 
+                      class="mega-menu-item"
+                      routerLink="/products" 
+                      [queryParams]="{ category: category.slug, subcategory: subcategory.slug }" 
+                      (click)="hideMegaMenu()"
+                    >
+                      {{ subcategory.name }}
+                    </a>
+                  }
+
+                  <!-- View All -->
+                  <a 
+                    class="mega-menu-item view-all" 
+                    routerLink="/products" 
+                    [queryParams]="{ category: category.slug }" 
+                    (click)="hideMegaMenu()"
+                  >
+                    View All {{ category.name }} <i class="bi bi-arrow-right"></i>
+                  </a>
                 </div>
+              </div>
+            }
+          }
+
+          <!-- Featured Products / Promotions -->
+          <div class="mega-menu-featured">
+            <div class="featured-card">
+              <div class="featured-label">FEATURED</div>
+              <img 
+                src="assets/products/laptop1.jpg" 
+                alt="Featured product" 
+                loading="lazy" 
+                class="featured-image"
+              >
+              <div class="featured-info">
+                <h4>Gaming Laptop</h4>
+                <p class="featured-price">₹1,200</p>
+                <a 
+                  routerLink="/products/1" 
+                  class="featured-btn" 
+                  (click)="hideMegaMenu()"
+                >
+                  View Details
+                </a>
               </div>
             </div>
           </div>
+
         </div>
-     }
-  
-  </div>
+      </div>
+    </div>
+  }
+</div>
+
   
   <!-- Mobile Bottom Navigation (Fixed at Bottom) -->
   <div class="mobile-navbar mobile-only">
