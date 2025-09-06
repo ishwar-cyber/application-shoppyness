@@ -30,10 +30,10 @@
             <h6>Category</h6>  
             @for (category of categories(); track $index) {
               <div class="form-check">  
-                  <input class="form-check-input" type="checkbox" [id]="'category-' + category.id"   
+                  <input class="form-check-input" type="checkbox" [id]="'category-' + category.slug"   
                     [checked]="selectedCategories().includes(category.name)"  
                     (change)="toggleCategory(category.name)">  
-                  <label class="form-check-label" [for]="'category-' + category">  
+                  <label class="form-check-label" [for]="'category-' + category.slug">  
                     {{ category.name }}  
                   </label>  
             </div>  
@@ -56,20 +56,19 @@
 
           </div>  
 
-          <!-- Price Range Filter -->  
-          <div class="filter-section mb-4">  
-            <h6>Price Range</h6>  
-            <div class="price-range">  
-              <div class="d-flex justify-content-between mb-2">  
-                <span>₹{{ priceRange()[0] }}</span>  
-                <span>₹{{ priceRange()[1] }}</span>  
-              </div>  
-              <input type="range" class="form-range mb-2"   
-                    [min]="minPrice()" [max]="maxPrice()" step="100"  
-                    [(ngModel)]="priceRangeValue" 
-                    (input)="filterProducts()">  
+        <!-- Price Range Filter -->  
+        <div class="filter-section mb-4">  
+          <h6>Price Range</h6>  
+          <div class="price-range">  
+            <div class="d-flex justify-content-between mb-2">  
+              <span>₹{{ priceRange()[0] }}</span>  
+              <span>₹{{ priceRange()[1] }}</span>  
             </div>  
+            <input type="range" class="form-range mb-2"   
+                  [min]="minPrice()" [max]="maxPrice()" step="100"  
+                  [(ngModel)]="priceRange()[1]" (input)="filterProducts()">  
           </div>  
+        </div> 
             
           <!-- Features Filter -->  
           <!-- <div class="filter-section">  
@@ -247,11 +246,11 @@
       <h6>Category</h6>  
       @for (category of categories(); track $index) {
         <div class="form-check">  
-          <input class="form-check-input" type="checkbox" [id]="'mobile-category-' + category"   
-              [checked]="selectedCategories().includes(category)"  
-              (change)="toggleCategory(category)">  
-          <label class="form-check-label" [for]="'mobile-category-' + category">  
-            {{ category }}  
+          <input class="form-check-input" type="checkbox" [id]="'mobile-category-' + category.slug"   
+              [checked]="selectedCategories().includes(category.name)"  
+              (change)="toggleCategory(category.name)">  
+          <label class="form-check-label" [for]="'mobile-category-' + category.slug">  
+            {{ category.name }}  
           </label>  
         </div>  
       }
@@ -261,11 +260,11 @@
   <h6>Brand</h6>  
   @for ( brand of brands(); track $index) {
     <div class="form-check">
-      <input class="form-check-input" type="checkbox" [id]="'mobile-brand-' + brand"  
-          [checked]="selectedBrands().includes(brand)"  
-          (change)="toggleBrand(brand)">  
-      <label class="form-check-label" [for]="'mobile-brand-' + brand">  
-        {{ brand }}  
+      <input class="form-check-input" type="checkbox" [id]="'mobile-brand-' + brand.slug"  
+          [checked]="selectedBrands().includes(brand.name)"  
+          (change)="toggleBrand(brand.name)">  
+      <label class="form-check-label" [for]="'mobile-brand-' + brand.slug">  
+        {{ brand.name }}  
       </label>  
     </div>  
   }

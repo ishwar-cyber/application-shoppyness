@@ -133,9 +133,9 @@ export class CartService {
 
   /** 📌 Helper: update signals */
   private updateSignals(res: CartResponse) {
-    this.cartItems.set(res.data.items);
-    this.cartCount.set(res.data.itemCount);
-    this.subTotal.set(res.data.subTotal);
-    this.totalPrice.set(res.data.total);
+    this.cartItems.set(res.data?.items);
+    this.cartCount.set(res.data?.itemCount);
+    this.subTotal.set(res.data?.subTotal);
+    this.totalPrice.set(res.data?.total);
   }
                                                                                                  }

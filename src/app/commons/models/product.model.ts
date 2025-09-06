@@ -65,6 +65,7 @@ export interface SubCategory {
   image: Image2
 }
 
+
 export interface Image2 {
   url: string
   public_id: string

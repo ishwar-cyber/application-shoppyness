@@ -187,11 +187,9 @@ export class ProductDetail implements OnInit, OnDestroy {
 // Add to Cart
 addToCart(product: any): void {
   const hasVariants = product?.variants && product.variants.length > 0;
-  const selectedVariant = hasVariants ? this.selectedVariant() : null;
-
   // pick stock from variant or product
   const stock = hasVariants
-    ? (selectedVariant?.stock ?? 0)
+    ? (this.selectedVariant()?.stock ?? 0)
     : (product?.stock ?? 0);
 
   // prevent add if out of stock
@@ -207,9 +205,7 @@ addToCart(product: any): void {
   const payload: any = {
     productId: product.id,
     quantity: this.quantity(),
-    ...(hasVariants
-      ? { variantId: selectedVariant?._id}
-      : { product })
+    variantId: this.selectedVariant()?.['_id'] ?? null
   };
 
   this.cartService.addToCart(payload).pipe(takeUntil(this.destroy$)).subscribe({

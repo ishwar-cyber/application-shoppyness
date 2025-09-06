@@ -24,7 +24,7 @@ export class ProductCard {
   addToCart(product: any): void {
     // Add product to cart through CartService
      const payload = {
-      productId: product.id,
+      productId: product,
       quantity: 1,
       variant: null
     };

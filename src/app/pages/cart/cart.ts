@@ -81,8 +81,8 @@ export class Cart implements OnInit{
     // Set updating state    
     this.cartService.removeFromCart(id)
       .subscribe({
-        next: (response: any) => {
-          
+        next: (response: any) => {    
+          this.loadCartItems();
         },
         error: (err) => {
           console.error('Error removing cart item:', err);
@@ -95,22 +95,16 @@ export class Cart implements OnInit{
 
   updateRes(item:any) {
     // Update cart items and totals
-      this.cartService.cartItems.set(item.data.items);
-      this.cartService.cartCount.set(item.data.itemCount)
+      this.cartService.cartItems.set(item?.data?.items);
+      this.cartService.cartCount.set(item?.data?.itemCount)
   }
   
   clearCart(): void {
-    if (this.cartItems().length === 0) return;
     this.cartService.clearCart()
       .subscribe({
         next: (response: any) => {
           // Update cart items and totals
-          this.cartItems.set([]);
-          this.subtotal.set(0);
-          this.tax.set(response.tax);
-          this.shipping.set(response.shipping);
-          this.total.set(response.total);
-          this.updatingItemId = null;
+          this.loadCartItems();
         },
         error: (err) => {
           console.error('Error clearing cart:', err);

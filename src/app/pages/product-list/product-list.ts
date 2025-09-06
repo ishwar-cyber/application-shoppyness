@@ -263,7 +263,7 @@ export class ProductList implements OnInit {
    // Add product to cart
   addToCart(product: any): void {
     const payload = {
-      productId: product.id,
+      productId: product,
       quantity: 1,
       variant: null
     }
