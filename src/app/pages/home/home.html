@@ -97,7 +97,9 @@
                 <div class="category-icon" [ngClass]="'category-' + category.name.toLowerCase()">
                     <img [src]="category?.image?.url" loading="lazy" [alt]="category.name.toLowerCase()">
                 </div>
-              }
+              }@else {
+                  <img src="./public/category.jpg" loading="lazy" alt="deafult">
+                  }
                 <div class="category-name" itemprop="name">{{ category.name }}</div>
               
                 </div>
