@@ -160,6 +160,7 @@ $transition: all 0.3s ease;
 
 // Quick Links
 .quick-links {
+  background-color:burlywood;
   .quick-link-card {
     display: flex;
     align-items: center;
@@ -210,6 +211,8 @@ $transition: all 0.3s ease;
 
 // Category section styles
 .home-categories {
+  background-color: #fff3e6;
+;
   .row {
     --bs-gutter-x: 1.5rem;
   }
@@ -221,7 +224,7 @@ $transition: all 0.3s ease;
     box-shadow: $shadow-sm;
     transition: $transition;
     text-align: center;
-    padding: 2rem 1rem;
+    padding: 1rem 1rem;
     position: relative;
     height: 100%;
     cursor: pointer;
@@ -241,22 +244,18 @@ $transition: all 0.3s ease;
     }
     
     .category-icon {
-     
       display: flex;
       align-items: center;
       justify-content: center;
-     
-      
       img {
         font-size: 2.5rem;
         color: $primary-color;
         transition: $transition;
-         border-radius: 50%;
-          width: 80px;
-      height: 80px;
-       margin: 0 auto 1.5rem;
-     
-      background-color: rgba($primary-color, 0.1);
+        border-radius: 50%;
+        width: 100px;
+        height: 100px;
+        // margin: 0 auto 1.5rem;
+        background-color: rgba($primary-color, 0.1);
       }
       
       &.category-laptop {
@@ -416,7 +415,7 @@ $transition: all 0.3s ease;
   
   .product-tag {
     position: absolute;
-    top: 10px;
+    top: -10px;
     left: 10px;
     background-color: $accent-color;
     color: $light-color;

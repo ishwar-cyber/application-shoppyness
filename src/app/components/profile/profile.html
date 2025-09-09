@@ -8,10 +8,10 @@
     <div class="sidebar">
       <div class="user-info">
         <div class="avatar">
-          <span>{{ getUserInitials() }}</span>
+          <span>{{ userProfile()?.username }}</span>
         </div>
         <div class="user-details">
-          <h3>{{ userProfile()?.name || 'User' }}</h3>
+          <h3>{{ userProfile()?.username || 'User' }}</h3>
           <p>{{ userProfile()?.email || 'loading...' }}</p>
         </div>
       </div>
@@ -72,10 +72,9 @@
           <div class="spinner"></div>
           <p>Loading...</p>
         </div>
-      }
-
-      <!-- Profile Section -->
-      @if (!isLoading() && activeSection() === 'profile') {
+      } @else {
+               <!-- Profile Section -->
+      @if (activeSection() === 'profile') {
         <section class="content-section">
           <div class="section-header">
             <h2>Profile Information</h2>
@@ -87,12 +86,12 @@
               <input 
                 type="text" 
                 id="name" 
-                formControlName="name" 
+                formControlName="username" 
                 [readonly]="!isEditing()"
-                [class.error]="profileForm.get('name')?.invalid && profileForm.get('name')?.touched"
+                [class.error]="profileForm.get('username')?.invalid && profileForm.get('username')?.touched"
               >
-              @if (profileForm.get('name')?.invalid && profileForm.get('name')?.touched) {
-                <span class="error-message">Name is required</span>
+              @if (profileForm.get('username')?.invalid && profileForm.get('username')?.touched) {
+                <span class="error-message">Username is required</span>
               }
             </div>
 
@@ -147,7 +146,7 @@
       }
 
       <!-- Orders Section -->
-      @if (!isLoading() && activeSection() === 'orders') {
+      @if ( activeSection() === 'orders') {
         <section class="content-section">
           <div class="section-header">
             <h2>Order History</h2>
@@ -206,7 +205,7 @@
       }
 
       <!-- Change Password Section -->
-      @if (!isLoading() && activeSection() === 'password') {
+      @if ( activeSection() === 'password') {
         <section class="content-section">
           <div class="section-header">
             <h2>Change Password</h2>
@@ -262,7 +261,7 @@
       }
 
       <!-- Settings Section -->
-      @if (!isLoading() && activeSection() === 'settings') {
+      @if ( activeSection() === 'settings') {
         <section class="content-section">
           <div class="section-header">
             <h2>Account Settings</h2>
@@ -333,6 +332,7 @@
             </div>
           </div>
         </section>
+      }
       }
     </div>
   </div>

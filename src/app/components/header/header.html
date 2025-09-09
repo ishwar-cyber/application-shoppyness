@@ -138,7 +138,7 @@
       <span>Products</span>
     </a>
     <a routerLink="/cart" class="mobile-nav-item" [class.active]="selectBottomMenu('cart')">
-      <i class="bi bi-cart3"></i>
+      <i class="bi bi-cart3 text-light"></i>
       <span>Cart</span>
        @if(cartService.cartCount()) {
           <span class="cart-count">{{ cartService.cartCount() }}</span>
@@ -146,7 +146,10 @@
           <span class="cart-count">0</span>
         }
     </a>
-
+    <a routerLink="/category" class="mobile-nav-item" [class.active]="selectBottomMenu('category')">
+      <i class="bi bi-card-text"></i>
+      <span>Category</span>
+    </a>
     @if (authService.isLoggedIn()) {
       <a routerLink="/profile" class="mobile-nav-item"  [class.active]="selectBottomMenu( 'account')">
         <i class="bi bi-person"></i>

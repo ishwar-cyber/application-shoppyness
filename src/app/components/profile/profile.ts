@@ -3,9 +3,10 @@ import { Component, inject, signal } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Auth } from '../../services/auth';
 import { Router } from '@angular/router';
+import { ProfileService } from '../../services/profile-service';
 interface UserProfile {
   id?: string;
-  name: string;
+  username: string;
   email: string;
   phone?: string;
   address?: string;
@@ -53,8 +54,9 @@ export class Profile {
     activityTracking: true 
   });
   private authService = inject(Auth);
-  private readonly fb = inject(FormBuilder)
+  private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
+  private readonly profileService = inject(ProfileService);
   ngOnInit(): void {
     this.initForms();
     this.loadUserProfile();
@@ -63,9 +65,10 @@ export class Profile {
 
   private initForms(): void {
     this.profileForm = this.fb.group({
-      name: ['', Validators.required],
+      username: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.pattern(/^\d{10}$/)]]
+      phone: ['', [Validators.pattern(/^\d{10}$/)]],
+      address: ['']
     });
 
     this.passwordForm = this.fb.group({
@@ -76,26 +79,32 @@ export class Profile {
   }
 
   private loadUserProfile(): void {
-    setTimeout(() => {
-      const mockUser: UserProfile = {
-        name: 'John Doe',
-        email: 'john@example.com',
-        phone: '9876543210'
-      };
-      this.userProfile.set(mockUser);
-      this.profileForm.patchValue(mockUser);
+    const userId = this.authService.userId() || sessionStorage.getItem('userId');
+    if (!userId) {
       this.isLoading.set(false);
-    }, 1000);
+      return;
+    }
+    this.profileService.getUserProfile(userId).subscribe({
+      next: (profile: any) => {
+         this.userProfile.set(profile.data);
+          const userProfile: UserProfile = {
+            username: profile.data.username,
+            email: profile.data.email,
+            phone: profile.data.phone
+          };
+          this.profileForm.patchValue(userProfile);
+          this.isLoading.set(false);
+      }
+    });
+    
   }
 
   private loadOrders(): void {
-    setTimeout(() => {
-      const mockOrders: Order[] = [
-        { id: 'ORD123', date: '2024-08-10', total: 1500, status: "delivered" },
-        { id: 'ORD124', date: '2024-08-15', total: 2000, status: 'processing' }
-      ];
-      this.orders.set(mockOrders);
-    }, 1200);
+     this.profileService.getUserOrders().subscribe({
+      next: (orders: any) => {
+        this.orders.set(orders.data);
+      }
+    });
   }
 
   // ✅ Update profile
@@ -140,10 +149,10 @@ export class Profile {
   }
 
   // ✅ Helpers
-  getUserInitials(): string {
-    const user = this.userProfile();
-    return user ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : '';
-  }
+  // getUserInitials(): string {
+  //   const user = this.userProfile();
+  //   return user ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : '';
+  // }
 
   // trackByOrderId(index: number, order: Order): string {
   //   return order.id;

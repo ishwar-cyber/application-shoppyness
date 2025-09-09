@@ -111,8 +111,9 @@ export class Login implements OnInit {
           // Navigate to return URL
           this.router.navigateByUrl(this.returnUrl);
         }
-
-        this.success.set(`${login.user.name} login successfully`);
+        this.authService.userId.set(login.user);
+        sessionStorage.setItem('userId', login.user._id);
+        this.success.set(`${login.user.username} login successfully`);
         this.isLoading.set(false);
       },
       error: (err) => {

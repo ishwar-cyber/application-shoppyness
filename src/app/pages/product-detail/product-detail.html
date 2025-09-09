@@ -87,8 +87,8 @@
                      (click)="selectVariant(variant)">
                   <div class="card-body">
                     <h5 class="card-title">{{ variant.name }}</h5>
-                    <p class="card-text">₹ {{ variant.price }}</p>
-                    <small class="text-muted">
+                    <p class="card-text fw-bolder">₹ {{ variant.price }}</p>
+                    <small class="text-success fw-bolder">
                       {{ variant.stock > 0 ? (variant.stock + ' in stock') : 'Out of stock' }}
                     </small>
                   </div>
@@ -113,9 +113,9 @@
             }
           </button>
 
-          <button class="btn btn-outline-secondary btn-lg mb-2 ms-2">
+          <!-- <button class="btn btn-outline-secondary btn-lg">
             <i class="bi bi-heart me-2"></i>Add to Wishlist
-          </button>
+          </button> -->
         </div>
 
         @if(addedToCartMessage()){

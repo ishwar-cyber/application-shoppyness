@@ -17,6 +17,7 @@
   width: 100%;
   background: #fff;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  background-color: #232f3e;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -29,7 +30,6 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.8rem 1rem;
-  background: #f8f9fa;
 }
 
 // Logo styles
@@ -57,7 +57,7 @@
 
 // Navigation menu
 .navbar-bottom {
-  background-color: #0d6efd;
+  background-color: darkorange;
   padding: 0.5rem 0;
   position: relative;
 }
@@ -116,7 +116,9 @@
   font-size: 1.2rem;
   color: #333;
   text-decoration: none;
-  
+  i{
+    color: white;
+  }
   &:hover {
     color: #0d6efd;
   }
@@ -160,6 +162,7 @@
   position: relative;
   flex: 1;
   max-width: 500px;
+  background-color: #232f3e;
   margin-right: 1rem;
 }
 
@@ -609,6 +612,9 @@
   .user-name {
     font-weight: 500;
     padding: 5px 10px;
+    i{
+      color: #fff;
+    }
   }
 
   .dropdown-menu {

@@ -19,6 +19,7 @@ export class Auth {
   // 🔹 Reactive signals
   userName = signal<string>('');
   isLoggedInSignal = signal<boolean>(false);
+  userId = signal<string>('');
 
   // 🔹 Injected dependencies
   private readonly http = inject(HttpClient);

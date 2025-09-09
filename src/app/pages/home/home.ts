@@ -6,6 +6,7 @@ import { ProductCard } from '../../components/product-card/product-card';
 import { Product } from '../../services/product';
 import { HomeService } from '../../services/home';
 import { forkJoin } from 'rxjs';
+import { info } from 'console';
 interface Category {
   id:string,
   slug:string,
@@ -29,7 +30,12 @@ export class Home implements OnInit{
   
   categories = signal<Category[]>([]);
   brands = signal<any[]>([]);
-
+  info = signal<any>([
+    { title: 'Free Shipping', description: 'On orders over $50', icon: 'bi-truck' },
+    { title: '24/7 Support', description: 'We are here to help', icon: 'bi-headset' },
+    { title: 'Secure Payment', description: '100% secure payment', icon: 'bi-shield-lock' },
+    { title: 'Easy Returns', description: '30-day return policy', icon: 'bi-arrow-counterclockwise' }
+  ]);
   private readonly product = inject(Product);
   private readonly home = inject(HomeService)
 

@@ -184,6 +184,10 @@ export class Checkout implements OnInit{
       next: (res) => {
         this.isProcessing.set(false);
         this.isOrderComplete.set(true);
+        setInterval(() => {
+          this.isOrderComplete.set(false);
+          this.router.navigate(['profile']);
+        }, 5000);
         this.orderResponse.set(res);
       },
       error: (err) => {
