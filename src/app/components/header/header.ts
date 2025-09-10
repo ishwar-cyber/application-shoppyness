@@ -64,7 +64,7 @@ export class Header implements OnInit{
     this.authService.logout();
   }
   selectBottomMenu(menu: string){
-    // this.selectedBottomMenu.set(menu);
+    this.selectedBottomMenu.set(menu);
      // check if current URL starts with path
     return this.router.url.startsWith(menu);
   }

@@ -129,16 +129,20 @@
   
   <!-- Mobile Bottom Navigation (Fixed at Bottom) -->
   <div class="mobile-navbar mobile-only">
-    <a routerLink="/home" class="mobile-nav-item" [class.active]="selectBottomMenu('home')">
+    <a routerLink="/home" class="mobile-nav-item" [class.active]="selectedBottomMenu() === 'home'" (click)="selectBottomMenu('home')">
       <i class="bi bi-house"></i>
       <span>Home</span>
     </a>
-    <a routerLink="/products" class="mobile-nav-item"  [class.active]="selectBottomMenu( 'products')">
+    <a routerLink="/products" class="mobile-nav-item"  [class.active]="selectedBottomMenu() === 'products'" (click)="selectBottomMenu('products')">
       <i class="bi bi-grid"></i>
       <span>Products</span>
     </a>
-    <a routerLink="/cart" class="mobile-nav-item" [class.active]="selectBottomMenu('cart')">
-      <i class="bi bi-cart3 text-light"></i>
+    <a routerLink="/categories" class="mobile-nav-item" [class.active]="selectedBottomMenu() === 'categories'" (click)="selectBottomMenu('categories')">
+      <i class="bi bi-grid-3x2-gap"></i>
+      <span>Category</span>
+    </a>
+    <a routerLink="/cart" class="mobile-nav-item" [class.active]="selectedBottomMenu() === 'cart'" (click)="selectBottomMenu('cart')">
+      <i class="bi bi-cart3"></i>
       <span>Cart</span>
        @if(cartService.cartCount()) {
           <span class="cart-count">{{ cartService.cartCount() }}</span>
@@ -146,17 +150,14 @@
           <span class="cart-count">0</span>
         }
     </a>
-    <a routerLink="/category" class="mobile-nav-item" [class.active]="selectBottomMenu('category')">
-      <i class="bi bi-card-text"></i>
-      <span>Category</span>
-    </a>
+
     @if (authService.isLoggedIn()) {
-      <a routerLink="/profile" class="mobile-nav-item"  [class.active]="selectBottomMenu( 'account')">
+      <a routerLink="/profile" class="mobile-nav-item"  [class.selected]="selectedBottomMenu() === 'account'">
         <i class="bi bi-person"></i>
         <span>Account</span>
       </a>
       } @else {
-        <a routerLink="/login" class="mobile-nav-item"  [class.active]="selectBottomMenu( 'account')">
+        <a routerLink="/login" class="mobile-nav-item"  [class.active]="selectedBottomMenu() === 'account'">
         <i class="bi bi-person"></i>
         <span>Account</span>
       </a>
