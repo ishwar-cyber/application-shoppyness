@@ -59,7 +59,7 @@
         <span class="fw-bold">Brand:</span> {{ product()!.brand?.name }}
       </p>
       <p class="product-sku text-muted">
-        <span class="fw-bold">SKU:</span> {{ product()!.sku }}
+        <span class="fw-bold">SKU:</span> {{ product()!.sku | uppercase}}
       </p>
 
       <div class="product-price mb-3 d-flex align-items-center" itemprop="offers" itemscope itemtype="https://schema.org/Offer">

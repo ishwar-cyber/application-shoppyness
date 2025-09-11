@@ -4,9 +4,9 @@
     <!-- Logo for Desktop -->
     <div class="logo-container desktop-only ">
       <a routerLink="/" class="logo-link d-flex flex-column column-gap-0">
-        <!-- <img src="assets/images/logo.svg" alt="shoppyness Logo" class="logo-image"> -->
-         <h5 class="p-0 m-0">SHOPPYNESS</h5><br>
-         <h6 class="p-0">TECHNOLOGY</h6>
+        <img src="../assets/logo/shoppyness_logo_no_bg.png" alt="shoppyness Logo" class="logo-image">
+         <!-- <h5 class="p-0 m-0">SHOPPYNESS</h5><br>
+         <h6 class="p-0">TECHNOLOGY</h6> -->
       </a>
     </div>
     <div class="search-container">
@@ -130,19 +130,19 @@
   <!-- Mobile Bottom Navigation (Fixed at Bottom) -->
   <div class="mobile-navbar mobile-only">
     <a routerLink="/home" class="mobile-nav-item" [class.active]="selectedBottomMenu() === 'home'" (click)="selectBottomMenu('home')">
-      <i class="bi bi-house"></i>
+      <i [class]="selectedBottomMenu() === 'home' ? 'bi bi-house-fill' : 'bi bi-house'"></i>
       <span>Home</span>
     </a>
     <a routerLink="/products" class="mobile-nav-item"  [class.active]="selectedBottomMenu() === 'products'" (click)="selectBottomMenu('products')">
-      <i class="bi bi-grid"></i>
+      <i [class]="selectedBottomMenu() === 'products' ? 'bi bi-grid-fill' : 'bi bi-grid'"></i>
       <span>Products</span>
     </a>
     <a routerLink="/categories" class="mobile-nav-item" [class.active]="selectedBottomMenu() === 'categories'" (click)="selectBottomMenu('categories')">
-      <i class="bi bi-grid-3x2-gap"></i>
+      <i [class]="selectedBottomMenu() === 'categories' ? 'bi bi-grid-3x2-gap-fill' : 'bi bi-grid-3x2-gap'"></i>
       <span>Category</span>
     </a>
     <a routerLink="/cart" class="mobile-nav-item" [class.active]="selectedBottomMenu() === 'cart'" (click)="selectBottomMenu('cart')">
-      <i class="bi bi-cart3"></i>
+      <i [class]="selectedBottomMenu() === 'cart' ? 'bi bi-cart-fill' : 'bi bi-cart3'"></i>
       <span>Cart</span>
        @if(cartService.cartCount()) {
           <span class="cart-count">{{ cartService.cartCount() }}</span>
@@ -153,7 +153,7 @@
 
     @if (authService.isLoggedIn()) {
       <a routerLink="/profile" class="mobile-nav-item"  [class.selected]="selectedBottomMenu() === 'account'">
-        <i class="bi bi-person"></i>
+        <i [class]="selectedBottomMenu() ? 'bi bi-person-fill' : 'bi bi-person'"></i>
         <span>Account</span>
       </a>
       } @else {

@@ -21,6 +21,6 @@ export class OrderSuccess {
   }
 
   navigateToProfile() {
-    this.router.navigate(['/profile']);
+    // this.router.navigate(['/profile']);
   }
 }

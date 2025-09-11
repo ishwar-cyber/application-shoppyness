@@ -8,6 +8,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { CartService } from '../../services/cart';
 import { CheckoutService } from '../../services/checkout';
 import { OrderSuccess } from '../../components/order-success/order-success';
+import { load } from '@cashfreepayments/cashfree-js';
 
 @Component({
   selector: 'app-checkout',
@@ -181,14 +182,20 @@ export class Checkout implements OnInit{
       coupon: this.couponCode() || null
     };
     this.checkoutService.createOrder(orderPayload).subscribe({
-      next: (res) => {
-        this.isProcessing.set(false);
-        this.isOrderComplete.set(true);
-        setInterval(() => {
-          this.isOrderComplete.set(false);
-          this.router.navigate(['profile']);
-        }, 5000);
-        this.orderResponse.set(res);
+      next: async (res: any) => {
+        // this.isProcessing.set(false);
+        // this.isOrderComplete.set(true);
+        // setInterval(() => {
+        //   this.isOrderComplete.set(false);
+        //   this.router.navigate(['profile']);
+        // }, 5000);
+        // this.orderResponse.set(res);
+     // Step 2: Initialize Cashfree checkout
+      const cashfree = await load({ mode: "sandbox" }); // or "production"      
+      cashfree.checkout({
+        paymentSessionId: res.paymentSessionId, // from backend
+        redirectTarget: "_self", // or _blank
+      });
       },
       error: (err) => {
         console.error('Order placement failed:', err);

@@ -1,0 +1,121 @@
+<div class="payment-status-page">
+  <div class="container card-wrapper">
+    <div class="status-card">
+      <div class="header">
+        <div class="left">
+          <h2>Payment status</h2>
+          <p class="muted">Order summary & transaction status</p>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-outline" (click)="refresh()" [disabled]="refreshing()">
+            <span *ngIf="!refreshing()">Refresh</span>
+            <span *ngIf="refreshing()" class="dot-spinner"></span>
+          </button>
+          <button class="btn btn-primary" (click)="goToOrders()">View Orders</button>
+        </div>
+      </div>
+
+      <div class="content">
+        <!-- Loading -->
+        <div class="center" *ngIf="loading()">
+          <div class="spinner"></div>
+          <p class="muted">Checking payment status...</p>
+        </div>
+
+        <!-- Error -->
+        <div *ngIf="errorMsg()" class="alert error">
+          {{ errorMsg() }}
+        </div>
+
+        <!-- Order Not Found -->
+        <div *ngIf="orderNotFound()" class="alert warning">
+          Order not found. Please verify the order ID or contact support.
+        </div>
+
+        <!-- Order Card -->
+        <div *ngIf="order() && !loading()" class="order-card">
+          <div class="order-header">
+            <div>
+              <h3>Order <span class="order-id">{{ order()!.orderId }}</span></h3>
+              <div class="status-badge" [ngClass]="{
+                'status-pending': order()!.status === 'pending' || order()!.status === 'active',
+                'status-success': order()!.status === 'success' || order()!.status === 'paid',
+                'status-failed': order()!.status === 'failed' || order()!.status === 'cancelled'
+              }">
+                {{ (order()!.status || 'pending') | titlecase }}
+              </div>
+            </div>
+
+            <div class="amount">
+              <div class="price">{{ order()!.currency || 'INR' }} {{ order()!.amount ?? '-' }}</div>
+              <div class="sub muted">Total paid</div>
+            </div>
+          </div>
+
+          <div class="order-body">
+            <div class="left-col">
+              <h4>Items</h4>
+              <div *ngIf="order()!.items?.length; else noItems">
+                <div class="item" *ngFor="let it of order()!.items">
+                  <img *ngIf="it.image" [src]="it.image" alt="img" />
+                  <div class="meta">
+                    <div class="title">{{ it.name }}</div>
+                    <div class="qty">Qty: {{ it.quantity ?? 1 }}</div>
+                  </div>
+                  <div class="price">{{ order()!.currency || 'INR' }} {{ it.price ?? '-' }}</div>
+                </div>
+              </div>
+              <ng-template #noItems>
+                <div class="muted">No items data available.</div>
+              </ng-template>
+            </div>
+
+            <div class="right-col">
+              <h4>Transaction</h4>
+
+              <div class="field">
+                <div class="label">Transaction ID</div>
+                <div class="value">{{ order()!.transactionId || '-' }}</div>
+              </div>
+
+              <div class="field">
+                <div class="label">Payment message</div>
+                <div class="value">{{ order()!.paymentMessage || '-' }}</div>
+              </div>
+
+              <div class="field">
+                <div class="label">Payment time</div>
+                <div class="value">{{ formatDate(order()!.paymentTime) }}</div>
+              </div>
+
+              <div class="field">
+                <div class="label">Session</div>
+                <div class="value small">{{ order()!.paymentSessionId || '-' }}</div>
+              </div>
+
+              <div class="cta">
+                <button *ngIf="order()!.status === 'failed'" class="btn btn-primary w-100" (click)="retryPayment()">
+                  Retry Payment
+                </button>
+
+                <button *ngIf="order()!.status === 'pending' || order()!.status === 'active'" class="btn btn-outline w-100" (click)="retryPayment()">
+                  Continue to Pay
+                </button>
+
+                <button *ngIf="order()!.status === 'success'" class="btn btn-success w-100" (click)="goToOrders()">
+                  View Order
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- small toast -->
+        <div class="toast" *ngIf="toast()">
+          {{ toast() }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
