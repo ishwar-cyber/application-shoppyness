@@ -84,7 +84,7 @@ export class PaymentStatus implements OnInit, OnDestroy {
     }
 
     try {
-      const url = `${this.apiBase}/status/${encodeURIComponent(orderId)}`;
+      const url = `${this.apiBase}/status/order_id=${encodeURIComponent(orderId)}`;
       const res = await firstValueFrom(this.http.get<OrderStatusResponse>(url));
       if (!res) {
         this.orderNotFound.set(true);

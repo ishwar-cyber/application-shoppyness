@@ -686,6 +686,50 @@ $transition: all 0.3s ease;
     }
   }
 }
+.home-slider {
+  .carousel-item {
+    height: 400px; // Desktop height
+    img {
+      object-fit: cover;
+      height: 100%;
+    }
+  }
+
+  .carousel-caption {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 15px 20px;
+    border-radius: 8px;
+    text-align: left;
+
+    h2 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    p {
+      color: #f1f1f1;
+      margin: 5px 0 10px;
+    }
+
+    .btn {
+      background: #2874F0;
+      border: none;
+      font-weight: 600;
+    }
+  }
+
+  // Mobile adjustments
+  @media (max-width: 768px) {
+    .carousel-item {
+      height: 220px;
+    }
+    .carousel-caption {
+      h2 { font-size: 18px; }
+      p { font-size: 14px; }
+    }
+  }
+}
 
 
 

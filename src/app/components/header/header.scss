@@ -1,8 +1,4 @@
-// Base navbar styles
-.navbar-brand {
-  font-weight: bold;
-  font-size: 1.3rem;
-}
+
 
 // Base styles for all nav links
 .nav-link {
@@ -25,35 +21,13 @@
   flex-direction: column;
 }
 
-.navbar-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.8rem 1rem;
-}
-
-// Logo styles
-.logo-container {
-  display: flex;
-  align-items: center;
-  margin-right: 1rem;
-}
-
 .logo-link {
   text-decoration: none;
   display: flex;
   align-items: center;
 }
 
-.logo-image {
-  height: 40px;
-  width: auto;
-  transition: transform 0.2s ease;
-  
-  &:hover {
-    transform: scale(1.05);
-  }
-}
+
 
 // Navigation menu
 .navbar-bottom {
@@ -117,6 +91,7 @@
   color: #333;
   text-decoration: none;
   i{
+    
     color: white;
   }
   &:hover {
@@ -379,7 +354,7 @@
   background: white;
   display: flex;
   justify-content: space-around;
-  padding: 1.1rem 0;
+  padding: 0.7rem 0;
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
   z-index: 100;
 }
@@ -388,18 +363,16 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  // color: #666;
   text-decoration: none;
   font-size: 0.8rem;
   position: relative;
   
   i {
-    color: #007bff;
+    color: #2874F0;
     font-size: 1.4rem;
-    margin-bottom: 0.2rem;
   }
-  span{
-    color: #333;
+  span {
+    color: #2874F0;
     font-weight: 700;
   }
 }
@@ -571,9 +544,6 @@
     margin-top: 0.5rem;
   }
   
-  .navbar-top{
-    flex-direction: column;
-  }
   .cart-login {
     order: 1;
     width: 100%;
@@ -607,6 +577,7 @@
   cursor: pointer;
 
   .user-name {
+    color: #fff;
     font-weight: 500;
     padding: 5px 10px;
     i{
@@ -643,5 +614,85 @@
 
   .dropdown-menu.show {
     display: block;
+  }
+}
+
+  .brand { font-family: Arial, Helvetica, sans-serif; font-weight: 700; fill: #2874F0; }
+  .sub   { font-family: Arial, Helvetica, sans-serif; font-weight: 600; fill: #FFB300; }
+  .bag   { fill: #FFC20E; }
+  .handle{ fill: #2874F0; }
+  .bag-s { font-family: Arial, Helvetica, sans-serif; font-weight: 700; fill: #2874F0; }
+
+
+.navbar-top {
+  display: grid;
+  align-items: center;
+  padding: 8px 16px;
+  // Desktop: Logo | Search | Cart+User
+  grid-template-columns: 27% 1fr auto;
+
+  .logo-container {
+    grid-column: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  .search-container {
+    grid-column: 2;
+    display: flex;               /* NEW */
+    justify-content: center;     /* Center horizontally */
+    align-items: center;         /* Center vertically */
+
+    app-search {
+      max-width: 600px;
+      width: 100%;
+    }
+  }
+
+  .cart-login {
+    grid-column: 3;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 16px;
+
+    .cart-icon {
+      position: relative;
+
+      .cart-count {
+        position: absolute;
+        top: -6px;
+        right: -10px;
+        background: #2874F0;
+        color: #fff;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 2px 6px;
+        border-radius: 12px;
+      }
+    }
+  }
+
+  // Mobile: Logo left | Cart+User right | Search in next line
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+
+    .cart-login {
+      grid-column: 2;
+    }
+
+    .search-container {
+      grid-column: 1 / span 2;
+      grid-row: 2;
+      margin-top: 8px;
+      display: flex;
+      justify-content: center;   /* Center horizontally */
+      align-items: center;
+
+      app-search {
+        max-width: 90%;
+      }
+    }
   }
 }

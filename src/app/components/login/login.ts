@@ -22,7 +22,7 @@ export class Login implements OnInit {
 
   loginForm!: FormGroup;
   registerForm!: FormGroup;
-  returnUrl: string = '/';
+  returnUrl: string = '';
 
   private formBuilder = inject(FormBuilder);
   private readonly router = inject(Router);
@@ -34,18 +34,13 @@ export class Login implements OnInit {
 
   ngOnInit(): void {
     this.initForms();
-
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
     if (isPlatformBrowser(this.platformId)) {
       this.route.queryParams.subscribe(params => {
         if (params['mode'] === 'register') {
           this.activeTab.set('register');
         } else {
           this.activeTab.set('login');
-        }
-
-        if (params['returnUrl']) {
-          sessionStorage.setItem('returnUrl', `${params['returnUrl']}`);
-          this.returnUrl = params['returnUrl'];
         }
       });
     }
@@ -97,11 +92,11 @@ export class Login implements OnInit {
         this.authService.userName.set(login.user.username);
         sessionStorage.setItem('userName', login.user.username)
         this.authService.isLoggedInSignal.set(true);
+           this.router.navigateByUrl(this.returnUrl);
 
         if (isPlatformBrowser(this.platformId)) {
           // Set auth token cookie
           this.cookiesService.set('authToken', login.token, { path: '/', secure: true, sameSite: 'Lax' });
-
           // Merge visitor cart if exists
           const visitorId = this.cookiesService.get('visitorId');
           if (login.success && visitorId) {

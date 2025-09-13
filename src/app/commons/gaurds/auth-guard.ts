@@ -9,15 +9,13 @@ export const authGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state: R
   const platformId = inject(PLATFORM_ID);
 
   // ✅ SSR-safe: Only check login in the browser
-  if (isPlatformBrowser(platformId)) {
+  // if (isPlatformBrowser(platformId)) {
     if (authService.isLoggedIn()) {
       return true;
-    } else {
-      router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
-      return false;
-    }
-  }
-
-  // ✅ On server, just allow rendering to avoid timeout
-  return true;
-};
+    } 
+    console.log('router.url', router.url);
+    
+    router.navigate(['/login'], { queryParams: { returnUrl: router.url } });
+    return false;
+  // }
+};  

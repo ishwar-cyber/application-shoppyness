@@ -1,5 +1,5 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, computed, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { Component, computed, HostListener, inject, OnInit, PLATFORM_ID, Signal, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Auth } from '../../services/auth';
@@ -29,7 +29,9 @@ export class Header implements OnInit{
   public cartService = inject(CartService);
   private readonly platformId = inject(PLATFORM_ID);
   public readonly home = inject(HomeService);
-
+  isBrowser = signal<boolean>(isPlatformBrowser(this.platformId));
+  // Signal to track screen width
+  screenWidth = signal<number>(this.isBrowser() ? window.innerWidth : 1200); // default fallback
 
   // Active Category for Mega Menu
   activeCategory: string | null = null;
@@ -46,8 +48,15 @@ export class Header implements OnInit{
     }
   }
 
+    // Update screen width when window is resized
+  @HostListener('window:resize')
+  onResize() {
+    if(isPlatformBrowser(this.platformId)){
+      this.screenWidth.set(window.innerWidth);
+    }
+  }
   isMobileView(): boolean {
-    return typeof window !== 'undefined' && window.innerWidth <= 768;
+    return this.screenWidth() <= 400;
   }
   // Megamenu functions
   showMegaMenu(slug: string): void {

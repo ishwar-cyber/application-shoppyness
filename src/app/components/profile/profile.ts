@@ -14,8 +14,8 @@ interface UserProfile {
 interface Order {
   id?: string;
   date?: string;
-  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
-  total?: number;
+  paymentStatus: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  totalAmount?: number;
   items?: Array<{ id: string; name: string; quantity: number; price: number; }>;
   trackingNumber?: string;
 }
@@ -102,7 +102,7 @@ export class Profile {
   private loadOrders(): void {
      this.profileService.getUserOrders().subscribe({
       next: (orders: any) => {
-        this.orders.set(orders.data);
+        this.orders.set(orders.data.orders || []);
       }
     });
   }

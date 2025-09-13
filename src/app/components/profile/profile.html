@@ -168,7 +168,7 @@
                       <p class="order-date">{{ order.date | date:'mediumDate' }}</p>
                     </div>
                     <div class="order-status">
-                      <span [class]="getOrderStatusClass(order.status)">{{ order.status | titlecase }}</span>
+                      <span [class]="getOrderStatusClass(order.paymentStatus)">{{ order.paymentStatus | titlecase }}</span>
                     </div>
                   </div>
 
@@ -179,14 +179,15 @@
                         <div class="order-item">
                           <div class="item-name">{{ item.name }}</div>
                           <div class="item-quantity">Qty: {{ item.quantity }}</div>
-                          <div class="item-price">${{ item.price.toFixed(2) }}</div>
+                          <div class="item-price">₹{{ item.price.toFixed(2) }}</div>
                         </div>
                       }
                     </div>
                     
                     <div class="order-total">
+                      
                       <span>Total:</span>
-                      <span class="total-amount">${{ order.total?.toFixed(2) }}</span>
+                      <span class="total-amount">₹{{ order.totalAmount?.toFixed(2) }}</span>
                     </div>
                   </div>
 
