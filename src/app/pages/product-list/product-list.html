@@ -140,35 +140,22 @@
           <button class="btn btn-link" (click)="resetFilters()">Clear all filters</button>  
         </div>
       }
-      
-
-      <!-- Grid View - Loading State -->  
-      @if(isLoading() && viewMode() === 'grid'){
-        <div class="row g-3"> 
-          @for (i of [1,2,3,4,5,6]; track $index) {
-               <div class="col-12 col-sm-6 col-lg-4">  
-                <app-product-card [isLoading]="true"></app-product-card>  
-              </div> 
-          } 
-        
-        </div>  
-      }
-
-
       <!-- Grid View - Loaded State -->  
       @if(!isLoading() && filteredProducts().length > 0 && viewMode() === 'grid'){
-          <div class="row g-3">  
-            @for (product of filteredProducts(); track $index) {
-              <div class="col-12 col-sm-6 col-lg-4">  
-                <app-product-card [product]="product" [isLoading]="false"></app-product-card>  
-              </div>  
-            }
-          </div>  
-      }
-    
-
+        <div class="row g-3">  
+          @for (product of filteredProducts(); track $index) {
+            <div class="col-12 col-sm-6 col-lg-4">  
+              <app-product-card [product]="product" [isLoading]="false"></app-product-card>  
+            </div>  
+          }
+        </div>  
+      } 
+      <!-- @else{
+        <app-skelton-loader/>
+      } -->
+  
       <!-- List View - Loading State -->  
-      @if (isLoading() && viewMode() === 'list') {
+      @if (isLoading()) {
           <div class="list-view">  
             @for (i of [1,2,3,4]; track $index) {
             <div class="list-product-item card mb-3">  
@@ -201,8 +188,6 @@
           }
           </div>
       }
-        
-
       <!-- List View - Loaded State -->  
       @if(!isLoading() && filteredProducts().length > 0 && viewMode() === 'list'){
           <div class="list-view">  

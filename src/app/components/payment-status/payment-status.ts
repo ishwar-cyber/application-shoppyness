@@ -36,7 +36,7 @@ export class PaymentStatus implements OnInit, OnDestroy {
   toast = signal<string | null>(null);
 
   private destroy$ = new Subject<void>();
-  private apiBase = `${environment.apiUrl}/payment`; // adjust to your backend
+  private apiBase = `${environment.apiUrl}`; // adjust to your backend
 
   // controls auto-polling attempts
   private maxPollAttempts = 6;
@@ -84,7 +84,7 @@ export class PaymentStatus implements OnInit, OnDestroy {
     }
 
     try {
-      const url = `${this.apiBase}/status/order_id=${encodeURIComponent(orderId)}`;
+      const url = `${this.apiBase}/order/status/order_id=${encodeURIComponent(orderId)}`;
       const res = await firstValueFrom(this.http.get<OrderStatusResponse>(url));
       if (!res) {
         this.orderNotFound.set(true);
@@ -127,7 +127,7 @@ export class PaymentStatus implements OnInit, OnDestroy {
     try {
       // Backend endpoint should create a new Cashfree session and return paymentSessionId
       const res = await firstValueFrom(this.http.post<{ paymentSessionId?: string; paymentUrl?: string }>(
-        `${this.apiBase}/retry/${encodeURIComponent(orderId)}`, {}
+        `${this.apiBase}/payment/retry/${encodeURIComponent(orderId)}`, {}
       ));
 
       // prefer SDK-based flow if session is provided

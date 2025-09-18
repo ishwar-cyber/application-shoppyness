@@ -25,7 +25,6 @@ export class Search {
     this.product.search(this.searchQuery).subscribe({
       next: (product : any) =>{
        this.filteredProducts.set(product.data)
-        
       }
     })
     const query = this.searchQuery.toLowerCase().trim();

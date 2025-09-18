@@ -9,10 +9,11 @@ import { CartService } from '../../services/cart';
 import { Product } from '../../services/product';
 import { HomeService } from '../../services/home';
 import { forkJoin } from 'rxjs';
+import { SkeltonLoader } from '../../components/skelton-loader/skelton-loader';
 
 @Component({
   selector: 'app-product-list',
-  imports: [CommonModule, FormsModule, RouterModule, RouterLink, ProductCard],
+  imports: [CommonModule, FormsModule, RouterModule, RouterLink, ProductCard, SkeltonLoader],
   templateUrl: './product-list.html',
   styleUrls: ['./product-list.scss']   // ✅ fixed (was styleUrl)
 })

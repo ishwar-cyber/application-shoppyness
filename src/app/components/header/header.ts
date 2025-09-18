@@ -56,7 +56,7 @@ export class Header implements OnInit{
     }
   }
   isMobileView(): boolean {
-    return this.screenWidth() <= 400;
+    return this.screenWidth() <= 768;
   }
   // Megamenu functions
   showMegaMenu(slug: string): void {

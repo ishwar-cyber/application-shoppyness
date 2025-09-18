@@ -102,19 +102,20 @@
                 <button *ngIf="order()!.status === 'pending' || order()!.status === 'active'" class="btn btn-outline w-100" (click)="retryPayment()">
                   Continue to Pay
                 </button>
-
-                <button *ngIf="order()!.status === 'success'" class="btn btn-success w-100" (click)="goToOrders()">
-                  View Order
-                </button>
+                @if (order()!.status === 'success') {
+                  <button class="btn btn-success w-100" (click)="goToOrders()"> View Order </button>
+                }
               </div>
             </div>
           </div>
         </div>
 
         <!-- small toast -->
-        <div class="toast" *ngIf="toast()">
-          {{ toast() }}
-        </div>
+        @if (toast()) {
+          <div class="toast" *ngIf="">
+            {{ toast() }}
+          </div>
+        }
       </div>
     </div>
   </div>

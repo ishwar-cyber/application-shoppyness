@@ -1,0 +1,15 @@
+
+@if (product()) {
+<div class="product-card card me-3">
+    <div class="image-wrapper">
+        <!-- Show default placeholder until actual loads -->
+        <img [src]="product()?.images[0]?.url"loading="lazy" class="card-img-top" alt="product" (error)="onImgError($event)"
+        />
+    </div>
+    <div class="card-body text-center">
+        <h6 class="card-title">{{ product()?.name }}</h6>
+        <p class="card-text text-muted mb-2">{{ product()?.price | currency:'INR' }}</p>
+        <button class="btn btn-sm btn-primary">Add to Cart</button>
+    </div>
+</div>
+}

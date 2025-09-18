@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { Seo } from '../../services/seo';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -28,6 +28,8 @@ interface image {
 export class Home implements OnInit{
   products = signal<any[]>([]); // Show only first 4 products
   
+  // Default placeholder
+  defaultImage = 'https://via.placeholder.com/200x150?text=Loading...';
   categories = signal<Category[]>([]);
   brands = signal<any[]>([]);
   info = signal<any>([
@@ -38,7 +40,7 @@ export class Home implements OnInit{
   ]);
   private readonly product = inject(Product);
   private readonly home = inject(HomeService)
-
+ @ViewChild('scrollContainer') scrollContainer!: ElementRef;
   constructor(private readonly seoService: Seo) {}
 
   ngOnInit(): void {
@@ -81,5 +83,12 @@ export class Home implements OnInit{
     }
   }
 
-  
+  scrollLeft() {
+    this.scrollContainer.nativeElement.scrollBy({ left: -220, behavior: 'smooth' });
+  }
+
+  scrollRight() {
+    this.scrollContainer.nativeElement.scrollBy({ left: 220, behavior: 'smooth' });
+  }
 }
+

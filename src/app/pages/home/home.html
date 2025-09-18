@@ -169,6 +169,39 @@
   </div>
 </section>
 
+<section class="home-products mb-5" aria-labelledby="product-heading" itemscope itemtype="https://schema.org/ItemList">
+  <div class="container">
+   <div class="product-scroll-section position-relative container-fluid py-4">
+  <h4 class="mb-3 fw-bold">🔥 Featured Products</h4>
+
+  <!-- Left Button -->
+  <button class="scroll-btn left" (click)="scrollLeft()">
+    <i class="bi bi-chevron-left"></i>
+  </button>
+
+  <!-- Scrollable Container -->
+  <div #scrollContainer class="scroll-container d-flex overflow-auto">
+    @for (product of products(); track $index) {
+      <div class="product-card card me-3" >
+        <img [src]="product.images[0].url" class="card-img-top" alt="product" width="198" height="198"/>
+        <div class="card-body text-center">
+          <h6 class="card-title">{{ product.name }}</h6>
+          <p class="card-text text-muted mb-2">{{ product.price | currency:'INR' }}</p>
+          <button class="btn btn-sm btn-primary">Add to Cart</button>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Right Button -->
+  <button class="scroll-btn right" (click)="scrollRight()">
+    <i class="bi bi-chevron-right"></i>
+  </button>
+</div>
+
+  </div>
+
+</section>
 <!-- Product Section with schema.org itemtype - Enhanced with trending tag and better layout -->
 <section class="home-products mb-5" aria-labelledby="product-heading" itemscope itemtype="https://schema.org/ItemList">
   <div class="container">
@@ -180,13 +213,13 @@
     <meta itemprop="numberOfItems" content="{{products().length}}" />
     <div class="row g-4">
       @for(product of products().slice(0, 4); track product.slug){
-      <div class="col-12 col-sm-6 col-md-4 col-lg-3" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-          <meta itemprop="position" content="{{$index+1}}" />
-          @if($index === 0) {
-          <div class="product-tag">Trending</div>
-          }
-          <app-product-card [product]="product"></app-product-card>
-      </div>
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <meta itemprop="position" content="{{$index+1}}" />
+            @if($index === 0) {
+            <div class="product-tag">Trending</div>
+            }
+            <app-product-card [product]="product"></app-product-card>
+        </div>
         }
 
     </div>
