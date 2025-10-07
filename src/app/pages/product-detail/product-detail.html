@@ -146,8 +146,7 @@
     </ul>
 
     <div class="tab-content p-3 border border-top-0 rounded-bottom" id="productDetailsTabContent">
-      <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
-        <p>{{ product()?.description }}</p>
+      <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab" [innerHTML]="product()?.description">
       </div>
 
       <div class="tab-pane fade" id="specifications" role="tabpanel" aria-labelledby="specifications-tab">
