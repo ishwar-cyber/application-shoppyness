@@ -14,7 +14,7 @@ interface UserProfile {
 interface Order {
   id?: string;
   date?: string;
-  paymentStatus: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  orderStatus: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
   totalAmount?: number;
   items?: Array<{ id: string; name: string; quantity: number; price: number; }>;
   trackingNumber?: string;
