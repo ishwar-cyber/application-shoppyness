@@ -19,11 +19,12 @@ import { ProductModel, ResponsePayload, Variant } from '../../commons/models/pro
 import { FormsModule } from '@angular/forms';
 import { ProductCard } from '../../components/product-card/product-card';
 import { CheckPincode } from '../../components/check-pincode/check-pincode';
+import { ProductReview } from '../../components/product-review/product-review';
 
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, ProductCard, CheckPincode],
+  imports: [CommonModule, RouterLink, FormsModule, ProductCard, CheckPincode, ProductReview],
   templateUrl: './product-detail.html',
   styleUrls: ['./product-detail.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

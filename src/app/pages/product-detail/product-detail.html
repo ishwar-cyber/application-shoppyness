@@ -71,7 +71,13 @@
           <span class="badge bg-danger ms-2">Out of Stock</span>
         }
       </div>
-
+      @if(product().pincode && product().pincode.length > 0){
+        <div class=" d-flex align-items-center">
+          <input type="checkbox" name="installService" id="installService">
+          <label for="installService" class="ms-2"> Installation Service</label>
+        </div>
+        <span class="service_note fw-bold mb-3">NOTE:(If you want installation service, please select this option)</span>
+      }
       <!-- Check Delivery -->
       <app-check-pincode></app-check-pincode>
 
@@ -103,8 +109,8 @@
       <div class="product-actions mt-3">
         <div class="d-flex flex-wrap">
           <button class="btn btn-primary btn-lg mb-2" 
-                  (click)="addToCart(product())"
-                  [disabled]="isAddingToCart() || (currentStock() <= 0)">
+            (click)="addToCart(product())"
+            [disabled]="isAddingToCart() || (currentStock() <= 0)">
             @if(!isAddingToCart()){
               <span><i class="bi bi-cart-plus me-2"></i>Add to Cart</span>
             }
@@ -143,6 +149,11 @@
                   aria-selected="false">Specifications</button>
         </li>
       }
+      <li class="nav-item" role="presentation">
+        <button class="nav-link fw-bolder" id="Review-tab" data-bs-toggle="tab"
+          data-bs-target="#Review" type="button" role="tab" aria-controls="Review"
+          aria-selected="true">Review</button>
+      </li>
     </ul>
 
     <div class="tab-content p-3 border border-top-0 rounded-bottom" id="productDetailsTabContent">
@@ -158,6 +169,10 @@
             </li>
           }
         </ul>
+      </div>
+
+      <div class="tab-pane fade" id="Review" role="tabpanel" aria-labelledby="Review-tab">
+        <app-product-review [productId]="product()?._id"></app-product-review>
       </div>
     </div>
   </div>

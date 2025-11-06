@@ -1,0 +1,29 @@
+.review-container {
+  max-width: 600px;
+  margin: 0 auto;
+  border-radius: 1rem;
+  background-color: #fff;
+}
+
+.add-review input,
+.add-review textarea {
+  border-radius: 0.5rem;
+}
+
+.add-review button {
+  border-radius: 0.5rem;
+  font-weight: 500;
+}
+
+.review-list .card {
+  border-radius: 0.75rem;
+}
+
+@media (max-width: 576px) {
+  .review-container {
+    padding: 1.5rem;
+  }
+  .stars i {
+    font-size: 1.25rem !important;
+  }
+}

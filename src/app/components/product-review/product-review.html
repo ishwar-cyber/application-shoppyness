@@ -1,0 +1,76 @@
+<div class="review-container card p-4 shadow-sm">
+  <h4 class="fw-bold mb-3">Customer Reviews</h4>
+
+  <!-- Average Rating -->
+  <div class="d-flex align-items-center mb-3">
+    <h2 class="mb-0 text-warning me-2">
+      ★ {{ getAverageRating() }}
+    </h2>
+    <span class="text-muted">Average rating ({{ reviews().length }} reviews)</span>
+  </div>
+
+  <hr />
+
+  <!-- Add Review Form -->
+  <div class="add-review mb-4">
+    <h5 class="fw-semibold mb-2">Write a Review</h5>
+    <div class="mb-2">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Your Name"
+        [(ngModel)]="newReview().name"
+      />
+    </div>
+
+    <div class="mb-2">
+      <textarea
+        class="form-control"
+        rows="3"
+        placeholder="Your Comment"
+        [(ngModel)]="newReview().comment"
+      ></textarea>
+    </div>
+
+    <!-- Star Rating -->
+    <div class="stars mb-3">
+        @for (star of [1,2,3,4,5]; track $index) {
+            <ng-container>
+                <i
+                class="bi"
+                [ngClass]="{
+                    'bi-star-fill text-warning': star <= (hoverRating() || newReview().rating),
+                    'bi-star text-secondary': star > (hoverRating() || newReview().rating)
+                }"
+                (click)="setRating(star)"
+                (mouseenter)="hoverStar(star)"
+                (mouseleave)="leaveStar()"
+                style="cursor: pointer; font-size: 1.5rem;"
+                ></i>
+            </ng-container>
+        }
+    </div>
+
+    <button class="btn btn-primary w-100" (click)="addReview()">Submit Review</button>
+  </div>
+
+  <hr />
+
+  <!-- Review List -->
+  <div class="review-list">
+    @for (review of reviews(); track $index) {
+        <div class="card mb-3 border-0 bg-light p-3">
+        <div class="d-flex justify-content-between">
+            <strong>{{ review.name }}</strong>
+            <small class="text-muted">{{ review.date }}</small>
+        </div>
+        <div class="text-warning mb-1">
+            @for (item of [1,2,3,4,5]; track $index) {
+            <i class="bi" [ngClass]="item <= review.rating ? 'bi-star-fill' : 'bi-star'"></i>
+            }
+        </div>
+        <p class="mb-0 text-muted">{{ review.comment }}</p>
+        </div>
+    }
+  </div>
+</div>

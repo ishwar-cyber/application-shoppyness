@@ -52,20 +52,7 @@ export class Checkout implements OnInit{
 
   selectedAddressId = signal<number | null>(1);
     // State (signals)
-  addresses = signal<Address[]>([
-    {
-      id: 1,
-      name: 'Rahul Sharma',
-      phone: '9876543210',
-      addressLine1: 'Flat 12B, Green View Apartments',
-      addressLine2: 'Sector 21',
-      landmark: 'Near HDFC Bank',
-      city: 'Mumbai',
-      state: 'Maharashtra',
-      pincode: '400001',
-      country: 'India'
-    },
-  ]);
+  addresses = signal<Address[]>([]);
     // Useful derived state
   selectedAddress = computed(() =>
     this.addresses().find(a => a.id === this.selectedAddressId()!) || null

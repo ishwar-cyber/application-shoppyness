@@ -137,7 +137,18 @@ $image-bg: #fff;
 .product-actions {
   margin-top: 2rem;
 }
-
+.service_note{
+  font-size: 0.85rem;
+  color: #ff4d4f;
+  margin-top: 0.25rem;
+}
+.product-variant{
+  cursor: pointer;
+  &hover{
+    border: 1px solid $primary-color;
+    background-color: hsl(220, 100%, 95%);
+  }
+}
 // Quantity controls
 .quantity-controls {
   button {
@@ -311,5 +322,5 @@ $image-bg: #fff;
 }
 .selected{
   border: 1px solid hsl(152, 67%, 80%);
-  // background-color: hsl(152, 67%, 80%);
+  background-color: hsl(152, 67%, 80%);
 }
