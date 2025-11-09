@@ -79,7 +79,7 @@ export class Profile {
   }
 
   private loadUserProfile(): void {
-    const userId = this.authService.userId() || sessionStorage.getItem('userId');
+    const userId = sessionStorage.getItem('userId');
     if (!userId) {
       this.isLoading.set(false);
       return;

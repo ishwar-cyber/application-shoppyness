@@ -4,27 +4,7 @@
     <!-- Logo for Desktop -->
     <div class="logo-container">
       <a routerLink="/" class="logo-link d-flex align-items-center">
-        <svg width="160" height="40" viewBox="0 0 160 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img" aria-label="Shoppyness Technology logo">
-          <!-- Transparent background (default) -->
-          <title>Shoppyness Technology</title>
-      
-          <!-- Left: Shopping bag icon (rounded rectangle + handle) -->
-          <g transform="translate(6,2)" aria-hidden="true">
-            <!-- bag body -->
-            <rect class="bag" x="0" y="6" rx="4" ry="4" width="28" height="28"></rect>
-            <!-- bag handle (rounded U) -->
-            <path class="handle" d="M9 6 a6 6 0 0 1 12 0 v2 h-4v-2 a2 2 0 0 0 -4 0 v2 H9z" transform="translate(0,-2)"></path>
-            <!-- S letter inside bag -->
-            <text class="bag-s" x="14" y="26" font-size="18" text-anchor="middle" dominant-baseline="middle">S</text>
-          </g>
-
-          <!-- Right: Brand text -->
-          <!-- "Shoppyness" big -->
-          <text class="brand" x="44" y="16" font-size="16" letter-spacing="0.2">Shoppyness</text>
-
-          <!-- "Technology" small and aligned under Shoppyness (slightly to right for visual balance) -->
-          <text class="sub" x="44" y="31" font-size="9" letter-spacing="0.15">Technology</text>
-        </svg>
+       <img src="../assets/logo/header-logo-2.png" alt="Shoppyness Technology logo" srcset="" class="logo-image" width="160" height="40" />
       </a>
     </div>
     <div class="search-container">
@@ -64,7 +44,7 @@
 <div class="navbar-bottom desktop-only">
   <ul class="nav-menu">
     @for (category of home.categoriesHeader(); track $index) {
-      <li class="nav-item" (mouseenter)="showMegaMenu(category.slug)">
+      <li class="nav-item uppercase" (mouseenter)="showMegaMenu(category.slug)">
         <a routerLink="/products" [queryParams]="{category: category.slug}" class="nav-link">
           {{ category.name }}
           <i class="bi bi-chevron-down small ms-1"></i>

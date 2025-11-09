@@ -71,6 +71,7 @@ export class Header implements OnInit{
   logout(): void {
     this.authService.isLoggedInSignal.set(false);
     this.authService.logout();
+    this.router.navigate(['/']);
   }
   selectBottomMenu(menu: string){
     this.selectedBottomMenu.set(menu);

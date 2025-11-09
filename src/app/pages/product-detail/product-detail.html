@@ -65,19 +65,20 @@
       <div class="product-price mb-3 d-flex align-items-center" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
         <meta itemprop="priceCurrency" content="INR" />
         <span class="price-tag" itemprop="price">₹ {{ currentPrice() }}</span>
+        (Incluides all taxes)
         @if(currentStock() > 0 || product().stock > 0 || product().stock === 'in'){
           <span class="badge bg-success ms-2">In Stock</span>
         } @else {
           <span class="badge bg-danger ms-2">Out of Stock</span>
         }
       </div>
-      @if(product().pincode && product().pincode.length > 0){
+      <!-- @if(product().pincode && product().pincode.length > 0){
         <div class=" d-flex align-items-center">
           <input type="checkbox" name="installService" id="installService">
-          <label for="installService" class="ms-2"> Installation Service</label>
+          <label for="installService" class="ms-2"> Installation Service (250)</label>
         </div>
         <span class="service_note fw-bold mb-3">NOTE:(If you want installation service, please select this option)</span>
-      }
+      } -->
       <!-- Check Delivery -->
       <app-check-pincode></app-check-pincode>
 

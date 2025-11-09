@@ -140,7 +140,7 @@
         <div class="form-group">
           <label for="register-phone">Phone</label>
           <input 
-            type="tel" 
+            type="tel" maxlength="10" min="10"
             id="register-phone" 
             formControlName="phone" 
             placeholder="Ex. 9809890987"
@@ -158,7 +158,7 @@
         <div class="form-group">
           <label for="register-password">Password</label>
           <input 
-            type="password" 
+            type="password"  required
             id="register-password" 
             formControlName="password" 
             placeholder="Create a password"
@@ -178,13 +178,13 @@
         <div class="form-group">
           <label for="register-confirm-password">Confirm Password</label>
           <input 
-            type="password" 
+            type="password"  required
             id="register-confirm-password" 
             formControlName="confirmPassword" 
             placeholder="Confirm your password"
             [class.invalid]="getPasswordMatchError() || (registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched)"
           >
-          @if (registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched || !getPasswordMatchError()) {
+          @if (registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched) {
             <div class="error-text">
               Confirm password is required
             </div>
@@ -200,7 +200,7 @@
           <button 
             type="submit" 
             class="btn btn-primary" (click)="register()"
-            [disabled]="registerForm.invalid || isLoading()"
+            [disabled]="!registerForm.invalid || isLoading()"
           >
             @if (isLoading()) {
               <span class="spinner"></span>
