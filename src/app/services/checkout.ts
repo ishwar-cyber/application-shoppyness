@@ -13,4 +13,8 @@ export class CheckoutService {
   createOrder(payload: any):Observable<void>{
     return this.http.post<any>(`${environment.apiUrl}/order/create-order`, payload)
   }
+
+  updateAddress(userId: string, addressData: any): Observable<void> {
+    return this.http.put<void>(`${environment.apiUrl}/update-user/${userId}`, addressData);
+  }
 }

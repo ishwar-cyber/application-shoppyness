@@ -42,6 +42,14 @@ export const routes: Routes = [
         loadComponent: () => import('./components/payment-status/payment-status').then(m => m.PaymentStatus)
     },
     {
+        path: 'order-success',
+        loadComponent: () => import('./components/order-success/order-success').then(m => m.OrderSuccess)
+    },
+    {
+        path: 'order-tracking/:orderId',
+        loadComponent: () => import('./components/order-details/order-details').then(m => m.OrderDetails)
+    },
+    {
         path: '**',
         loadComponent: () => import('./pages/home/home').then(m => m.Home)
     }

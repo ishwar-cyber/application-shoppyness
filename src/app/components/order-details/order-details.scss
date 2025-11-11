@@ -1,0 +1,138 @@
+.order-tracking-container {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  font-family: 'Poppins', sans-serif;
+}
+
+.order-header {
+  text-align: center;
+  margin-bottom: 30px;
+
+  h2 {
+    font-size: 1.6rem;
+    color: #222;
+    margin-bottom: 8px;
+  }
+
+  p {
+    color: #555;
+    font-size: 0.95rem;
+    margin: 4px 0;
+
+    .date {
+      color: #28a745;
+      font-weight: 500;
+    }
+  }
+}
+
+.progressbar {
+  height: 6px;
+  background: #eee;
+  border-radius: 10px;
+  margin-bottom: 40px;
+  position: relative;
+  overflow: hidden;
+
+  .progress {
+    height: 100%;
+    background: linear-gradient(90deg, #00c6ff, #0072ff);
+    border-radius: 10px;
+    transition: width 0.4s ease-in-out;
+  }
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+  .step {
+    display: flex;
+    align-items: flex-start;
+    position: relative;
+    margin-bottom: 30px;
+
+    &:last-child::after {
+      display: none;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 14px;
+      top: 24px;
+      width: 2px;
+      height: 40px;
+      background: #ddd;
+      z-index: 0;
+    }
+
+    .circle {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 2px solid #ccc;
+      background: #fff;
+      position: relative;
+      z-index: 1;
+      flex-shrink: 0;
+      transition: all 0.3s ease;
+    }
+
+    .label {
+      margin-left: 15px;
+      h4 {
+        font-size: 1rem;
+        margin: 0;
+        color: #333;
+      }
+      p {
+        font-size: 0.85rem;
+        color: #777;
+        margin-top: 4px;
+      }
+    }
+
+    &.completed .circle {
+      background: #28a745;
+      border-color: #28a745;
+    }
+
+    &.active .circle {
+      border-color: #007bff;
+      box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.2);
+    }
+
+    &.completed .label h4 {
+      color: #28a745;
+    }
+
+    &.active .label h4 {
+      color: #007bff;
+    }
+  }
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .order-tracking-container {
+    padding: 16px;
+  }
+
+  .order-header h2 {
+    font-size: 1.3rem;
+  }
+
+  .timeline .step .label h4 {
+    font-size: 0.9rem;
+  }
+
+  .timeline .step .label p {
+    font-size: 0.8rem;
+  }
+}

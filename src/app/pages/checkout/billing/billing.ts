@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, input, output, signal } from '@angular/core';
+import { Component, inject, input, OnInit, output, signal } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
-import { sign } from 'crypto';
+import { CheckoutService } from '../../../services/checkout';
 // src/app/models/address.model.ts
 export interface Address {
   id: number;
@@ -22,7 +22,7 @@ export interface Address {
   templateUrl: './billing.html',
   styleUrl: './billing.scss'
 })
-export class Billing {
+export class Billing implements OnInit {
  // Signal-based inputs/outputs
   addresses = input<Address[]>([]);
   selectedAddressId = input<number | null>(null);
@@ -41,39 +41,58 @@ export class Billing {
 
   // Local UI state
   showForm = signal(false);
-  form: FormGroup;
-
-  constructor(private fb: FormBuilder) {
-    this.form = this.fb.group({
-    name: ['', [Validators.required, Validators.minLength(2)]],
-    phone: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
-    addressLine1: ['', [Validators.required, Validators.minLength(6)]],
-    addressLine2: [''],
-    landmark: [''],
-    city: ['', Validators.required],
-    state: ['', Validators.required],
-    pincode: ['', [Validators.required, Validators.pattern(/^[0-9]{6}$/)]],
-    country: ['India', Validators.required],
-  });
+  addressForm!: FormGroup;
+  private fb = inject(FormBuilder);
+  private readonly checkoutService = inject(CheckoutService);
+ 
+  ngOnInit(): void {
+    this.buildForm();
   }
 
+  buildForm() {
+    this.addressForm = this.fb.group({
+      name: ['', [Validators.required, Validators.minLength(2)]],
+      phone: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
+      addressLine1: ['', [Validators.required, Validators.minLength(6)]],
+      addressLine2: [''],
+      landmark: [''],
+      city: ['', Validators.required],
+      state: ['', Validators.required],
+      pincode: ['', [Validators.required, Validators.pattern(/^[0-9]{6}$/)]],
+      country: ['India', Validators.required],
+    });
+  }
   onSelectAddress(id: number) {
     this.addressChange.emit(id);
   }
 
   
   selectState(state: string) {
-    this.form.patchValue({ state });
+    this.addressForm.patchValue({ state });
     this.searchState.set(state);
   }
-  onSaveAddress() {
-    if (this.form.invalid) return;
+  saveAddress() {
+    if (this.addressForm.invalid) return;
     const newAddr: Address = {
       id: Date.now(),
-      ...this.form.value,
+      ...this.addressForm.value,
     };
+    const userId = sessionStorage.getItem('userId');
+    if (!userId) {
+      console.error('No userId found in sessionStorage. Skipping address update.');
+    } else {
+      this.checkoutService.updateAddress(userId, newAddr).subscribe({
+        next: () => {
+          console.log('Address updated successfully');
+        },
+        error: (err) => {
+          console.error('Error updating address:', err);
+        }
+      });
+    }
+
     this.addAddress.emit(newAddr);
-    this.form.reset();
+    this.addressForm.reset();
     this.showForm.set(false);
   }
   filterStates(value: any) {

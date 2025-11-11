@@ -211,9 +211,14 @@ addToCart(product: any): void {
 
   this.cartService.addToCart(payload).pipe(takeUntil(this.destroy$)).subscribe({
     next: () => {
-      this.isAddingToCart.set(false);
-      this.addedToCartMessage.set('Added to cart successfully.');
-      setTimeout(() => this.addedToCartMessage.set(''), 3000);
+      try {
+        this.isAddingToCart.set(false);
+        this.addedToCartMessage.set('Added to cart successfully.');
+        setTimeout(() => this.addedToCartMessage.set(''), 3000); 
+      } catch (error) {
+        
+      }
+      
     },
     error: (err: any) => {
       console.error('Error adding to cart:', err);

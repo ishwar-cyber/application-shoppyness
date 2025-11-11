@@ -168,6 +168,7 @@
                       <p class="order-date">{{ order.date | date:'mediumDate' }}</p>
                     </div>
                     <div class="order-status">
+                      <button class="">View Order</button>
                       <span [class]="getOrderStatusClass(order.orderStatus)">{{ order.orderStatus | titlecase }}</span>
                     </div>
                   </div>

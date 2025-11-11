@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, inject, Input, Output, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { PopUp } from "../pop-up/pop-up";
 
 @Component({
   selector: 'app-order-success',
-  imports: [CommonModule],
+  imports: [CommonModule, PopUp],
   templateUrl: './order-success.html',
   styleUrl: './order-success.scss'
 })

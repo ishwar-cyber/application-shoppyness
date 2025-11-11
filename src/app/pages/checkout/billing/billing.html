@@ -28,42 +28,42 @@
 <!-- Address Form -->
 @if (showForm()) {
   <div class="card p-3 mb-3">
-    <form [formGroup]="form" (ngSubmit)="onSaveAddress()">
+    <form [formGroup]="addressForm">
       <div class="row g-3">
         <div class="col-md-6">
           <label class="form-label">Name</label>
-          <input class="form-control" formControlName="name" />
-          @if (form.get('name')?.touched && form.get('name')?.invalid) {
+          <input class="form-control" formControlName="name" type="text"/>
+          @if (addressForm.get('name')?.touched && addressForm.get('name')?.invalid) {
             <div class="text-danger small">Name is required (min 2 chars)</div>
           }
         </div>
 
         <div class="col-md-6">
           <label class="form-label">Phone</label>
-          <input class="form-control" formControlName="phone" />
-          @if (form.get('phone')?.touched && form.get('phone')?.invalid) {
+          <input class="form-control" formControlName="phone"  type="tel" minlength="10" maxlength="10"/>
+          @if (addressForm.get('phone')?.touched && addressForm.get('phone')?.invalid) {
             <div class="text-danger small">Enter a valid 10-digit phone</div>
           }
         </div>
 
         <div class="col-12">
           <label class="form-label">Address Line 1</label>
-          <input class="form-control" formControlName="addressLine1" />
+          <input class="form-control" formControlName="addressLine1" type="text" />
         </div>
 
         <div class="col-12">
           <label class="form-label">Address Line 2</label>
-          <input class="form-control" formControlName="addressLine2" />
+          <input class="form-control" formControlName="addressLine2" type="text" />
         </div>
 
         <div class="col-md-6">
           <label class="form-label">Landmark</label>
-          <input class="form-control" formControlName="landmark" />
+          <input class="form-control" formControlName="landmark" type="text" />
         </div>
 
         <div class="col-md-6">
           <label class="form-label">City</label>
-          <input class="form-control" formControlName="city" />
+          <input class="form-control" formControlName="city" type="text" />
         </div>
 
         <div class="col-md-6 position-relative">
@@ -78,24 +78,19 @@
           @if(openStateSearch()){
              <div class="list-group position-absolute w-100 shadow-sm">
               @for (state of filteredStates(); track state) {
-                <button type="button"
-                  class="list-group-item list-group-item-action"
-                  (click)="form.get('state')?.setValue(state); searchState.set(state); filteredStates.set([])">
-                  {{ state }}
+                <button type="button" class="list-group-item list-group-item-action"
+                  (click)="addressForm.get('state')?.setValue(state); searchState.set(state); openStateSearch.set(false)"> {{ state }}
                 </button>
               } @empty {
-               <button type="button"
-                  class="list-group-item list-group-item-action"
-                >State not found                </button>
+                <button type="button" class="list-group-item list-group-item-action"> State not found </button>
               }
             </div>
           }
-         
         </div>
 
         <div class="col-md-6">
           <label class="form-label">Pincode</label>
-          <input class="form-control" formControlName="pincode" />
+          <input class="form-control" formControlName="pincode" type="text" maxlength="6" />
         </div>
 
         <div class="col-md-6">
@@ -106,7 +101,7 @@
 
       <div class="d-flex justify-content-end gap-2 mt-3">
         <button type="button" class="btn btn-light" (click)="showForm.set(false)">Cancel</button>
-        <button type="submit" class="btn btn-success" [disabled]="form.invalid">Save Address</button>
+        <button type="submit" class="btn btn-success" [disabled]="addressForm.invalid" (click)="saveAddress()">Save Address</button>
       </div>
     </form>
   </div> 
