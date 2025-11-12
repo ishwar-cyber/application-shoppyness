@@ -214,6 +214,8 @@ export class Profile {
     this.authService.logout();
     this.router.navigate(['/']);
   }
-
+  viewOrder(orderId: any): String | void {
+    this.router.navigate(['/order-tracking'], { queryParams: { orderId } });
+  }
   enableEditing(): void { this.isEditing.set(true); } cancelEditing(): void { if (this.userProfile()) { this.profileForm.patchValue(this.userProfile()!); } this.isEditing.set(false); }
 }

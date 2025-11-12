@@ -16,4 +16,8 @@ export class ProfileService {
   getUserOrders() {
     return this.http.get(`${this.apiBase}/order/user/${sessionStorage.getItem('userId')}`);
   }
+
+  getOrderById(userId: string, orderId: string) {
+    return this.http.get(`${this.apiBase}/order/${userId}/${orderId}`);
+  }
 }

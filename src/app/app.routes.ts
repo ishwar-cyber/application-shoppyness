@@ -15,7 +15,7 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/product-list/product-list').then(m => m.ProductList)
     },
     {
-        path: 'categories',
+        path:'categories',
         loadComponent: () => import('./pages/categories/categories').then(m => m.Categories)
     },
     {
@@ -46,7 +46,7 @@ export const routes: Routes = [
         loadComponent: () => import('./components/order-success/order-success').then(m => m.OrderSuccess)
     },
     {
-        path: 'order-tracking/:orderId',
+        path: 'order-tracking',
         loadComponent: () => import('./components/order-details/order-details').then(m => m.OrderDetails)
     },
     {
