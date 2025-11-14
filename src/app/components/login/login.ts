@@ -121,7 +121,6 @@ export class Login implements OnInit {
 
   register() {
     if (!this.registerForm.valid) return;
-
     const value = this.registerForm.value;
     const payload = {
       username: value.name,

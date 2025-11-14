@@ -15,6 +15,10 @@ export class CheckoutService {
   }
 
   updateAddress(userId: string, addressData: any): Observable<void> {
-    return this.http.put<void>(`${environment.apiUrl}/update-user/${userId}`, addressData);
+    return this.http.post<void>(`${environment.apiUrl}/users/add-address/${userId}`, addressData);
+  }
+
+  getUserData(userId: string): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}/users/addresses/${userId}`);
   }
 }

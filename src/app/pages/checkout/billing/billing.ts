@@ -2,20 +2,19 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, input, OnInit, output, signal } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CheckoutService } from '../../../services/checkout';
-// src/app/models/address.model.ts
+
 export interface Address {
-  id: number;
-  name: string;
+  _id: string;
+  fullName: string;
   phone: string;
-  addressLine1: string;
-  addressLine2?: string;
+  line1: string;
+  line2?: string;
   landmark?: string;
   city: string;
   state: string;
   pincode: string;
   country: string; // Default = 'India'
 }
-
 @Component({
   selector: 'app-billing',
   imports: [CommonModule, ReactiveFormsModule],
@@ -25,12 +24,11 @@ export interface Address {
 export class Billing implements OnInit {
  // Signal-based inputs/outputs
   addresses = input<Address[]>([]);
-  selectedAddressId = input<number | null>(null);
-
-  addressChange = output<number>();
+  addressChange = output<any>();
   addAddress = output<Address>();
   continue = output<void>();
   openStateSearch =signal<boolean>(false);
+  selectedAddress = signal<Address | null>(null);
    // dummy state list
   allStates = [
     'Maharashtra', 'Karnataka', 'Tamil Nadu', 'Delhi',
@@ -42,19 +40,32 @@ export class Billing implements OnInit {
   // Local UI state
   showForm = signal(false);
   addressForm!: FormGroup;
+  addressesList = signal<Address[]>([]);
   private fb = inject(FormBuilder);
   private readonly checkoutService = inject(CheckoutService);
- 
+  
   ngOnInit(): void {
+    this.addressesList.set(this.addresses());
     this.buildForm();
+    this.getUserData();
   }
 
+  getUserData() {
+    const userId = sessionStorage.getItem('userId');
+    if (userId) {
+      this.checkoutService.getUserData(userId).subscribe({
+        next: (response: any) => {
+            this.addressesList.set(response.data);
+        }
+      });
+    }
+  }
   buildForm() {
     this.addressForm = this.fb.group({
-      name: ['', [Validators.required, Validators.minLength(2)]],
+      fullName: ['', [Validators.required, Validators.minLength(2)]],
       phone: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
-      addressLine1: ['', [Validators.required, Validators.minLength(6)]],
-      addressLine2: [''],
+      line1: ['', [Validators.required, Validators.minLength(6)]],
+      line2: [''],
       landmark: [''],
       city: ['', Validators.required],
       state: ['', Validators.required],
@@ -62,26 +73,22 @@ export class Billing implements OnInit {
       country: ['India', Validators.required],
     });
   }
-  onSelectAddress(id: number) {
-    this.addressChange.emit(id);
+  onSelectAddress(id: string) {
+    this.selectedAddress.set(this.addressesList().find(a => a._id === id) || null);
+    this.addressChange.emit(this.selectedAddress());
   }
-
-  
   selectState(state: string) {
     this.addressForm.patchValue({ state });
     this.searchState.set(state);
   }
   saveAddress() {
     if (this.addressForm.invalid) return;
-    const newAddr: Address = {
-      id: Date.now(),
-      ...this.addressForm.value,
-    };
+    const newAddr: Address = { ...this.addressForm.value };
     const userId = sessionStorage.getItem('userId');
     if (!userId) {
       console.error('No userId found in sessionStorage. Skipping address update.');
     } else {
-      this.checkoutService.updateAddress(userId, newAddr).subscribe({
+      this.checkoutService.updateAddress(userId, { address: newAddr }).subscribe({
         next: () => {
           console.log('Address updated successfully');
         },

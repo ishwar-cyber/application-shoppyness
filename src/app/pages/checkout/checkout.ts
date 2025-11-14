@@ -9,6 +9,7 @@ import { CartService } from '../../services/cart';
 import { CheckoutService } from '../../services/checkout';
 import { OrderSuccess } from '../../components/order-success/order-success';
 import { load } from '@cashfreepayments/cashfree-js';
+import { single } from 'rxjs';
 
 @Component({
   selector: 'app-checkout',
@@ -49,27 +50,18 @@ export class Checkout implements OnInit{
   private readonly checkoutService = inject(CheckoutService);
   public cartService = inject(CartService);
   totalAmount = signal<number>(this.cartService.subTotal());
-
-  selectedAddressId = signal<number | null>(1);
     // State (signals)
-  addresses = signal<Address[]>([]);
-    // Useful derived state
-  selectedAddress = computed(() =>
-    this.addresses().find(a => a.id === this.selectedAddressId()!) || null
-  );
-
+  addressesList = signal<Address[]>([]);
+  selectedAddress = signal<Address | null>(null);
   ngOnInit(): void {
     this.totalAmount.set(this.cartService.subTotal());
     this.loadCart();
   }
   
-
-
-
-  setAddress(id: number) {
-    this.selectedAddressId.set(id);
+  setAddress(address: any) {
+    console.log('after select', address);
+    this.selectedAddress.set(address);
   }
-
   private loadCart() {
     this.cartService.loadCart().subscribe({
       next: (items:any) => {
@@ -95,8 +87,8 @@ export class Checkout implements OnInit{
   }
 
   addAddress(newAddr: Address) {
-    this.addresses.update(list => [...list, newAddr]);
-    this.selectedAddressId.set(newAddr.id);
+    this.addressesList.update(list => [...list, newAddr]);
+      this.selectedAddress.set(newAddr);
   }
   formatCurrency(amount: number): string {
     return amount.toLocaleString('en-IN');
@@ -138,11 +130,12 @@ export class Checkout implements OnInit{
       .subscribe({
         next: (response: any) => {
           this.isCouponLoading.set(false);
+          console.log('response', response);
           
           if (response.success) {
             this.couponError.set(false);
             this.couponMessage.set(response.message);
-            // this.loadCartItems(); // Refresh cart to reflect discount
+            // this.loadCart(); // Refresh cart to reflect discount
           } else {
             this.couponError.set(true);
             this.couponMessage.set(response.message);
@@ -162,7 +155,7 @@ export class Checkout implements OnInit{
     this.isProcessing.set(true);
     this.error.set(null);
     const orderPayload = {
-      shippingAddress: this.addresses().find(a => a.id === this.selectedAddressId()),
+      shippingAddress:  this.selectedAddress(),
       paymentMethod: 'online',
       items: this.cartService.cartItems(),
       totalAmount: this.cartService.subTotal() + this.shipping(),

@@ -61,8 +61,7 @@
             }
             @if (currentStep() === 2) {
               <app-billing
-                [addresses]="addresses()"
-                [selectedAddressId]="selectedAddressId()"
+                [addresses]="addressesList()"
                 (addressChange)="setAddress($event)"
                 (addAddress)="addAddress($event)"
                 (continue)="nextStep()">
@@ -202,7 +201,7 @@
                   <button class="btn btn-outline-secondary" (click)="prevStep()" [disabled]="isProcessing()">
                     &larr; Back
                   </button>
-                  <button class="btn btn-primary" (click)="placeOrder()" [disabled]="isProcessing() || !selectedAddressId()">
+                  <button class="btn btn-primary" (click)="placeOrder()" [disabled]="isProcessing()">
                     @if(!isProcessing()){
                       Place Order &rarr;
                     } @else if(isProcessing()){
