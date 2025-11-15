@@ -40,13 +40,11 @@ export class Checkout implements OnInit{
   isProcessing = signal(false);
 
   selectedPaymentTab = signal<'card' | 'upi'>('card');
-
+  subTotal = signal<number>(0);
   // Selected payment tab
   selectPaymentTab(tab: 'card' | 'upi') {
     this.selectedPaymentTab.set(tab);
   }
-  private readonly formBuilder = inject(FormBuilder);
-  private readonly router = inject(Router);
   private readonly checkoutService = inject(CheckoutService);
   public cartService = inject(CartService);
   totalAmount = signal<number>(this.cartService.subTotal());
@@ -55,11 +53,12 @@ export class Checkout implements OnInit{
   selectedAddress = signal<Address | null>(null);
   ngOnInit(): void {
     this.totalAmount.set(this.cartService.subTotal());
+    this.subTotal.set(this.cartService.subTotal());
+    this.cartItems.set(this.cartService.cartItems());
     this.loadCart();
   }
   
   setAddress(address: any) {
-    console.log('after select', address);
     this.selectedAddress.set(address);
   }
   private loadCart() {
@@ -90,9 +89,10 @@ export class Checkout implements OnInit{
     this.addressesList.update(list => [...list, newAddr]);
       this.selectedAddress.set(newAddr);
   }
-  formatCurrency(amount: number): string {
-    return amount.toLocaleString('en-IN');
-  }
+ formatCurrency(amount: number | undefined | null): string {
+  const value = Number(amount || 0);
+  return '₹' + value.toLocaleString('en-IN');
+}
   removeCoupon(code: string): void {
     this.isCouponLoading.set(true);
     
@@ -121,29 +121,18 @@ export class Checkout implements OnInit{
       this.couponMessage.set('Please enter a valid coupon code to receive a discount');
       return;
     }
-    
     this.isCouponLoading.set(true);
     this.couponError.set(false);
     this.couponMessage.set(null);
-
     this.cartService.applyCoupon(code)
       .subscribe({
         next: (response: any) => {
-          this.isCouponLoading.set(false);
-          console.log('response', response);
-          
-          if (response.success) {
-            this.couponError.set(false);
-            this.couponMessage.set(response.message);
-            // this.loadCart(); // Refresh cart to reflect discount
-          } else {
-            this.couponError.set(true);
-            this.couponMessage.set(response.message);
-          }
-        },
-        error: (err) => {
+          this.couponCode.set(code);
+          this.discount.set(response.discount);
+          this.subTotal.set(response.cartTotal);
+          this.totalAmount.set(response.finalTotal);
+        }, error: (err) => {
           console.error('Error applying coupon:', err);
-          this.isCouponLoading.set(false);
           this.couponError.set(true);
           this.couponMessage.set('Failed to apply coupon. Please try again.');
         }
@@ -158,9 +147,12 @@ export class Checkout implements OnInit{
       shippingAddress:  this.selectedAddress(),
       paymentMethod: 'online',
       items: this.cartService.cartItems(),
-      totalAmount: this.cartService.subTotal() + this.shipping(),
+      totalAmount: this.totalAmount(),
       coupon: this.couponCode() || null
     };
+
+    console.log('order payload', orderPayload);
+    
     this.checkoutService.createOrder(orderPayload).subscribe({
       next: async (res: any) => {
         // this.isProcessing.set(false);

@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, input, OnInit, output, signal } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CheckoutService } from '../../../services/checkout';
+import { Router } from '@angular/router';
 
 export interface Address {
   _id: string;
@@ -43,6 +44,7 @@ export class Billing implements OnInit {
   addressesList = signal<Address[]>([]);
   private fb = inject(FormBuilder);
   private readonly checkoutService = inject(CheckoutService);
+  private router = inject(Router);
   
   ngOnInit(): void {
     this.addressesList.set(this.addresses());
@@ -52,12 +54,19 @@ export class Billing implements OnInit {
 
   getUserData() {
     const userId = sessionStorage.getItem('userId');
+    console.log('user idf', userId);
+    
     if (userId) {
       this.checkoutService.getUserData(userId).subscribe({
         next: (response: any) => {
             this.addressesList.set(response.data);
         }
       });
+    } else {
+     //remove authtoken and redirect to login
+      console.error('No userId found in sessionStorage.');
+      sessionStorage.removeItem('authToken');
+      this.router.navigate(['/login']);
     }
   }
   buildForm() {

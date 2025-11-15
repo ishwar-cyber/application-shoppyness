@@ -18,6 +18,6 @@ export class ProfileService {
   }
 
   getOrderById(userId: string, orderId: string) {
-    return this.http.get(`${this.apiBase}/order/${userId}/${orderId}`);
+    return this.http.get(`${this.apiBase}/order/${orderId}/tracking`);
   }
 }

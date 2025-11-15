@@ -91,62 +91,32 @@
                                   <div class="item-price">₹{{ formatCurrency(item.price * item.quantity) }}</div>
                                 </div>
                             }
-
                           </div>
-
                       </div>
-
                       <hr>
-
                       <!-- Pricing Breakdown -->
                       <div class="price-summary">
                           <!-- Coupon Section -->
                         <!-- Coupon section allows users to apply discount codes to their order -->
                         <div class="coupon-section mb-3">
                           <!-- Coupon Input Form - Shown when no coupon is applied -->
-                          @if(true){
                           <div class="coupon-form">
                             <div class="input-group">
-                              <input 
-                                type="text" 
-                                class="form-control" 
-                                placeholder="Enter coupon code" 
-                                [value]="couponInput()"
-                                (input)="couponInput.set($any($event.target).value)"
-                                [disabled]="isCouponLoading()"
-                                (keyup.enter)="applyCoupon()"
+                              <input type="text"  class="form-control"  placeholder="Enter coupon code" 
+                                [value]="couponInput()" (input)="couponInput.set($any($event.target).value)"
+                                [disabled]="isCouponLoading()" (keyup.enter)="applyCoupon()"
                               >
-                              <button 
-                                class="btn btn-outline-primary" 
-                                type="button" 
-                                [disabled]="isCouponLoading() || !couponInput()"
-                                (click)="applyCoupon()"
-                              >
-                              @if(!isCouponLoading()){
-                                <span >Apply</span>
-                              }
-                              @if(isCouponLoading()){
-                                  <span >
-                                  <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
-                                  <span class="visually-hidden">Loading...</span>
-                                </span>
-                              }
-                                
-                              </button>
+                              <button class="btn btn-outline-primary" type="button" (click)="applyCoupon()"> Apply </button>
                             </div>
                             @if(couponMessage() && !couponCode()){
                               <div class="coupon-message mt-2" [class.text-danger]="couponError()" [class.text-success]="!couponError()">
-                              {{ couponMessage() }}
-                            </div>
+                                {{ couponMessage() }}
+                              </div>
                             }
-                            
                           </div>
-                          }
-                        
-                          
                           <!-- Applied Coupon Display - Shown when a coupon is successfully applied -->
                           @if(couponCode()){
-                              <div  class="applied-coupon">
+                            <div  class="applied-coupon mt-2">
                             <div class="d-flex justify-content-between align-items-center">
                               <div>
                                 <span class="badge bg-success me-2">
@@ -158,27 +128,26 @@
                                 <i class="bi bi-x-circle"></i> Remove
                               </button>
                             </div>
-                            @if(discount() > 0) {
-                              <div class="summary-item d-flex justify-content-between mt-2 text-success">
-                              <span>Discount</span>
-                              <span>-₹{{ formatCurrency(discount()) }}</span>
-                            </div>
-                            }
-                          
                           </div>
                           }
-                          
                         </div>
                         <div class="summary-item d-flex justify-content-between mb-2">
                           <span>Subtotal</span>
-                          <span>₹{{ formatCurrency(cartService.subTotal()) }}</span>
+                          <span>{{ formatCurrency(subTotal()) }}</span>
                         </div>
-                        <div class="summary-item d-flex justify-content-between mb-2">
-                          <span>Shipping Charges  </span>
-                          @if (shipping() > 0) {
-                            <span>₹{{ formatCurrency(shipping()) }}</span>
-                          }
-                        </div>
+                        
+                        @if (shipping()) {
+                          <div class="summary-item d-flex justify-content-between mb-2">
+                            <span>Shipping Charges  </span>
+                            <span>{{ formatCurrency(shipping()) }}</span>
+                          </div>
+                        }
+                        @if(discount()) {
+                          <div class="summary-item d-flex justify-content-between mt-2 text-success">
+                            <span>Discount</span>
+                            <span>-{{ formatCurrency(discount()) }}</span>
+                          </div>
+                        }
                         @if (selectedPaymentMethod() === 'cod' && currentStep() === 3) {
                           <div class="summary-item d-flex justify-content-between mb-2">
                             <span>Cash on Delivery Fee</span>
@@ -189,7 +158,7 @@
                         <div class="summary-total d-flex justify-content-between align-items-center">
                           <span>Total</span>
                           <span class="total-price">
-                            ₹{{ formatCurrency(cartService.subTotal() + (selectedPaymentMethod() === 'cod' && currentStep() === 3 ? 50 : 0)) }}
+                            {{ formatCurrency(totalAmount()) }}
                           </span>
                         </div>
                       </div>

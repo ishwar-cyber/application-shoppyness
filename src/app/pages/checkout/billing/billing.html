@@ -1,7 +1,6 @@
 <h4 class="mb-3">Select Delivery Address</h4>
 
 <div class="list-group mb-3">
-  <pre>{{addressesList() | json}}</pre>
   @for (addr of addressesList(); track addr._id) {
     <label class="list-group-item d-flex gap-2 align-items-start">
       <input

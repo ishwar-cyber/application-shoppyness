@@ -1,4 +1,4 @@
-import { Component, inject, input, Input, PLATFORM_ID } from '@angular/core';
+import { Component, EventEmitter, inject, input, Input, Output, PLATFORM_ID, signal } from '@angular/core';
 import { Router, RouterLink, RouterModule } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { CartService } from '../../services/cart';
@@ -16,12 +16,24 @@ export class ProductCard {
   @Input() product:any = [];
   isLoading = input();
 
+    // @Input() product: any;
+  @Output() addToCart = new EventEmitter<any>();
+
+  isWishlisted = signal(false);
+
+  toggleWishlist() {
+    this.isWishlisted.update(v => !v);
+  }
+
+  handleAddToCart() {
+    this.addToCart.emit(this.product);
+  }
   navigateToProduct(slug: string): void {
     this.router.navigate(['/product', slug]);
   }
 
     // Add product to cart
-  addToCart(product: any): void {
+  addToCart1(product: any): void {
     // Add product to cart through CartService
      const payload = {
       productId: product,

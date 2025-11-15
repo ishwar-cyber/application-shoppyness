@@ -14,12 +14,11 @@
     </div>
 
   </div>
-   <!-- Push price + button to bottom -->
     <div class="mt-auto d-flex justify-content-between align-items-center border-top p-2">
       <span class="fw-bold" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
         <meta itemprop="priceCurrency" content="INR" />
         <span itemprop="price">₹{{ product.price }}</span>
       </span>
-      <button class="btn btn-outline-primary btn-sm" (click)="addToCart(product._id)" [disabled]="product.stock === 'in' ? '' : product.stock <= 0">Add to Cart</button>
+      <button class="btn btn-outline-primary btn-sm" (click)="addToCart1(product._id)" [disabled]="product.stock === 'in' ? '' : product.stock <= 0">Add to Cart</button>
     </div>
 </div>
