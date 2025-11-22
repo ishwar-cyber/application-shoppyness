@@ -100,6 +100,7 @@ export class Billing implements OnInit {
       this.checkoutService.updateAddress(userId, { address: newAddr }).subscribe({
         next: () => {
           console.log('Address updated successfully');
+          this.getUserData();
         },
         error: (err) => {
           console.error('Error updating address:', err);
