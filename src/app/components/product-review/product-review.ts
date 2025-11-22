@@ -1,67 +1,133 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, inject, Input, OnInit, signal } from '@angular/core';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ProductReviewService } from '../../services/product-review';
 
 interface Review {
   name: string;
+  email: string;
+  userId?: string;
+  productId: string | null;
   rating: number;
   comment: string;
-  date: string;
+  createdAt?: string;
 }
+
 @Component({
   selector: 'app-product-review',
-  imports: [CommonModule, FormsModule],
+  standalone: true,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './product-review.html',
-  styleUrl: './product-review.scss'
+  styleUrls: ['./product-review.scss'],
 })
-
-export class ProductReview {
+export class ProductReview implements OnInit {
+  
   @Input() productId: string | null = null;
-   reviews = signal<Review[]>([
-    { name: 'John Doe', rating: 5, comment: 'Amazing product! Totally worth it.', date: '2025-11-05' },
-    { name: 'Sarah Lee', rating: 4, comment: 'Good quality but a bit expensive.', date: '2025-11-04' }
-  ]);
+  productReviewForm!: FormGroup;
 
-  newReview = signal<Review>({
-    name: '',
-    rating: 0,
-    comment: '',
-    date: ''
-  });
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly reviewService = inject(ProductReviewService);
 
+  // All reviews
+  reviews = signal<Review[]>([]);
+
+  // ⭐ Rating signals
+  rating = signal<number>(0);
   hoverRating = signal(0);
 
-  setRating(value: number) {
-    this.newReview.update(r => ({ ...r, rating: value }));
+  // 👇 Added Load More Signals
+  visibleCount = signal(3); // show first 3 reviews
+  visibleReviews = signal<Review[]>([]); // derived list (updated after load)
+
+  ngOnInit(): void {
+    this.buildForm();
+    this.getProductReview();
   }
 
+  // Build form
+  buildForm() {
+    this.productReviewForm = this.formBuilder.group({
+      userName: ['', Validators.required],
+      userEmail: ['', [Validators.required, Validators.email]],
+      rating: [0, Validators.required],
+      comment: ['', Validators.required],
+    });
+  }
+
+  // Load reviews from backend
+  getProductReview() {
+    if (!this.productId) {
+      this.reviews.set([]);
+      this.updateVisibleReviews();
+      return;
+    }
+
+    this.reviewService.getProductByIdReview(this.productId).subscribe({
+      next: (res: any) => {
+        this.reviews.set(res?.reviews || []);
+        this.visibleCount.set(3);      // reset visible count
+        this.updateVisibleReviews();   // show first 3 again
+      },
+      error: (err: any) => {
+        console.error('Failed to load reviews', err);
+      },
+    });
+  }
+
+  // ⭐ Rating interactions
+  setRating(value: number) {
+    this.rating.set(value);
+  }
   hoverStar(value: number) {
     this.hoverRating.set(value);
   }
-
   leaveStar() {
     this.hoverRating.set(0);
   }
 
+  // Add new review locally + API
   addReview() {
-    if (!this.newReview().name || !this.newReview().comment || this.newReview().rating === 0) {
-      alert('Please fill in all fields and select a rating.');
-      return;
-    }
-
-    const review: Review = {
-      ...this.newReview(),
-      date: new Date().toISOString().split('T')[0]
+    const payload = {
+      name: this.productReviewForm.controls['userName'].value,
+      email: this.productReviewForm.controls['userEmail'].value,
+      productId: this.productId || '',
+      rating: this.rating(),
+      comment: this.productReviewForm.controls['comment'].value,
     };
 
-    this.reviews.update(r => [review, ...r]);
-    this.newReview.set({ name: '', rating: 0, comment: '', date: '' });
+    this.reviewService.addProductReview(payload).subscribe({
+      next: () => {},
+    });
+
+    const review: Review = {
+      ...payload,
+      productId: this.productId || null,
+      createdAt: new Date().toISOString(),
+    };
+
+    // Add new review at top
+    this.reviews.update((r) => [review, ...r]);
+    this.updateVisibleReviews();
+
+    this.productReviewForm.reset();
+    this.rating.set(0);
   }
 
+  // ⭐⭐ NEW — LOAD MORE FUNCTION ⭐⭐
+  loadMore() {
+    this.visibleCount.set(this.visibleCount() + 3);
+    this.updateVisibleReviews();
+  }
+
+  // Apply visible slice
+  updateVisibleReviews() {
+    this.visibleReviews.set(this.reviews().slice(0, this.visibleCount()));
+  }
+
+  // Average rating
   getAverageRating(): number {
     const all = this.reviews();
     if (all.length === 0) return 0;
-    const total = all.reduce((sum, r) => sum + r.rating, 0);
-    return +(total / all.length).toFixed(1);
+    return +(all.reduce((s, r) => s + r.rating, 0) / all.length).toFixed(1);
   }
 }
