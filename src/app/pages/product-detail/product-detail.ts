@@ -13,7 +13,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { Product } from '../../services/product';
 import { Seo } from '../../services/seo';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { CommonModule, isPlatformBrowser, ViewportScroller } from '@angular/common';
 import { CartService } from '../../services/cart';
 import { ProductModel, ResponsePayload, Variant } from '../../commons/models/product.model';
 import { FormsModule } from '@angular/forms';
@@ -36,6 +36,7 @@ export class ProductDetail implements OnInit, OnDestroy {
   private readonly seoService = inject(Seo);
   private readonly productService = inject(Product);
   public cartService = inject(CartService);
+  private scroller = inject(ViewportScroller);
   private readonly platformId = inject(PLATFORM_ID);
 
   // signals
@@ -54,7 +55,7 @@ export class ProductDetail implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loading.set(true);
-
+    this.scroller.scrollToPosition([0, 0]); // safe scroll    
     // subscribe to route params for product id
     this.route.params.pipe(takeUntil(this.destroy$)).subscribe(params => {
       const productId = params['slug'];

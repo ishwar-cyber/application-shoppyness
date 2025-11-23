@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, ViewportScroller } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
 import { Subject, takeUntil } from 'rxjs';
 import { Seo } from '../../services/seo';
@@ -39,12 +39,14 @@ export class Cart implements OnInit{
   // Loading state for quantity updates
   updatingItemId: string | null = '';
   // Services
+  private scroller = inject(ViewportScroller);
   public cartService = inject(CartService);
   private readonly seoService = inject(Seo);
   private readonly router = inject(Router);
   private readonly authService = inject(Auth);
   
   ngOnInit(): void {
+    this.scroller.scrollToPosition([0, 0]); // safe scroll
     this.loadCartItems();
     // Set SEO tags
     this.seoService.updateMetaTags({

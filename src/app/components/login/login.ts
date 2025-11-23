@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, ViewportScroller } from '@angular/common';
 import { Component, inject, OnInit, signal, PLATFORM_ID } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -31,8 +31,10 @@ export class Login implements OnInit {
   private readonly cookiesService = inject(CookieService);
   private readonly toastr = inject(ToastrService);
   private readonly platformId = inject(PLATFORM_ID) as Object;
+  private scroller = inject(ViewportScroller);
 
   ngOnInit(): void {
+     this.scroller.scrollToPosition([0, 0]); // safe scroll
     this.initForms();
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
     if (isPlatformBrowser(this.platformId)) {

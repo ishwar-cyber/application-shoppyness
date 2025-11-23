@@ -147,13 +147,13 @@
     </a>
 
     @if (authService.isLoggedIn()) {
-      <a routerLink="/profile" class="mobile-nav-item"  [class.selected]="selectedBottomMenu() === 'account'">
+      <a routerLink="/profile" class="mobile-nav-item"  [class.selected]="selectedBottomMenu() === 'profile'">
         <i [class]="selectedBottomMenu() ? 'bi bi-person-fill' : 'bi bi-person'"></i>
         <span>Account</span>
       </a>
-      } @else {
-        <a routerLink="/login" class="mobile-nav-item"  [class.active]="selectedBottomMenu() === 'account'">
-        <i class="bi bi-person"></i>
+    } @else {
+      <a routerLink="/login" class="mobile-nav-item"  [class.active]="selectedBottomMenu() === 'login'">
+          <i class="bi bi-person"></i>
         <span>Account</span>
       </a>
     }

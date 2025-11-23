@@ -1,4 +1,4 @@
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { CommonModule, isPlatformBrowser, ViewportScroller } from '@angular/common';
 import { Component, HostListener, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink, RouterModule } from '@angular/router';
 import { ProductModel } from '../../commons/models/product.model';
@@ -62,6 +62,7 @@ export class ProductList implements OnInit {
   private readonly productService = inject(Product);
   private readonly platformId = inject(PLATFORM_ID);
   public readonly homeService = inject(HomeService);
+  private scroller = inject(ViewportScroller);
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event) {
@@ -78,7 +79,7 @@ export class ProductList implements OnInit {
   ngOnInit(): void {
     // Check initial screen size
     this.checkScreenSize();
-
+    this.scroller.scrollToPosition([0, 0]); // safe scroll
     this.route.queryParams.subscribe(params => {
       this.isCategoryRoute.set(false);
       if (params['search']) {

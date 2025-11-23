@@ -1,6 +1,6 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, computed, HostListener, inject, OnInit, PLATFORM_ID, Signal, signal } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink, RouterModule } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router, RouterLink, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Auth } from '../../services/auth';
 import { Product } from '../../services/product';
@@ -19,7 +19,7 @@ export class Header implements OnInit{
   searchQuery = '';
   isSearchFocused = false;
   toggleUserDropdown =signal<boolean>(false)
-  selectedBottomMenu = signal<string>('home')
+  selectedBottomMenu = signal<string>('')
   filteredProducts = signal<any>([]);
   
   private readonly router = inject(Router);
@@ -46,9 +46,14 @@ export class Header implements OnInit{
     if(isPlatformBrowser(this.platformId)){
       this.userName.set(sessionStorage.getItem('userName'));
     }
+   this.router.events.subscribe(event => {
+    if (event instanceof NavigationEnd) {
+      const segment = event.urlAfterRedirects.split('/')[1];
+      this.selectedBottomMenu.set(segment || 'home');
+    }
+  });
   }
-
-    // Update screen width when window is resized
+  // pdate screen width when window is resized
   @HostListener('window:resize')
   onResize() {
     if(isPlatformBrowser(this.platformId)){
@@ -66,7 +71,13 @@ export class Header implements OnInit{
   hideMegaMenu(): void {
     this.activeCategory = null;
   }
-  
+  getFirstRouteSegment() {
+      const firstRoute = this.router.url.split('/')[1]; // e.g., /products → "products"
+
+      if (firstRoute) {
+        this.selectedBottomMenu.set(firstRoute);
+      }
+  }
 
   logout(): void {
     this.authService.isLoggedInSignal.set(false);
@@ -75,7 +86,5 @@ export class Header implements OnInit{
   }
   selectBottomMenu(menu: string){
     this.selectedBottomMenu.set(menu);
-     // check if current URL starts with path
-    return this.router.url.startsWith(menu);
   }
 }
