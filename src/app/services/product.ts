@@ -17,9 +17,7 @@ export class Product {
   getProduct() {
     const KEY = makeStateKey<ProductModel[]>('products');
     const saved = this.state.get(KEY, null as any);
-
     if (saved) return of(saved);
-
     return this.http.get<ProductModel[]>(`${this.URL}/products`).pipe(
       tap(data => this.state.set(KEY, data))
     );

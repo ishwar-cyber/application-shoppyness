@@ -129,7 +129,6 @@ export class ProductList implements OnInit {
       next: (product: any) => {
         this.allProducts.set(product.data);
         this.filteredProducts.set(product.data);
-
         const prices = product.data.map((p: any) => p.price || 0);
         this.minPrice.set(Math.min(...prices));
         this.maxPrice.set(Math.max(...prices));

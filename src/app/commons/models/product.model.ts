@@ -12,7 +12,7 @@ export interface ProductModel {
   variants: Variant[]
   category: Category[]
   pincode: string[]
-  stock: number
+  stock: string
   description: string
   sku: string
   featured: boolean

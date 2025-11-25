@@ -19,7 +19,6 @@ export class CartService {
   cartCount = signal<number>(0);
   totalPrice = signal<number>(0);
   subTotal = signal<number>(0);
-  cartItems$ = this.cartItems.asReadonly();
   cart = computed(()=> this.cartItems());
 
   /** 🔄 Load cart (SSR-safe) */
@@ -92,7 +91,7 @@ export class CartService {
   applyCoupon(code: string) {
     if (!this.isBrowser) return of(null);
     return this.http.post<CartResponse>(`${environment.apiUrl}/coupons/apply-coupon`, { code }, { withCredentials: true }).pipe(
-      tap(res => res.success && this.updateSignals(res)),
+      tap(res => res.success),
       catchError(err => {
         console.error('Error applying coupon:', err);
         return of(null);
@@ -104,7 +103,7 @@ export class CartService {
   removeCoupon(code: string) {
     if (!this.isBrowser) return of(null);
     return this.http.delete<CartResponse>(`${this.apiUrl}/remove-coupon/${code}`, { withCredentials: true }).pipe(
-      tap(res => res.success && this.updateSignals(res)),
+      tap(res => res.success),
       catchError(err => {
         console.error('Error removing coupon:', err);
         return of(null);

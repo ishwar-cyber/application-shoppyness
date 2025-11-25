@@ -1,138 +1,117 @@
 <div class="payment-status-page">
   <div class="container card-wrapper">
     <div class="status-card">
+      <!-- Header -->
       <div class="header">
         <div class="left">
-          <h2>Payment status</h2>
-          <p class="muted">Order summary & transaction status</p>
+          <h2>Payment Status</h2>
+          <p class="muted">Order summary & transaction details</p>
         </div>
 
         <div class="actions">
           <button class="btn btn-outline" (click)="refresh()" [disabled]="refreshing()">
-            @if (refreshing()) {
+            @if(refreshing()) {
               <span class="dot-spinner"></span>
             } @else {
-              <span>Refresh</span>
+              Refresh
             }
           </button>
+
           <button class="btn btn-primary" (click)="goToOrders()">View Orders</button>
         </div>
       </div>
 
       <div class="content">
         <!-- Loading -->
-         @if (loading()) {
-           <div class="center">
-             <div class="spinner"></div>
-             <p class="muted">Checking payment status...</p>
-           </div>
-         }
-
-        <!-- Error -->
-         @if (errorMsg()) {
-           <div class="alert error">
-             {{ errorMsg() }}
-           </div>
-         }
-
-        <!-- Order Not Found -->
-         @if(orderNotFound()) {
-          <div class="alert warning">
-            Order not found. Please verify the order ID or contact support.
+        @if (loading()) {
+          <div class="center">
+            <div class="spinner"></div>
+            <p class="muted">Checking payment status...</p>
           </div>
         }
 
-        <!-- Order Card -->
-        @if (order() && !loading()) {
-          <div  class="order-card">
+        <!-- Error -->
+        @if (errorMsg()) {
+          <div class="alert error">
+            {{ errorMsg() }}
+          </div>
+        }
+
+        <!-- Order Not Found -->
+        @if(orderNotFound()) {
+          <div class="alert warning">
+            Order not found. Please verify order ID.
+          </div>
+        }
+
+        <!-- ORDER CARD -->
+        @if(order() && !loading()) {
+          <div class="order-card">
+            <!-- Order Header -->
             <div class="order-header">
               <div>
-                <h3>Order <span class="order-id">{{ order()!.orderId }}</span></h3>
-                <div class="status-badge" [ngClass]="{
-                  'status-pending': order()!.status === 'pending' || order()!.status === 'active',
-                  'status-success': order()!.status === 'success' || order()!.status === 'paid',
-                  'status-failed': order()!.status === 'failed' || order()!.status === 'cancelled'
-                }">
-                  {{ (order()!.status || 'pending') | titlecase }}
+                <h3>Order 
+                  <span class="order-id">{{ order()?.order_id }}</span>
+                </h3>
+
+                <div class="status-badge" 
+                  [ngClass]="{
+                    'status-pending': order()!.order_status === 'ACTIVE' || order()!.order_status === 'PENDING',
+                    'status-success': order()!.order_status === 'PAID' || order()!.order_status === 'SUCCESS',
+                    'status-failed': order()!.order_status === 'FAILED' || order()!.order_status === 'CANCELLED'
+                  }">
+                  {{ order()?.order_status | titlecase }}
                 </div>
               </div>
 
               <div class="amount">
-                <div class="price">{{ order()!.currency || 'INR' }} {{ order()!.amount ?? '-' }}</div>
-                <div class="sub muted">Total paid</div>
+                <div class="price">
+                  {{ order()?.order_currency }} {{ order()?.order_amount }}
+                </div>
+                <div class="sub muted">Total Amount</div>
               </div>
             </div>
 
+            <!-- Order Body -->
             <div class="order-body">
+              
               <div class="left-col">
-                <h4>Items</h4>
-                @if (order()!.items?.length) {
-                  <div>
-                    @for (it of order()!.items; track $index) {
-                      <div class="item">
-                        @if(it.image) {
-                          <img *ngIf="it.image" [src]="it.image" alt="img" />
-                        }
-                        <div class="meta">
-                          <div class="title">{{ it.name }}</div>
-                          <div class="qty">Qty: {{ it.quantity ?? 1 }}</div>
-                        </div>
-                        <div class="price">{{ order()!.currency || 'INR' }} {{ it.price ?? '-' }}</div>
-                      </div>
-                    }
-                  </div>
-                } @else {
-                  <ng-template>
-                    <div class="muted">No items data available.</div>
-                  </ng-template>
-                }
+                <h4>Customer Details</h4>
+
+                <div class="detail-row">
+                  <strong>Name:</strong>
+                  <span>{{ order()?.customer_details?.customer_name }}</span>
+                </div>
+
+                <div class="detail-row">
+                  <strong>Email:</strong>
+                  <span>{{ order()?.customer_details?.customer_email }}</span>
+                </div>
+
+                <div class="detail-row">
+                  <strong>Phone:</strong>
+                  <span>{{ order()?.customer_details?.customer_phone }}</span>
+                </div>
+
+                <div class="detail-row">
+                  <strong>Created At:</strong>
+                  <span>{{ order()?.created_at | date:'medium' }}</span>
+                </div>
+
+                <!-- <div class="detail-row">
+                  <strong>Payment Session:</strong>
+                  <span class="muted small">{{ order()?.payment_session_id }}</span>
+                </div> -->
               </div>
 
-              <div class="right-col">
-                <h4>Transaction</h4>
-
-                <div class="field">
-                  <div class="label">Transaction ID</div>
-                  <div class="value">{{ order()!.transactionId || '-' }}</div>
-                </div>
-
-                <div class="field">
-                  <div class="label">Payment message</div>
-                  <div class="value">{{ order()!.paymentMessage || '-' }}</div>
-                </div>
-
-                <div class="field">
-                  <div class="label">Payment time</div>
-                  <div class="value">{{ formatDate(order()!.paymentTime) }}</div>
-                </div>
-
-                <div class="field">
-                  <div class="label">Session</div>
-                  <div class="value small">{{ order()!.paymentSessionId || '-' }}</div>
-                </div>
-
-                <div class="cta">
-                  <button *ngIf="order()!.status === 'failed'" class="btn btn-primary w-100" (click)="retryPayment()">
-                    Retry Payment
-                  </button>
-                  @if (order()!.status === 'pending' || order()!.status === 'active') {
-                    <button class="btn btn-outline w-100" (click)="retryPayment()">
-                      Continue to Pay
-                    </button>
-                  }
-                  @if (order()!.status === 'success') {
-                    <button class="btn btn-success w-100" (click)="goToOrders()"> View Order </button>
-                  }
-                </div>
-              </div>
             </div>
+
           </div>
         }
-        <!-- small toast -->
+
+        <!-- TOAST -->
         @if (toast()) {
-          <div class="toast">
-            {{ toast() }}
-          </div>
+          <div class="toast">{{ toast() }}</div>
         }
       </div>
     </div>

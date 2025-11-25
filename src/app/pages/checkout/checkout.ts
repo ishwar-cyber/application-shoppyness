@@ -143,10 +143,22 @@ export class Checkout implements OnInit{
     if (this.isProcessing()) return; // Prevent multiple submissions
     this.isProcessing.set(true);
     this.error.set(null);
+    if(this.cartService.cartItems().length===0){
+      this.cartService.loadCart().subscribe({
+        next: (items:any) => {
+          this.cartItems.set(items);
+          this.isLoading.set(false);
+        },
+        error: () => {
+          this.error.set('Failed to load cart. Please try again.');
+          this.isLoading.set(false);
+        },
+      }); 
+    }
     const orderPayload = {
       shippingAddress:  this.selectedAddress(),
       paymentMethod: 'online',
-      items: this.cartService.cartItems(),
+      items: this.cartService.cartItems() || this.cartItems(),
       totalAmount: this.totalAmount(),
       coupon: this.couponCode() || null
     };
