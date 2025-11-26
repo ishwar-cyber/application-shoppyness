@@ -7,6 +7,17 @@ import { Product } from '../../services/product';
 import { Search } from "../search/search";
 import { CartService } from '../../services/cart';
 import { HomeService } from '../../services/home';
+
+interface CategoryItem {
+  name: string;
+  slug: string;
+  subcategories: SubcategoryItem[];
+}
+
+interface SubcategoryItem {
+  name: string;
+  slug: string;
+}
 @Component({
   selector: 'app-header',
   standalone: true,
@@ -38,10 +49,17 @@ export class Header implements OnInit{
   cartCount = signal<number>(0);
   userName = signal<any>('');
   // Categories data with subcategories
-  categories = this.home.categoriesHeader();
+  categories = signal<CategoryItem[]>([]);
 
   ngOnInit(): void {
-    this.home.getCategoryAndSubcategory();
+
+    this.home.getCategoryAndSubcategory().subscribe({
+      next: (res: any) => {
+       this.categories.set(res);
+       console.log(this.categories());
+      },
+      error: (err) => console.error('Category API error:', err),
+    });
 
     if(isPlatformBrowser(this.platformId)){
       this.userName.set(sessionStorage.getItem('userName'));
