@@ -40,8 +40,11 @@ export class Home implements OnInit{
   ]);
   private readonly product = inject(Product);
   private readonly home = inject(HomeService)
- @ViewChild('scrollContainer') scrollContainer!: ElementRef;
-  constructor(private readonly seoService: Seo) {}
+  @ViewChild('scrollContainer') scrollContainer!: ElementRef;
+  constructor() {}
+
+  private readonly seoService = inject(Seo);
+  private readonly homeService = inject(HomeService);
 
   ngOnInit(): void {
     // Set SEO meta tags for home page
@@ -66,6 +69,8 @@ export class Home implements OnInit{
         console.error('Error fetching data', err);
       }
     })
+
+    this.homeService.getCategoryAndSubcategory();
   }
   
   getCategoryIcon(category: string): string {
