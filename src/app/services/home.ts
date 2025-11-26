@@ -27,11 +27,6 @@ export class HomeService {
   }
 
   getCategoryAndSubcategory(){
-    return this.http.get(`${this.url}/category/header`).subscribe({
-      next: (res: any) => {
-        this.categoriesHeader.set(res);
-      },
-      error: (err) => console.error('Category API error:', err),
-    });
+    return this.http.get(`${this.url}/category/header`)
   }
 }
