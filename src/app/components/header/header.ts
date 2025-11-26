@@ -100,10 +100,14 @@ export class Header implements OnInit{
   }
 
   loadCategories() {
-  this.home.getCategoryAndSubcategory().subscribe((res: any) => {
-    this.categories.set(res);
-  });
-}
+    this.home.getCategoryAndSubcategory().subscribe({
+      next: (res:any) => {
+        this.categories.set(res);
+        console.log('UPDATED HEADER DATA:', res);
+      },
+      error: (err) => console.error(err)
+    });
+  }
   logout(): void {
     this.authService.isLoggedInSignal.set(false);
     this.authService.logout();
