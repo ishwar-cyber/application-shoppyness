@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../environments/environment';
 interface CategoryItem {
@@ -15,18 +15,26 @@ interface SubcategoryItem {
   providedIn: 'root'
 })
 export class HomeService {
-  private readonly http =inject(HttpClient);
+  private readonly http = inject(HttpClient);
   public category = signal<any[]>([]);
   public categoriesHeader = signal<CategoryItem[]>([]);
   url = environment.apiUrl;
-  getBrand(){
+  getBrand() {
     return this.http.get(`${this.url}/brands`);
   }
-  getCategories(){
-    return this.http.get(`${this.url}/category`)
+
+  getCategories() {
+    return this.http.get(`${this.url}/category`);
   }
 
-  getCategoryAndSubcategory(){
-    return this.http.get(`${this.url}/category/header`)
+  // ⭐ Always fresh data – cache disabled
+  getCategoryAndSubcategory() {
+    return this.http.get(`${this.url}/category/header`, {
+      headers: new HttpHeaders({
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Pragma": "no-cache",
+        "Expires": "0"
+      })
+    });
   }
 }

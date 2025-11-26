@@ -53,13 +53,13 @@ export class Header implements OnInit{
 
   ngOnInit(): void {
 
-    this.home.getCategoryAndSubcategory().subscribe({
-      next: (res: any) => {
-       this.categories.set(res);
-       console.log(this.categories());
-      },
-      error: (err) => console.error('Category API error:', err),
-    });
+   this.loadCategories();
+
+  this.router.events.subscribe(event => {
+    if (event instanceof NavigationEnd) {
+      this.loadCategories(); // auto refresh
+    }
+  });
 
     if(isPlatformBrowser(this.platformId)){
       this.userName.set(sessionStorage.getItem('userName'));
@@ -71,6 +71,8 @@ export class Header implements OnInit{
     }
   });
   }
+
+  
   // pdate screen width when window is resized
   @HostListener('window:resize')
   onResize() {
@@ -97,6 +99,11 @@ export class Header implements OnInit{
       }
   }
 
+  loadCategories() {
+  this.home.getCategoryAndSubcategory().subscribe((res: any) => {
+    this.categories.set(res);
+  });
+}
   logout(): void {
     this.authService.isLoggedInSignal.set(false);
     this.authService.logout();
