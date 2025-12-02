@@ -32,33 +32,9 @@ app.use(
     maxAge: 0,
     index: false,
     redirect: false,
-    etag: false,
-    lastModified: false,
   }),
 );
 
-app.use((req, res, next) => {
-  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-  res.setHeader('Pragma', 'no-cache');
-  res.setHeader('Expires', '0');
-  next();
-});
-
-app.use(
-  express.static(browserDistFolder, {
-    index: false,
-    redirect: false,
-    setHeaders: (res, filePath) => {
-      if (filePath.endsWith('.html')) {
-        // Do not cache HTML pages
-        res.setHeader('Cache-Control', 'no-store');
-      } else {
-        // Cache JS, CSS, images for 1 year (safe)
-        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-      }
-    }
-  })
-);
 /**
  * Handle all other requests by rendering the Angular application.
  */

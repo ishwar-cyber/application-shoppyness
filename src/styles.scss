@@ -54,3 +54,159 @@ body {
 .btn-primary:hover {
   background: var(--primary-dark);
 }
+
+
+
+// -------------------------- GENERIC STYLES
+
+.policy-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 2.5rem;
+}
+
+/* HEADER */
+.policy-header {
+  text-align: left;
+  margin-bottom: 1.5rem;
+
+  h1 {
+    font-size: 1.9rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+  }
+
+  .subtitle {
+    font-size: 0.95rem;
+    color: #6b7280;
+    max-width: 650px;
+  }
+}
+
+/* LAYOUT */
+.policy-layout {
+  display: flex;
+  flex-direction: column;
+}
+
+/* MAIN CONTENT */
+.policy-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+/* SECTION CARD */
+.policy-section {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 1.2rem 1.4rem;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+
+  h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+  }
+
+  p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #374151;
+    margin-bottom: 0.4rem;
+  }
+}
+
+/* LISTS */
+.policy-list {
+  margin: 0.4rem 0 0.7rem;
+  padding-left: 1.1rem;
+  font-size: 0.95rem;
+  color: #374151;
+
+  li {
+    margin-bottom: 0.25rem;
+    line-height: 1.5;
+  }
+
+  &.ordered {
+    list-style-type: decimal;
+  }
+}
+
+/* HIGHLIGHT / CALLOUT BOX */
+.highlight-box {
+  margin-top: 0.4rem;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  background: var(--primary-bg, #f5f3ff);
+  border: 1px solid rgba(124, 58, 237, 0.15);
+
+  h3 {
+    margin-top: 0;
+  }
+}
+
+/* NOTE STYLING */
+.note {
+  margin-top: 0.4rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 10px;
+  background: #f9fafb;
+  border-left: 3px solid var(--primary, #7c3aed);
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+
+/* TWO-COLUMN SECTION (Desktop) */
+.two-column {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 0.6rem 0 0.6rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* COMPANY INFO SPECIAL */
+.company-info {
+  border-left: 3px solid var(--primary, #7c3aed);
+
+  p {
+    margin-bottom: 0.4rem;
+  }
+}
+
+/* LINKS */
+a {
+  color: var(--primary, #7c3aed);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+/* RESPONSIVE TWEAKS */
+@media (max-width: 768px) {
+  .policy-page {
+    padding-inline: 1rem;
+  }
+
+  .policy-section {
+    padding: 1rem 1rem;
+  }
+
+  .policy-header h1 {
+    font-size: 1.5rem;
+  }
+}
