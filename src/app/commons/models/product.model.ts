@@ -27,8 +27,8 @@ export interface ProductModel {
   brand?: Brand
   status?: boolean
   warranty?: Warranty[],
-  image?: string;
-  images?: string[];
+  image?: string[];
+  images: Image[] | any;
   productImages?: any[];
   specifications: string[]
   offerPrice: any[]
@@ -54,8 +54,8 @@ export interface Category {
 }
 
 export interface Image {
-  url: string
-  public_id: string
+  url?: string
+  public_id?: string
 }
 
 export interface SubCategory {
@@ -72,10 +72,9 @@ export interface Image2 {
 }
 
 export interface Brand {
-  _id: string
+  _id?: string
   name: string
-  slug: string
-  image: Image3
+  slug?: string
 }
 
 export interface Image3 {

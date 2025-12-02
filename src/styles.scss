@@ -1,53 +1,56 @@
-/* You can add global styles to this file, and also import other style files */
+/* ============================
+   GLOBAL THEME VARIABLES
+============================ */
 
-// Global box-sizing and font settings
-* {
-  box-sizing: border-box;
+:root {
+   --primary: #7C3AED;
+  --primary-dark: #6D28D9;
+  --primary-light: #A78BFA;
+  --accent: #10B981;
+  --bg-light: #F8FAFC;
+  --bg-white: #FFFFFF;
+  --text-dark: #1F2937;
+  --text-white: #FFFF;
+  --text-muted: #6B7280;
+  --border: #E5E7EB;
+  --shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+
+  --radius: 14px;
+  --radius-sm: 10px;
+  --radius-lg: 20px;
+
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
 }
+
+/* RESET */
 body {
+  background: var(--bg-light);
+  font-family: 'Inter', sans-serif;
+  color: var(--text-dark);
   margin: 0;
-  font-family: 'Roboto', 'Arial', sans-serif;
-  background: #f8f9fa;
-  color: #222;
-
-  // Prevent body scrolling when mobile filter drawer is open
-  &.filter-drawer-open {
-    overflow: hidden;
-    position: fixed;
-    width: 100%;
-    height: 100%;
-  }
+  padding: 0;
 }
 
-// Mobile-first base styles
-.container {
-  width: 100%;
-  padding: 1rem;
-}
-.header {
-  font-size: 1.5rem;
-  padding: 1rem 0;
+/* Card Style */
+.card {
+  background: var(--bg-white);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
 }
 
-// Responsive adjustments for desktop
-@media (min-width: 1024px) {
-  .container {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 2rem;
-  }
-  .header {
-    font-size: 2.5rem;
-    padding: 2rem 0;
-  }
+/* Button Default */
+.btn-primary {
+  background: var(--primary);
+  border-radius: var(--radius-sm);
+  color: var(--text-white);
+  border: none;
 }
 
-// Example for mobile navigation
-@media (max-width: 600px) {
-  nav {
-    font-size: 1rem;
-  }
-}
-.btn {
-  border-radius: 20px !important;
+.btn-primary:hover {
+  background: var(--primary-dark);
 }

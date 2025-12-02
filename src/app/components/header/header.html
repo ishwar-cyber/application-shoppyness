@@ -1,161 +1,306 @@
-<nav class="custom-navbar">
-  <!-- Top Navbar with Logo, Search, Cart & Login -->
-  <div class="navbar-top" (mouseenter)="hideMegaMenu()">
-    <!-- Logo for Desktop -->
-    <div class="logo-container">
-      <a routerLink="/" class="logo-link d-flex align-items-center">
-       <img src="../assets/logo/header-logo-2.png" alt="Shoppyness Technology logo" srcset="" class="logo-image" width="160" height="40" />
-      </a>
-    </div>
-    <div class="search-container">
-      <app-search/>
-    </div>
-    @if(screenWidth() > 767) {
-      <div class="cart-login">
-        <a routerLink="/cart" class="cart-icon">
-          <i class="bi bi-cart3"></i>
-          @if(cartService.cartCount()) {
-            <span class="cart-count">{{ cartService.cartCount() }}</span>
-          } @else {
-            <span class="cart-count">0</span>
-          }
-        </a>
-        @if (authService.isLoggedIn()) {
-          <div 
-            class="user-dropdown" 
-            (mouseenter)="toggleUserDropdown.set(true)" 
-            (mouseleave)="toggleUserDropdown.set(false)"
-          >
-            <span class="user-name">{{authService.userName() ? authService.userName() :  userName() }} <i class="bi bi-chevron-down small"></i>
-            </span>
-            <ul class="dropdown-menu" [class.show]="toggleUserDropdown()">
-              <li><button class="dropdown-item btn btn-link" type="button" routerLink="/profile">Profile</button></li>
-              <li><button class="dropdown-item btn btn-link" type="button" (click)="logout()">Logout</button> </li>
-            </ul>
+<header class="main-header">
+
+  <!-- ==========================
+        DESKTOP HEADER
+  =========================== -->
+  @if (!isMobileView()) {
+
+    <div class="header-desktop">
+
+      <!-- TOP BAR -->
+      <div class="header-top">
+
+        <!-- Logo -->
+        <div class="brand"
+             routerLink="/"
+             (click)="selectBottomMenu('home')">
+          <span class="brand-mark">S</span>
+          <span class="brand-text">Shoppyness</span>
+        </div>
+
+        <!-- Search -->
+       <!-- Search -->
+<div class="search-wrapper" (click)="onFocusSearch()">
+
+  <i class="bi bi-search search-icon"></i>
+
+  <input
+    type="text"
+    class="search-input"
+    placeholder="Search for products, brands and more"
+    [(ngModel)]="searchQuery"
+    (keyup)="onSearchChange()"
+    (keyup.enter)="performSearch()"
+    (focus)="isSearchFocused.set(true)"
+  />
+
+  <!-- 🔍 SEARCH DROPDOWN -->
+  @if (isSearchFocused() && searchResults().length > 0) {
+    <div class="search-dropdown">
+
+      @for (item of searchResults(); track item._id) {
+        <div class="search-item" (click)="openProduct(item.slug)">
+          <img [src]="item.images?.[0]?.url" class="search-thumb" />
+
+          <div class="search-info">
+            <div class="title">{{ item.name }}</div>
+            <div class="sub">{{ item.category }} • {{ item.subcategory }}</div>
           </div>
-        } @else {
-            <a routerLink="/login" class="login-btn"><span class="login-text">Login</span> <i class="bi bi-person"></i></a>
-        }
-      </div>
-    }
-  </div>
+        </div>
+      }
 
- <!-- Bottom Navbar with Categories (Desktop Only) -->
-<div class="navbar-bottom desktop-only">
-  <ul class="nav-menu">
-    @for (category of categories(); track $index) {
-      <li class="nav-item uppercase" (mouseenter)="showMegaMenu(category.slug)">
-        <a routerLink="/products" [queryParams]="{category: category.slug}" class="nav-link">
-          {{ category.name }}
-          <i class="bi bi-chevron-down small ms-1"></i>
-        </a>
-      </li>
-    }
-    <li class="nav-item">
-      <a routerLink="/categories" class="nav-link">All Categories</a>
-    </li>
-  </ul>
-  <!-- Mega Menu Dropdown -->
-  @if (activeCategory) {
-    <div class="mega-menu-container" (mouseenter)="showMegaMenu(activeCategory)" (mouseleave)="hideMegaMenu()">
-      <div class="mega-menu-content">
-        <div class="mega-menu-grid">
-          <!-- Category with Subcategories -->
-          @for (category of categories(); track $index) {
-            @if (category.slug === activeCategory) {
-              <div class="mega-menu-category">
-                <h3 class="mega-menu-title">{{ category.name }}</h3>
-                <div class="mega-menu-subcategories">
-                  @for (subcategory of category.subcategories; track $index) {
-                    <a 
-                      class="mega-menu-item"
-                      routerLink="/products" 
-                      [queryParams]="{ category: category.slug, subcategory: subcategory.slug }" 
-                      (click)="hideMegaMenu()"
-                    >
-                      {{ subcategory.name }}
-                    </a>
-                  }
+    </div>
+  }
 
-                  <!-- View All -->
-                  <a 
-                    class="mega-menu-item view-all" 
-                    routerLink="/products" 
-                    [queryParams]="{ category: category.slug }" 
-                    (click)="hideMegaMenu()"
-                  >
-                    View All {{ category.name }} <i class="bi bi-arrow-right"></i>
-                  </a>
-                </div>
+  <!-- 🔍 No results -->
+  @if (isSearchFocused() && searchQuery().length > 1 && searchResults().length == 0) {
+    <div class="search-dropdown empty">
+      <p>No matching products found</p>
+    </div>
+  }
+
+</div>
+
+
+        <!-- Right Actions -->
+        <div class="actions">
+
+          <!-- USER -->
+          <div class="action-item user-area"
+               (clickOutside)="toggleUserDropdown.set(false)">
+
+            <button type="button"
+                    class="btn-ghost"
+                    (click)="toggleUserDropdown.set(!toggleUserDropdown())">
+              <i class="bi bi-person-circle"></i>
+
+              <span class="label">
+                @if (authService.isLoggedInSignal()) {
+                  {{ userName() || 'Account' }}
+                } @else {
+                  Login / Signup
+                }
+              </span>
+
+              <i class="bi bi-chevron-down caret"></i>
+            </button>
+
+            <!-- User Dropdown -->
+            @if (toggleUserDropdown()) {
+              <div class="user-dropdown">
+
+                @if (authService.isLoggedInSignal()) {
+
+                  <div class="user-info">
+                    <div class="avatar">
+                      {{ (userName() || 'U')[0] | uppercase }}
+                    </div>
+                    <div>
+                      <div class="user-name">{{ userName() }}</div>
+                      <div class="muted">Welcome back 👋</div>
+                    </div>
+                  </div>
+
+                  <button class="dropdown-item" routerLink="/my-account">
+                    My Account
+                  </button>
+
+                  <button class="dropdown-item" routerLink="/orders">
+                    My Orders
+                  </button>
+
+                  <button class="dropdown-item logout" (click)="logout()">
+                    Logout
+                  </button>
+
+                } @else {
+
+                  <button class="dropdown-item" routerLink="/login">Login</button>
+                  <button class="dropdown-item" routerLink="/register">Create Account</button>
+
+                }
+
               </div>
             }
-          }
+          </div>
 
-          <!-- Featured Products / Promotions -->
-          <div class="mega-menu-featured">
-            <div class="featured-card">
-              <div class="featured-label">FEATURED</div>
-              <img 
-                src="assets/products/laptop1.jpg" 
-                alt="Featured product" 
-                loading="lazy" 
-                class="featured-image"
-              >
-              <div class="featured-info">
-                <h4>Gaming Laptop</h4>
-                <p class="featured-price">₹1,200</p>
-                <a 
-                  routerLink="/products/1" 
-                  class="featured-btn" 
-                  (click)="hideMegaMenu()"
-                >
-                  View Details
-                </a>
-              </div>
-            </div>
+          <!-- CART -->
+          <div class="action-item cart"
+               routerLink="/cart"
+               (click)="selectBottomMenu('cart')">
+
+            <button class="btn-ghost">
+              <i class="bi bi-cart3"></i>
+
+              <span class="label">Cart</span>
+
+              @if (cartCount() > 0) {
+                <span class="badge">{{ cartCount() }}</span>
+              }
+            </button>
           </div>
 
         </div>
       </div>
-    </div>
-  }
-</div>
 
-  
-  <!-- Mobile Bottom Navigation (Fixed at Bottom) -->
-  <div class="mobile-navbar mobile-only">
-    <a routerLink="/home" class="mobile-nav-item" [class.active]="selectedBottomMenu() === 'home'" (click)="selectBottomMenu('home')">
-      <i [class]="selectedBottomMenu() === 'home' ? 'bi bi-house-fill' : 'bi bi-house'"></i>
-      <span>Home</span>
-    </a>
-    <a routerLink="/products" class="mobile-nav-item"  [class.active]="selectedBottomMenu() === 'products'" (click)="selectBottomMenu('products')">
-      <i [class]="selectedBottomMenu() === 'products' ? 'bi bi-grid-fill' : 'bi bi-grid'"></i>
-      <span>Products</span>
-    </a>
-    <a routerLink="/categories" class="mobile-nav-item" [class.active]="selectedBottomMenu() === 'categories'" (click)="selectBottomMenu('categories')">
-      <i [class]="selectedBottomMenu() === 'categories' ? 'bi bi-grid-3x2-gap-fill' : 'bi bi-grid-3x2-gap'"></i>
-      <span>Category</span>
-    </a>
-    <a routerLink="/cart" class="mobile-nav-item" [class.active]="selectedBottomMenu() === 'cart'" (click)="selectBottomMenu('cart')">
-      <i [class]="selectedBottomMenu() === 'cart' ? 'bi bi-cart-fill' : 'bi bi-cart3'"></i>
-      <span>Cart</span>
-       @if(cartService.cartCount()) {
-          <span class="cart-count">{{ cartService.cartCount() }}</span>
-        } @else {
-          <span class="cart-count">0</span>
+      <!-- =======================
+           CATEGORY NAV + MEGAMENU
+      ======================= -->
+      <div class="header-nav">
+        @if (categories().length) {
+          <nav class="category-nav">
+
+            @for (cat of categories(); track cat.slug) {
+
+              <div class="category-item"
+                   (mouseover)="openMegaMenu(cat)"
+                   >
+
+                <button class="category-btn"
+                        [class.active]="activeCategory() === cat.slug"
+                        [routerLink]="['/category', cat.slug]">
+                  {{ cat.name }}
+                </button>
+
+                <!-- MEGA MENU -->
+                @if (activeCategory() === cat.slug && cat.subcategories.length) {
+
+                  <div class="mega-menu"  (mouseleave)="closeMegaMenu()">
+                    <div class="mega-column">
+                      <!-- <h4 class="mega-title">{{ cat.name }}</h4> -->
+
+                      <div class="mega-links">
+                        @for (sub of cat.subcategories; track sub.slug) {
+                          <a class="mega-link"
+                             [routerLink]="['/category', cat.slug, sub.slug]">
+                            {{ sub.name }}
+                          </a>
+                        }
+                      </div>
+
+                    </div>
+                  </div>
+
+                }
+              </div>
+
+            }
+
+          </nav>
         }
-    </a>
+      </div>
 
-    @if (authService.isLoggedIn()) {
-      <a routerLink="/profile" class="mobile-nav-item"  [class.selected]="selectedBottomMenu() === 'profile'">
-        <i [class]="selectedBottomMenu() ? 'bi bi-person-fill' : 'bi bi-person'"></i>
+    </div>
+
+  }
+
+
+  <!-- ==========================
+        MOBILE HEADER
+  =========================== -->
+  @if (isMobileView()) {
+    <div class="header-mobile">
+      <div class="mobile-top">
+        <div class="brand" routerLink="/" (click)="selectBottomMenu('home')">
+          <span class="brand-mark">S</span>
+          <span class="brand-text">Shoppyness</span>
+        </div>
+
+        <div class="mobile-actions">
+          <!-- <button class="icon-btn">
+            <i class="bi bi-search"></i>
+          </button> -->
+          <button class="icon-btn"
+                  routerLink="/cart"
+                  (click)="selectBottomMenu('cart')">
+            <i class="bi bi-cart3"></i>
+            @if (cartCount() > 0) {
+              <span class="badge">{{ cartCount() }}</span>
+            }
+          </button>
+        </div>
+      </div>
+      <div class="mobile-search">
+        <i class="bi bi-search search-icon"></i>
+       <input
+            type="text"
+            class="search-input"
+            placeholder="Search for products, brands and more"
+            [(ngModel)]="searchQuery"
+            (keyup)="onSearchChange()"
+            (keyup.enter)="performSearch()"
+            (focus)="isSearchFocused.set(true)"
+          />
+      </div>
+      @if (isSearchFocused() && searchResults().length > 0) {
+        <div class="mobile-search-dropdown">
+
+          @for (item of searchResults(); track item._id) {
+            <div class="search-item" (click)="openProduct(item.slug); isSearchFocused.set(false); searchQuery.set('')">
+              <img [src]="item.images?.[0]?.url" class="search-thumb" />
+
+              <div class="search-info">
+                <div class="title">{{ item.name }}</div>
+                <div class="sub">{{ item.category }} • {{ item.subcategory }}</div>
+              </div>
+            </div>
+          }
+
+        </div>
+      }
+
+    </div>
+
+  }
+
+
+  <!-- MOBILE BOTTOM NAV -->
+  @if (isMobileView()) {
+
+    <nav class="mobile-bottom-nav">
+
+      <button class="bottom-item"
+              [class.active]="selectedBottomMenu() === 'home'"
+              (click)="selectBottomMenu('home')"
+              routerLink="/">
+        <i class="bi bi-house-door"></i>
+        <span>Home</span>
+      </button>
+
+      <button class="bottom-item"
+              [class.active]="selectedBottomMenu() === 'categories'"
+              routerLink="/categories"
+              (click)="selectBottomMenu('categories')">
+        <i class="bi bi-grid"></i>
+        <span>Categories</span>
+      </button>
+
+      <button class="bottom-item"
+              [class.active]="selectedBottomMenu() === 'products'"
+              routerLink="/products"
+              (click)="selectBottomMenu('products')">
+        <i class="bi bi-grid"></i>
+        <span>Products</span>
+      </button>
+
+      <!-- <button class="bottom-item"
+              [class.active]="selectedBottomMenu() === 'cart'"
+              routerLink="/cart"
+              (click)="selectBottomMenu('cart')">
+        <i class="bi bi-cart3"></i>
+        <span>Cart</span>
+      </button> -->
+
+      <button class="bottom-item"
+              [class.active]="selectedBottomMenu() === 'my-account'"
+              routerLink="/my-account"
+              (click)="selectBottomMenu('my-account')">
+        <i class="bi bi-person"></i>
         <span>Account</span>
-      </a>
-    } @else {
-      <a routerLink="/login" class="mobile-nav-item"  [class.active]="selectedBottomMenu() === 'login'">
-          <i class="bi bi-person"></i>
-        <span>Account</span>
-      </a>
-    }
-  </div>
-</nav>
+      </button>
+
+    </nav>
+
+  }
+
+</header>

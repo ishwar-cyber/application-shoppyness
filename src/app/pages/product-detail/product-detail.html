@@ -1,237 +1,284 @@
-@if(product()){
-<div class="container mt-4">
-  <nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a routerLink="/">Home</a></li>
-      <li class="breadcrumb-item"><a routerLink="/products">Products</a></li>
-      <li class="breadcrumb-item active" aria-current="page">{{ product()?.name }}</li>
-    </ol>
-  </nav>
+<!-- ===============================
+     PRODUCT DETAIL PAGE
+================================ -->
+@if (loading()) {
+  <div class="product-page loading-state">
+    <div class="skeleton skeleton-title"></div>
+    <div class="skeleton skeleton-main"></div>
+  </div>
 
-  <div class="row" itemscope>
-    <meta itemprop="sku" [content]="product()?.sku" />
-    <meta itemprop="mpn" [content]="product()?.id" />
+} @else if (error()) {
+  <div class="product-page error-state">
+    <p>{{ error() }}</p>
+  </div>
 
-    <!-- Images -->
-    <div class="col-md-6 mb-4">
-      <div class="product-image-container">
-        <div class="main-image-wrapper">
-          @if((product()?.images?.length ?? 0) > 1) {
-            <button class="image-nav-btn prev-btn" (click)="prevImage()" aria-label="Previous image">
-              <i class="bi bi-chevron-left"></i>
-            </button>
+} @else {
+  @if (product(); as p) {
+
+    <div class="product-page glass-card" itemscope itemtype="https://schema.org/Product">
+
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb">
+        <a routerLink="/">Home</a>
+        <span>/</span>
+
+        @if (p.category?.slug) {
+          <a [routerLink]="['/category', p.category.slug]">
+            {{ p.category?.name || 'Category' }}
+          </a>
+          <span>/</span>
+        }
+
+        <span class="current" itemprop="name">{{ p.name }}</span>
+      </nav>
+
+      <!-- MAIN LAYOUT -->
+      <div class="product-layout">
+
+        <!-- LEFT: GALLERY -->
+        <section class="gallery">
+
+          @if (p.images?.length) {
+            <div class="thumbs">
+              @for (img of p.images; track img.url; let i = $index) {
+                <button type="button"
+                        class="thumb"
+                        [class.active]="i === selectedImageIndex()"
+                        (click)="selectImage(i)">
+                  <img [src]="img.url" [alt]="p.name" loading="lazy" />
+                </button>
+              }
+            </div>
           }
-          <img [src]="selectedImage"
-               [alt]="product()?.name"
-               class="img-fluid product-image"
-               itemprop="image"
-               loading="eager" />
-          @if((product()?.images?.length ?? 0) > 1) {
-            <button class="image-nav-btn next-btn" (click)="nextImage()" aria-label="Next image">
-              <i class="bi bi-chevron-right"></i>
-            </button>
-          }
-        </div>
 
-        @if((product()?.images?.length ?? 0) > 1) {
-          <div class="thumbnail-gallery">
-            @for (img of product()?.images; track $index) {
-              <button
-                class="thumbnail-item"
-                [class.active]="selectedImageIndex() === $index"
-                (click)="selectImage($index)"
-                [attr.aria-label]="'View image ' + ($index + 1)">
-                <img [src]="img.url"
-                     [alt]="product()!.name + ' thumbnail ' + ($index + 1)"
-                     class="img-fluid"
-                     loading="lazy" />
+          <div class="main-image">
+            <img [src]="selectedImage" [alt]="p.name" itemprop="image" />
+
+            @if (p.images?.length > 1) {
+              <button class="nav-btn prev" type="button" (click)="prevImage()">
+                <i class="bi bi-chevron-left"></i>
+              </button>
+
+              <button class="nav-btn next" type="button" (click)="nextImage()">
+                <i class="bi bi-chevron-right"></i>
               </button>
             }
           </div>
-        }
-      </div>
-    </div>
 
-    <!-- Details -->
-    <div class="col-md-6">
-      <h1 class="product-title text-truncate" data-bs-target="tooltip" itemprop="name">{{ getVariantName(product(), selectedVariant()) }}</h1>
-      <p class="product-brand text-muted" itemprop="brand">
-        <span class="fw-bold">Brand:</span> {{ product()!.brand?.name }}
-      </p>
-      <p class="product-sku text-muted">
-        <span class="fw-bold">SKU:</span> {{ product()!.sku | uppercase}}
-      </p>
+        </section>
 
-      <div class="product-price mb-3 d-flex align-items-center" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
-        <meta itemprop="priceCurrency" content="INR" />
-        <span class="price-tag" itemprop="price">₹ {{ currentPrice() }}</span>
-        (Incluides all taxes)
-        @if(currentStock() > 0 || product().stock > 0 || product().stock === 'in'){
-          <span class="badge bg-success ms-2">In Stock</span>
-        } @else {
-          <span class="badge bg-danger ms-2">Out of Stock</span>
-        }
-      </div>
-      <!-- @if(product().pincode && product().pincode.length > 0){
-        <div class=" d-flex align-items-center">
-          <input type="checkbox" name="installService" id="installService">
-          <label for="installService" class="ms-2"> Installation Service (250)</label>
-        </div>
-        <span class="service_note fw-bold mb-3">NOTE:(If you want installation service, please select this option)</span>
-      } -->
-      <!-- Check Delivery -->
-      <app-check-pincode></app-check-pincode>
+        <!-- RIGHT: INFO -->
+        <section class="info" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
 
-      <!-- Variants -->
-      @if(product()?.variants && product()?.variants?.length > 0){
-        <div class="product-variant mt-4">
-          <h2 class="h5">Available Variant</h2>
-          <div class="row">
-            @for (variant of product()?.variants; track $index) {
-              <div class="col-6 col-md-6 mb-3">
-                <div class="card h-100 variant-card"
-                     [class.selected]="selectedVariant()?._id === variant?._id"
-                     (click)="selectVariant(variant)">
-                  <div class="card-body">
-                    <h5 class="card-title">{{ variant.name }}</h5>
-                    <p class="card-text fw-bolder">₹ {{ variant.price }}</p>
-                    <small class="text-success fw-bolder">
-                      {{ variant.stock > 0 ? (variant.stock + ' in stock') : 'Out of stock' }}
-                    </small>
-                  </div>
-                </div>
+          <h1 class="title">{{ p.name }}</h1>
+
+          <div class="meta-row">
+            @if (p.rating) {
+              <div class="rating">
+                <span class="badge">
+                  <i class="bi bi-star-fill"></i>
+                  <span>{{ p.rating }}</span>
+                </span>
+                <span class="muted">{{ p.ratingCount || 0 }} Ratings</span>
               </div>
             }
+
+            <div class="sku-brand">
+              @if (p.brand) {
+                <span>Brand: <strong>{{ p.brand?.name || p.brand }}</strong></span>
+              }
+
+              @if (p.sku) {
+                <span>SKU: <strong itemprop="sku">{{ p.sku }}</strong></span>
+              }
+            </div>
           </div>
-        </div>
-      }
 
-      <!-- Actions -->
-      <div class="product-actions mt-3">
-        <div class="d-flex flex-wrap">
-          <button class="btn btn-primary btn-lg mb-2" 
-            (click)="addToCart(product())"
-            [disabled]="isAddingToCart() || (currentStock() <= 0)">
-            @if(!isAddingToCart()){
-              <span><i class="bi bi-cart-plus me-2"></i>Add to Cart</span>
-            }
-            @if(isAddingToCart()){
-              <span><i class="bi bi-arrow-repeat spin me-2"></i>Adding...</span>
-            }
-          </button>
+          @if (p.variants?.length) {
+            <div class="variants">
+              <div class="variants-header">
+                <span>Available Options</span>
+              </div>
 
-          <!-- <button class="btn btn-outline-secondary btn-lg">
-            <i class="bi bi-heart me-2"></i>Add to Wishlist
-          </button> -->
-        </div>
-
-        @if(addedToCartMessage()){
-          <div class="alert alert-success mt-3">
-            <i class="bi bi-check-circle me-2"></i>{{ addedToCartMessage() }}
-          </div>
-        }
-      </div>
-    </div>
-  </div>
-
-  <!-- Tabs -->
-  <div class="product-details-tabs mt-4">
-    <ul class="nav nav-tabs" id="productDetailsTab" role="tablist">
-      <li class="nav-item" role="presentation">
-        <button class="nav-link active fw-bolder" id="description-tab" data-bs-toggle="tab"
-                data-bs-target="#description" type="button" role="tab" aria-controls="description"
-                aria-selected="true">Description</button>
-      </li>
-
-      @if (product()?.specifications?.length > 0) {
-        <li class="nav-item" role="presentation">
-          <button class="nav-link fw-bolder" id="specifications-tab" data-bs-toggle="tab"
-                  data-bs-target="#specifications" type="button" role="tab" aria-controls="specifications"
-                  aria-selected="false">Specifications</button>
-        </li>
-      }
-      <li class="nav-item" role="presentation">
-        <button class="nav-link fw-bolder" id="Review-tab" data-bs-toggle="tab"
-          data-bs-target="#Review" type="button" role="tab" aria-controls="Review"
-          aria-selected="true">Review</button>
-      </li>
-    </ul>
-
-    <div class="tab-content p-3 border border-top-0 rounded-bottom" id="productDetailsTabContent">
-      <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab" [innerHTML]="product()?.description">
-      </div>
-
-      <div class="tab-pane fade" id="specifications" role="tabpanel" aria-labelledby="specifications-tab">
-        <ul class="list-group">
-          @for (item of product()?.specifications; track $index) {
-            <li class="list-group-item d-flex justify-content-between">
-              <span class="fw-bold">{{ item.name }}</span>
-              <span>{{ item.value }}</span>
-            </li>
-          }
-        </ul>
-      </div>
-
-      <div class="tab-pane fade" id="Review" role="tabpanel" aria-labelledby="Review-tab">
-        <app-product-review [productId]="product()?._id"></app-product-review>
-      </div>
-    </div>
-  </div>
-
-  <!-- Related -->
-  @if(relatedProducts().length > 0){
-    <section class="related-products mt-5">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="mb-4">Related Products</h2>
-        <div class="scroll-controls">
-          <button class="btn btn-outline-secondary me-2 scroll-btn" (click)="scrollProducts('left')">
-            <i class="bi bi-chevron-left"></i>
-          </button>
-          <button class="btn btn-outline-secondary me-2 scroll-btn" (click)="scrollProducts('right')">
-            <i class="bi bi-chevron-right"></i>
-          </button>
-        </div>
-      </div>
-
-      <div class="related-products-scroll-container">
-        <div class="related-products-scroll" #relatedProductsScroll>
-          @for (productItem of relatedProducts(); track $index) {
-            <div class="related-product-card">
-              <app-product-card [product]="productItem"></app-product-card>
+              <div class="variant-list">
+                @for (v of p.variants; track v._id) {
+                  <button type="button"
+                          class="variant-chip" [class.active]="selectedVariant()?.['_id'] === v._id"
+                          (click)="selectVariant(v)">
+                    {{ getVariantName(p, v) }}
+                  </button>
+                }
+              </div>
             </div>
           }
+
+          <div class="price-box">
+
+            <div class="left">
+              <span class="price" itemprop="price">₹{{ currentPrice() }}</span>
+              <meta itemprop="priceCurrency" content="INR" />
+
+              @if (p.oldPrice) {
+                <span class="old-price">₹{{ p.oldPrice }}</span>
+                <span class="discount">
+                  {{ ((p.oldPrice - currentPrice()) / p.oldPrice * 100) | number:'1.0-0' }}% OFF
+                </span>
+              }
+            </div>
+            <div class="stock" [class.in-stock]="currentStock() === 'in' ">
+              <i class="bi"
+                 [class.bi-check-circle]="currentStock() === 'in' "
+                 [class.bi-x-circle]="currentStock() !== 'in' "></i>
+              <span>{{ currentStock() === 'in'  ? 'In Stock' : 'Out of Stock' }}</span>
+            </div>
+
+          </div>
+
+          <!-- Qty + Actions -->
+          <div class="qty-actions">
+
+            <div class="qty">
+              <span>Qty</span>
+
+              <div class="qty-box">
+                <button type="button" (click)="decreaseQty()">-</button>
+
+                <input type="number"
+                       [ngModel]="quantity()"
+                       (ngModelChange)="quantity.set($event)"
+                       min="1" />
+
+                <button type="button" (click)="increaseQty()">+</button>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="btn-primary"
+                      (click)="addToCart(p)"
+                      [disabled]="currentStock() !== 'in' || isAddingToCart()">
+
+                <i class="bi bi-cart-plus"></i>
+
+                @if (!isAddingToCart()) { <span>Add to Cart</span> }
+                @else { <span>Adding...</span> }
+
+              </button>
+            </div>
+          </div>
+
+          @if (addedToCartMessage()) {
+            <div class="status-message">{{ addedToCartMessage() }}</div>
+          }
+
+          @if (p.highlights?.length) {
+            <div class="card highlights">
+              <h2>Key Highlights</h2>
+              <ul>
+                @for (h of p.highlights; track h) { <li>{{ h }}</li> }
+              </ul>
+            </div>
+          }
+
+          <div class="card delivery">
+            <h2>Delivery</h2>
+            <app-check-pincode></app-check-pincode>
+          </div>
+
+        </section>
+
+      </div>
+
+
+      <!-- ==========================
+           TABS SECTION
+      =========================== -->
+      <div class="product-tabs-container">
+
+        <div class="tabs-header">
+          <button class="tab-btn"
+                  [class.active]="activeTab() === 'description'"
+                  (click)="activeTab.set('description')">
+            Description
+          </button>
+
+          <button class="tab-btn"
+                  [class.active]="activeTab() === 'specs'"
+                  (click)="activeTab.set('specs')">
+            Specifications
+          </button>
+
+          <button class="tab-btn"
+                  [class.active]="activeTab() === 'reviews'"
+                  (click)="activeTab.set('reviews')">
+            Reviews
+          </button>
+        </div>
+
+        <div class="tabs-content">
+
+          <!-- Description -->
+          @if (activeTab() === 'description') {
+            <div class="tab-pane">
+              @if (sanitizedDescription()) {
+                <div class="short-desc" [innerHTML]="sanitizedDescription()"></div>
+              } @else {
+                <p class="muted">No description available.</p>
+              }
+            </div>
+          }
+
+          <!-- Specifications -->
+          @if (activeTab() === 'specs') {
+            <div class="tab-pane">
+              @if (p.specifications?.length) {
+                <div class="spec-grid">
+                  @for (spec of p.specifications; track spec.name) {
+                    <div class="spec-row">
+                      <div class="label">{{ spec.name }}</div>
+                      <div class="value">{{ spec.value }}</div>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <p class="muted">No specifications available.</p>
+              }
+            </div>
+          }
+
+          <!-- Reviews -->
+          @if (activeTab() === 'reviews') {
+            <div class="tab-pane reviews-pane">
+              <app-product-review [productId]="p.id"></app-product-review>
+            </div>
+          }
+
         </div>
       </div>
-    </section>
+
+
+      <!-- Related Products -->
+      @if (relatedProducts().length) {
+        <section class="related">
+          <div class="related-header">
+            <h2 class="section-title">You may also like</h2>
+            <div class="scroll-btns">
+              <button type="button" (click)="scrollProducts('left')">
+                <i class="bi bi-chevron-left"></i>
+              </button>
+              <button type="button" (click)="scrollProducts('right')">
+                <i class="bi bi-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="related-row" #relatedProductsScroll>
+            @for (rp of relatedProducts(); track rp._id) {
+              <app-product-card [product]="rp"></app-product-card>
+            }
+          </div>
+        </section>
+      }
+
+    </div>
   }
-</div>
-} @else {
-  <!-- Loading -->
-  <div class="container mt-5 text-center">
-    <div class="d-flex justify-content-center">
-      <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" aria-hidden="true">
-        <span class="visually-hidden">Loading product details...</span>
-      </div>
-    </div>
-    <p class="mt-3" aria-live="polite">Loading product details...</p>
-  </div>
-}
-<!-- Not Found -->
-@if(!product() && !loading() && !error()){
-  <div class="container mt-4 text-center">
-    <div class="alert alert-warning">
-      <h2>Product Not Found</h2>
-      <p>Sorry, the product you are looking for does not exist or has been removed.</p>
-      <a routerLink="/products" class="btn btn-primary mt-3">Browse All Products</a>
-    </div>
-  </div>
-}
-@if(error()){
-  <div class="container mt-4 text-center">
-    <div class="alert alert-danger">
-      <h2>Error Loading Product</h2>
-      <p>There was an error loading the product details. Please try again later.</p>
-      <a routerLink="/products" class="btn btn-primary mt-3">Browse All Products</a>
-    </div>
-  </div>
 }

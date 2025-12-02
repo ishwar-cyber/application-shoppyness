@@ -15,12 +15,18 @@ export class CartService {
   isBrowser = isPlatformBrowser(this.platformId);
 
   // 🔔 Signals for cart state
-  cartItems = signal<Item[]>([]);
-  cartCount = signal<number>(0);
-  totalPrice = signal<number>(0);
-  subTotal = signal<number>(0);
-  cart = computed(()=> this.cartItems());
+cartItems = signal<Item[] | null>(null);
+cartCount = signal<number>(0);
+totalPrice = signal<number>(0);
+subTotal = signal<number>(0);
 
+  cart = computed(()=> this.cartItems());
+  getSubtotal() {
+    return this.subTotal();
+  }
+  getShippingCharge() {
+    return this.totalPrice() - this.subTotal();
+  }
   /** 🔄 Load cart (SSR-safe) */
   loadCart() {
     if (!this.isBrowser) return of(null); // SSR safety
@@ -42,7 +48,7 @@ export class CartService {
   }
 
   /** ➕ Add product */
-  addToCart(payload: { productId: string; quantity: number; variant?: any }) {
+  addToCart(payload: any) {
     if (!this.isBrowser) return of(null);
     return this.http.post<CartResponse>(`${this.apiUrl}/add`, payload, { withCredentials: true }).pipe(
       tap(res => {
@@ -59,21 +65,32 @@ export class CartService {
 
   /** ✏️ Update quantity (optimistic) */
   updateQuantity(itemId: string, quantity: number) {
-    if (!this.isBrowser) return;
+  if (!this.isBrowser) return;
 
-    const oldItems = [...this.cartItems()]; // backup for rollback
-    this.cartItems.update(items =>
-      items.map(i => (i._id === itemId ? { ...i, quantity } : i))
-    );
+  const oldItems = [...(this.cartItems() || [])]; // safe backup
 
-    this.http.put<CartResponse>(`${this.apiUrl}/update/${itemId}/quantity`, { quantity }, { withCredentials: true }).subscribe({
-      next: res => res.success ? this.updateSignals(res) : this.cartItems.set(oldItems),
+  this.cartItems.update(items =>
+    (items || []).map(i =>
+      i._id === itemId ? { ...i, quantity } : i
+    )
+  );
+
+  this.http
+    .put<CartResponse>(`${this.apiUrl}/update/${itemId}/quantity`, { quantity }, { withCredentials: true })
+    .subscribe({
+      next: res => {
+        if (res.success) {
+          this.updateSignals(res);
+        } else {
+          this.cartItems.set(oldItems);
+        }
+      },
       error: () => {
         this.cartItems.set(oldItems); // rollback
         alert('Failed to update quantity. Please try again.');
-      },
+      }
     });
-  }
+}
 
   /** ❌ Remove item */
   removeFromCart(itemId: string) {
@@ -131,10 +148,15 @@ export class CartService {
   }
 
   /** 📌 Helper: update signals */
-  private updateSignals(res: CartResponse) {
-    this.cartItems.set(res.data?.items);
-    this.cartCount.set(res.data?.itemCount);
-    this.subTotal.set(res.data?.subTotal);
-    this.totalPrice.set(res.data?.total);
-  }
+private updateSignals(res: CartResponse) {
+  const data = res.data;
+
+  this.cartItems.set(data?.items || []);
+  this.cartCount.set(data?.itemCount ?? 0);
+  this.subTotal.set(data?.subTotal ?? 0);
+  this.totalPrice.set(
+    (data?.subTotal ?? 0) + (data?.shippingCharge ?? 0)
+  );
+}
+
                                                                                                  }

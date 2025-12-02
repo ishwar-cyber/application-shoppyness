@@ -1,131 +1,109 @@
-<footer class="footer">
-  <!-- Main Footer Content -->
-  <div class="footer-main">
-    <div class="container">
-      <div class="row">
-        <!-- Company Info -->
-        <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
-          <div class="footer-widget">
-            <h4 class="widget-title">Shoppyness</h4>
-            <p class="about-text">
-              Premium computer and electronics store offering the best technology products with expert service and competitive prices.
-            </p>
-            <div class="footer-social">
-              <a href="https://facebook.com" target="_blank" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
-              <a href="https://twitter.com" target="_blank" aria-label="Twitter"><i class="bi bi-twitter"></i></a>
-              <a href="https://instagram.com" target="_blank" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
-              <a href="https://youtube.com" target="_blank" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Quick Links -->
-        <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
-          <div class="footer-widget">
-            <h4 class="widget-title">Quick Links</h4>
-            <ul class="footer-links">
-              <li><a routerLink="/products">All Products</a></li>
-              <li><a routerLink="/products" [queryParams]="{category: 'laptop'}">Laptops</a></li>
-              <li><a routerLink="/products" [queryParams]="{category: 'desktop'}">Desktops</a></li>
-              <li><a routerLink="/products" [queryParams]="{category: 'accessories'}">Accessories</a></li>
-              <li><a routerLink="/products" [queryParams]="{category: 'components'}">Components</a></li>
-              <li><a routerLink="/products" [queryParams]="{category: 'gaming'}">Gaming</a></li>
-            </ul>
-          </div>
-        </div>
-        
-        <!-- Customer Service -->
-        <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
-          <div class="footer-widget">
-            <h4 class="widget-title">Customer Service</h4>
-            <ul class="footer-links">
-              <li><a routerLink="/contact-us">Contact Us</a></li>
-              <li><a routerLink="/help-center">Help Center</a></li>
-              <li><a routerLink="/return-policy">Return Policy</a></li>
-              <li><a routerLink="/warranty-info">Warranty Information</a></li>
-              <li><a routerLink="/shipping-delivery">Shipping & Delivery</a></li>
-              <li><a routerLink="/order-tracking">Order Tracking</a></li>
-            </ul>
-          </div>
-        </div>
-        
-        <!-- Contact Information -->
-        <div class="col-lg-3 col-md-6">
-          <div class="footer-widget">
-            <h4 class="widget-title">Store Location</h4>
-            <div class="contact-info">
-              <div class="contact-item">
-                <i class="bi bi-geo-alt"></i>
-                <p>1st Floor, Office No 1 Shripad Vallabh Complex, Ashoka Society Rd, 
-Thergaon, Nr. Tikone Hospital,
- Pimpri-Chinchwad, Maharashtra 411017</p>
-              </div>
-              <div class="contact-item">
-                <i class="bi bi-telephone"></i>
-                <p>+91 8888825017</p>
-              </div>
-              <div class="contact-item">
-                <i class="bi bi-envelope"></i>
-                <p>support&#64;shoppyness.com</p>
-              </div>
-              <div class="contact-item">
-                <i class="bi bi-clock"></i>
-                <p>Mon-Sat: 10:00 AM - 8:00 PM</p>
-              </div>
-            </div>
-          </div>
-        </div>
+<footer class="footer-modern">
+
+  <!-- ===============================
+       TOP SECTION
+  ================================ -->
+  <div class="footer-top container">
+
+    <!-- COMPANY -->
+    <div class="footer-block">
+      <h4 class="title">Shoppyness</h4>
+      <p class="desc">
+        Your trusted store for computers, electronics & accessories.  
+        Best quality — best service — best prices.
+      </p>
+
+      <div class="social-icons">
+        <a href="#"><i class="bi bi-facebook"></i></a>
+        <a href="#"><i class="bi bi-instagram"></i></a>
+        <a href="#"><i class="bi bi-twitter"></i></a>
+        <a href="#"><i class="bi bi-youtube"></i></a>
       </div>
     </div>
-  </div>
-  
-  <!-- Payment Methods -->
-  <div class="payment-methods">
-    <div class="container">
-      <div class="row align-items-center">
-        <div class="col-md-6">
-          <h5>We Accept</h5>
-          <div class="payment-icons">
-            <i class="bi bi-credit-card"></i>
-            <i class="bi bi-credit-card-2-front"></i>
-            <i class="bi bi-wallet2"></i>
-            <i class="bi bi-bank"></i>
-            <i class="bi bi-cash"></i>
-          </div>
-        </div>
-        <div class="col-md-6 text-md-end">
-          <div class="security-badges">
-            <span class="badge rounded-pill text-bg-light"><i class="bi bi-shield-check"></i> Secure Payments</span>
-            <span class="badge rounded-pill text-bg-light"><i class="bi bi-patch-check"></i> Authentic Products</span>
-            <span class="badge rounded-pill text-bg-light"><i class="bi bi-truck"></i> Fast Delivery</span>
-          </div>
-        </div>
+
+    <!-- QUICK LINKS -->
+     @if (false) {
+      <div class="footer-block">
+        <h4 class="title">Quick Links</h4>
+        <ul class="footer-links">
+          <li><a routerLink="/products">All Products</a></li>
+          <li><a routerLink="/products" [queryParams]="{category: 'laptop'}">Laptops</a></li>
+          <li><a routerLink="/products" [queryParams]="{category: 'desktop'}">Desktops</a></li>
+          <li><a routerLink="/products" [queryParams]="{category: 'components'}">Components</a></li>
+          <li><a routerLink="/products" [queryParams]="{category: 'gaming'}">Gaming</a></li>
+        </ul>
+      </div>
+    }
+
+    <!-- CUSTOMER SUPPORT -->
+    <div class="footer-block">
+      <h4 class="title">Customer Support</h4>
+      <ul class="footer-links">
+        <li><a routerLink="/contact-us">Contact Us</a></li>
+        <li><a routerLink="/help-center">Help Center</a></li>
+        <li><a routerLink="/shipping-policy">Shipping</a></li>
+        <li><a routerLink="/terms-and-conditions">Terms and Conditions</a></li>
+        <li><a routerLink="/return-and-refund">Return and refund</a></li>
+        <li><a routerLink="/help-center">FAQ</a></li>
+      </ul>
+    </div>
+
+    <!-- CONTACT -->
+    <div class="footer-block">
+      <h4 class="title">Contact Info</h4>
+
+      <div class="contact-row">
+        <i class="bi bi-geo-alt-fill"></i>
+        <p>
+          1st Floor, Shripad Vallabh Complex,<br>
+          Thergaon, Pimpri-Chinchwad, Maharashtra 411017
+        </p>
+      </div>
+
+      <div class="contact-row">
+        <i class="bi bi-telephone-fill"></i>
+        <p>+91 8888825017</p>
+      </div>
+
+      <div class="contact-row">
+        <i class="bi bi-envelope-fill"></i>
+        <p>support@shoppyness.com</p>
       </div>
     </div>
+
   </div>
-  
-  <!-- Bottom Bar -->
+
+  <!-- ===============================
+       PAYMENT + BADGES
+  ================================ -->
+  <div class="footer-pay container">
+    <div class="pay-left">
+      <h5>We Accept</h5>
+      <div class="pay-icons">
+        <i class="bi bi-credit-card"></i>
+        <i class="bi bi-wallet2"></i>
+        <i class="bi bi-bank"></i>
+        <i class="bi bi-google"></i>
+      </div>
+    </div>
+
+    <div class="pay-right">
+      <span><i class="bi bi-shield-check"></i> Secure Payments </span>
+      <span><i class="bi bi-patch-check"></i> 100% Authentic </span>
+      <span><i class="bi bi-truck"></i> Fast Delivery </span>
+    </div>
+  </div>
+
+  <!-- ===============================
+       BOTTOM COPYRIGHT
+  ================================ -->
   <div class="footer-bottom">
-    <div class="container">
-      <div class="row align-items-center">
-        <div class="col-md-6">
-          <p class="copyright">&copy; {{ currentYear }} for Viraj Computers. All Rights Reserved.</p>
-        </div>
-        <div class="col-md-6 text-md-end">
-          <ul class="footer-bottom-links">
-            <li><a routerLink="/privacy-policy">Privacy Policy</a></li>
-            <li><a routerLink="/terms-conditions">Terms & Conditions</a></li>
-            <li><a routerLink="/sitemap">Sitemap</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
+    <p>© {{ currentYear }} Shoppyness — All Rights Reserved.</p>
   </div>
+
 </footer>
 
-<!-- Scroll to top button -->
-<button class="scroll-top" (click)="scrollToTop()" aria-label="Scroll to top">
+<!-- SCROLL TOP -->
+<!-- <button class="scroll-top" (click)="scrollToTop()">
   <i class="bi bi-arrow-up"></i>
-</button>
-
-
+</button> -->

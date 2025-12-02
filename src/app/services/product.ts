@@ -56,4 +56,8 @@ export class Product {
     
     return this.http.get<any[]>(`${this.URL}/products/filter`, { params });
   }
+
+  searchProducts(query: string) {
+    return this.http.get(`${this.URL}/products/search?q=${query}`);
+  }
 }

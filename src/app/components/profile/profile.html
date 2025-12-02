@@ -1,341 +1,284 @@
-<div class="profile-container">
-  <div class="profile-header">
-    <h1>My Account</h1>
-  </div>
+<div class="account-page">
 
-  <div class="profile-layout">
-    <!-- Sidebar -->
-    <div class="sidebar">
-      <div class="user-info">
+  <!-- Sidebar + Content layout -->
+  <div class="layout">
+
+    <!-- ======================
+         SIDEBAR
+    ====================== -->
+    <aside class="sidebar">
+
+      <div class="user-box">
         <div class="avatar">
-          <span>{{ userProfile()?.username }}</span>
+          {{ userProfile()?.username?.charAt(0) || 'U' }}
         </div>
-        <div class="user-details">
-          <h3>{{ userProfile()?.username || 'User' }}</h3>
-          <p>{{ userProfile()?.email || 'loading...' }}</p>
+
+        <div class="user-meta">
+          <h3>{{ userProfile()?.username }}</h3>
+          <p>{{ userProfile()?.email }}</p>
         </div>
       </div>
-      
-      <nav class="sidebar-nav">
-        <ul>
-          <li>
-            <button 
-              [class.active]="activeSection() === 'profile'" 
-              (click)="switchSection('profile')"
-            >
-              <i class="icon user-icon"></i>
-              Profile Information
-            </button>
-          </li>
-          <li>
-            <button 
-              [class.active]="activeSection() === 'orders'" 
-              (click)="switchSection('orders')"
-            >
-              <i class="icon orders-icon"></i>
-              My Orders
-            </button>
-          </li>
-          <li>
-            <button 
-              [class.active]="activeSection() === 'password'" 
-              (click)="switchSection('password')"
-            >
-              <i class="icon password-icon"></i>
-              Change Password
-            </button>
-          </li>
-          <li>
-            <button 
-              [class.active]="activeSection() === 'settings'" 
-              (click)="switchSection('settings')"
-            >
-              <i class="icon settings-icon"></i>
-              Account Settings
-            </button>
-          </li>
-          <li class="divider"></li>
-          <li>
-            <button class="logout-btn" (click)="logout()">
-              <i class="icon logout-icon"></i>
-              Logout
-            </button>
-          </li>
-        </ul>
+
+      <nav>
+        <button 
+          class="nav-item"
+          [class.active]="activeSection() === 'profile'"
+          (click)="switchSection('profile')">
+          <i class="bi bi-person"></i> Profile Information
+        </button>
+
+        <button 
+          class="nav-item"
+          [class.active]="activeSection() === 'orders'"
+          (click)="switchSection('orders')">
+          <i class="bi bi-bag"></i> My Orders
+        </button>
+
+        <button 
+          class="nav-item"
+          [class.active]="activeSection() === 'password'"
+          (click)="switchSection('password')">
+          <i class="bi bi-lock"></i> Change Password
+        </button>
+
+        <button 
+          class="nav-item"
+          [class.active]="activeSection() === 'settings'"
+          (click)="switchSection('settings')">
+          <i class="bi bi-gear"></i> Account Settings
+        </button>
+
+        <div class="divider"></div>
+
+        <button class="nav-item logout" (click)="logout()">
+          <i class="bi bi-box-arrow-right"></i> Log Out
+        </button>
       </nav>
-    </div>
-    
-    <!-- Main Content -->
-    <div class="main-content">
+
+    </aside>
+
+    <!-- MOBILE TABS (visible only on mobile) -->
+    <nav class="mobile-tabs">
+      <button 
+        class="tab-item"
+        [class.active]="activeSection() === 'profile'"
+        (click)="switchSection('profile')">
+        <i class="bi bi-person"></i>
+        <span>Profile</span>
+      </button>
+
+      <button 
+        class="tab-item"
+        [class.active]="activeSection() === 'orders'"
+        (click)="switchSection('orders')">
+        <i class="bi bi-bag"></i>
+        <span>Orders</span>
+      </button>
+
+      <button 
+        class="tab-item"
+        [class.active]="activeSection() === 'password'"
+        (click)="switchSection('password')">
+        <i class="bi bi-lock"></i>
+        <span>Password</span>
+      </button>
+
+      <button 
+        class="tab-item"
+        [class.active]="activeSection() === 'settings'"
+        (click)="switchSection('settings')">
+        <i class="bi bi-gear"></i>
+        <span>Settings</span>
+      </button>
+    </nav>
+
+    <!-- ======================
+         MAIN CONTENT
+    ====================== -->
+    <main class="content">
+
+      <!-- Loader -->
       @if (isLoading()) {
-        <div class="loading-spinner">
+        <div class="center">
           <div class="spinner"></div>
           <p>Loading...</p>
         </div>
-      } @else {
-               <!-- Profile Section -->
-      @if (activeSection() === 'profile') {
-        <section class="content-section">
-          <div class="section-header">
-            <h2>Profile Information</h2>
-            <p>Manage your personal information</p>
-          </div>
-          <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="profile-form">
+      }
+
+      <!-- ======================
+           PROFILE SECTION
+      ====================== -->
+      @if (!isLoading() && activeSection() === 'profile') {
+        <section class="section-card">
+          <h2>Profile Information</h2>
+          <p class="subtitle">Manage your personal details</p>
+
+          <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="form">
+
             <div class="form-group">
-              <label for="name">Full Name</label>
-              <input 
-                type="text" 
-                id="name" 
-                formControlName="username" 
-                [readonly]="!isEditing()"
-                [class.error]="profileForm.get('username')?.invalid && profileForm.get('username')?.touched"
-              >
-              @if (profileForm.get('username')?.invalid && profileForm.get('username')?.touched) {
-                <span class="error-message">Username is required</span>
-              }
+              <label>Full Name</label>
+              <input formControlName="username" [readonly]="!isEditing()" />
             </div>
 
             <div class="form-group">
-              <label for="email">Email</label>
-              <input 
-                type="email" 
-                id="email" 
-                formControlName="email" 
-                [readonly]="!isEditing()"
-                [class.error]="profileForm.get('email')?.invalid && profileForm.get('email')?.touched"
-              >
-              @if (profileForm.get('email')?.invalid && profileForm.get('email')?.touched) {
-                <span class="error-message">Valid email is required</span>
-              }
+              <label>Email Address</label>
+              <input formControlName="email" [readonly]="!isEditing()" />
             </div>
 
             <div class="form-group">
-              <label for="phone">Phone Number</label>
-              <input 
-                type="tel" 
-                id="phone" 
-                formControlName="phone" 
-                [readonly]="!isEditing()"
-                [class.error]="profileForm.get('phone')?.invalid && profileForm.get('phone')?.touched"
-              >
-              @if (profileForm.get('phone')?.invalid && profileForm.get('phone')?.touched) {
-                <span class="error-message">Please enter a valid phone number</span>
-              }
+              <label>Phone Number</label>
+              <input formControlName="phone" [readonly]="!isEditing()" />
             </div>
 
             <div class="form-group">
-              <label for="address">Shipping Address</label>
-              <textarea 
-                id="address" 
-                rows="3" 
-                formControlName="address" 
-                [readonly]="!isEditing()"
-              ></textarea>
+              <label>Address</label>
+              <textarea rows="3" formControlName="address" [readonly]="!isEditing()"></textarea>
             </div>
 
-            <div class="form-actions">
+            <div class="actions">
               @if (!isEditing()) {
-                <button type="button" class="edit-btn" (click)="enableEditing()">Edit Profile</button>
+                <button class="btn-outline" type="button" (click)="enableEditing()">Edit</button>
               } @else {
-                <button type="submit" class="save-btn" [disabled]="profileForm.invalid">Save Changes</button>
-                <button type="button" class="cancel-btn" (click)="cancelEditing()">Cancel</button>
+                <button class="btn-primary" type="submit">Save</button>
+                <button class="btn-outline" type="button" (click)="cancelEditing()">Cancel</button>
               }
             </div>
+
           </form>
         </section>
       }
 
-      <!-- Orders Section -->
-      @if ( activeSection() === 'orders') {
-        <section class="content-section">
-          <div class="section-header">
-            <h2>Order History</h2>
-            <p>Track and manage your orders</p>
-          </div>
-          
+      <!-- ======================
+           ORDERS SECTION
+      ====================== -->
+      @if (!isLoading() && activeSection() === 'orders') {
+        <section class="section-card">
+          <h2>My Orders</h2>
+          <p class="subtitle">Track your order history</p>
+
           @if (orders().length === 0) {
-            <div class="no-orders">
-              <p>You haven't placed any orders yet.</p>
-              <button class="shop-btn" routerLink="/products">Shop Now</button>
+            <div class="empty-box">
+              <img src="assets/empty-orders.svg" />
+              <h3>No Orders Found</h3>
+              <button routerLink="/products" class="btn-primary">Shop Now</button>
             </div>
           } @else {
+
             <div class="orders-list">
               @for (order of orders(); track order.id) {
+
                 <div class="order-card">
+                  
                   <div class="order-header">
-                    <div class="order-info">
-                      <h3>Order #{{ order.id }}</h3>
-                      <p class="order-date">{{ order.date | date:'mediumDate' }}</p>
-                    </div>
-                    <div class="order-status">
-                      <button class="border-0 bg-none" (click)="viewOrder(order.id)">Track Order</button>
-                      <span [class]="getOrderStatusClass(order.orderStatus)">{{ order.orderStatus | titlecase }}</span>
-                    </div>
+                    <h3>#{{ order.id }}</h3>
+                    <span class="badge" [class]="getOrderStatusClass(order.orderStatus)">
+                      {{ order.orderStatus | titlecase }}
+                    </span>
                   </div>
 
-                  <div class="order-details">
-                    <h4>Items</h4>
-                    <div class="order-items">
-                      @for (item of order.items; track item.name) {
-                        <div class="order-item">
-                          <div class="item-name">{{ item.name }}</div>
-                          <div class="item-quantity">Qty: {{ item.quantity }}</div>
-                          <div class="item-price">₹{{ item.price.toFixed(2) }}</div>
-                        </div>
-                      }
-                    </div>
-                    
-                    <div class="order-total">
-                      
-                      <span>Total:</span>
-                      <span class="total-amount">₹{{ order.totalAmount?.toFixed(2) }}</span>
-                    </div>
+                  <p class="date">Placed on {{ order.date | date:'mediumDate' }}</p>
+
+                  <div class="items">
+                    @for (item of order.items; track item.id) {
+                      <div class="item-row">
+                        <span>{{ item.name }}</span>
+                        <span>Qty: {{ item.quantity }}</span>
+                        <strong>₹{{ item.price }}</strong>
+                      </div>
+                    }
                   </div>
 
-                  @if (order.trackingNumber) {
-                    <div class="tracking-info">
-                      <h4>Tracking Information</h4>
-                      <p>Tracking Number: <span class="tracking-number">{{ order.trackingNumber }}</span></p>
-                      <a href="javascript:void(0)" class="track-btn">Track Order</a>
-                    </div>
-                  }
+                  <div class="order-footer">
+                    <span class="price">Total: ₹{{ order.totalAmount  }}</span>
+                   <button 
+                      class="btn-view"
+                      (click)="viewOrder(order.id)">
+                      <i class="bi bi-eye"></i>
+                      View Details
+                    </button>
+                  </div>
+
                 </div>
+
               }
             </div>
+
           }
         </section>
       }
 
-      <!-- Change Password Section -->
-      @if ( activeSection() === 'password') {
-        <section class="content-section">
-          <div class="section-header">
-            <h2>Change Password</h2>
-            <p>Update your password to keep your account secure</p>
-          </div>
+      <!-- ======================
+           CHANGE PASSWORD
+      ====================== -->
+      @if (activeSection() === 'password') {
+        <section class="section-card">
+          <h2>Change Password</h2>
+          <p class="subtitle">Update your login password</p>
 
-          <!-- @if (passwordUpdateSuccess()) {
-            <div class="success-message">Password updated successfully!</div>
-          } -->
+          <form [formGroup]="passwordForm" 
+                (ngSubmit)="changePassword()" 
+                class="form">
 
-          <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" class="password-form">
             <div class="form-group">
-              <label for="current-password">Current Password</label>
-              <input type="password" id="current-password" formControlName="currentPassword"
-                [class.error]="passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched">
-              @if (passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched) {
-                <span class="error-message">Current password is required</span>
-              }
+              <label>Current Password</label>
+              <input type="password" formControlName="currentPassword" />
             </div>
 
             <div class="form-group">
-              <label for="new-password">New Password</label>
-              <input type="password" id="new-password" formControlName="newPassword"
-                [class.error]="passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched">
-              @if (passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched) {
-                <span class="error-message">Password must be at least 6 characters</span>
-              }
+              <label>New Password</label>
+              <input type="password" formControlName="newPassword" />
             </div>
 
             <div class="form-group">
-              <label for="confirm-password">Confirm New Password</label>
-              <input type="password" id="confirm-password" formControlName="confirmPassword"
-                [class.error]="passwordForm.get('confirmPassword')?.invalid && passwordForm.get('confirmPassword')?.touched || getPasswordMatchError()">
-              @if (passwordForm.get('confirmPassword')?.invalid && passwordForm.get('confirmPassword')?.touched) {
-                <span class="error-message">Please confirm your new password</span>
-              }
+              <label>Confirm Password</label>
+              <input type="password" formControlName="confirmPassword" />
               @if (getPasswordMatchError()) {
-                <span class="error-message">Passwords do not match</span>
+                <span class="error">Passwords do not match</span>
               }
             </div>
 
-            <div class="form-actions">
-              <button type="submit" class="save-btn" [disabled]="passwordForm.invalid">
-                @if (passwordForm.invalid) {
-                  <span class="spinner small"></span>
-                } @else {
-                  <span>Update Password</span>
-                }
+            <div class="actions">
+              <button class="btn-primary" type="submit" [disabled]="passwordForm.invalid">
+                Update Password
               </button>
             </div>
+
           </form>
         </section>
       }
 
-      <!-- Settings Section -->
-      @if ( activeSection() === 'settings') {
-        <section class="content-section">
-          <div class="section-header">
-            <h2>Account Settings</h2>
-            <p>Manage your account preferences</p>
-          </div>
+      <!-- ======================
+           SETTINGS 
+      ====================== -->
+     @if (activeSection() === 'settings') {
+  <section class="section-card">
+    <h2>Account Settings</h2>
 
-          <div class="settings-form">
-            <div class="setting-group">
-              <h3>Email Notifications</h3>
-              
-              <div class="setting-item">
-                <div class="setting-label">
-                  <label for="order-updates">Order Updates</label>
-                  <p class="setting-description">Receive emails about your order status</p>
-                </div>
-                <div class="setting-control">
-                  <input type="checkbox" id="order-updates" [checked]="settings().orderUpdates" (change)="toggleSetting('orderUpdates')">
-                </div>
-              </div>
-              
-              <div class="setting-item">
-                <div class="setting-label">
-                  <label for="promotions">Promotions</label>
-                  <p class="setting-description">Receive emails about promotions and discounts</p>
-                </div>
-                <div class="setting-control">
-                  <input type="checkbox" id="promotions" [checked]="settings().promotions" (change)="toggleSetting('promotions')">
-                </div>
-              </div>
-              
-              <div class="setting-item">
-                <div class="setting-label">
-                  <label for="newsletter">Newsletter</label>
-                  <p class="setting-description">Receive our weekly newsletter</p>
-                </div>
-                <div class="setting-control">
-                  <input type="checkbox" id="newsletter" [checked]="settings().newsletter" (change)="toggleSetting('newsletter')">
-                </div>
-              </div>
-            </div>
+    @for (s of settingKeys(); track s) {
+      <div class="toggle-row">
 
-            <div class="setting-group">
-              <h3>Privacy</h3>
-              
-              <div class="setting-item">
-                <div class="setting-label">
-                  <label for="data-sharing">Data Sharing</label>
-                  <p class="setting-description">Allow us to share your data with trusted partners</p>
-                </div>
-                <div class="setting-control">
-                  <input type="checkbox" id="data-sharing" [checked]="settings().dataSharing" (change)="toggleSetting('dataSharing')">
-                </div>
-              </div>
-              
-              <div class="setting-item">
-                <div class="setting-label">
-                  <label for="activity-tracking">Activity Tracking</label>
-                  <p class="setting-description">Allow us to track your activity on our platform</p>
-                </div>
-                <div class="setting-control">
-                  <input type="checkbox" id="activity-tracking" [checked]="settings().activityTracking" (change)="toggleSetting('activityTracking')">
-                </div>
-              </div>
-            </div>
+        <label class="toggle-label">
+          {{ s | titlecase }}
+        </label>
 
-            <div class="setting-actions">
-              <button class="save-btn" (click)="saveSettings()">Save Settings</button>
-            </div>
-          </div>
-        </section>
-      }
-      }
-    </div>
+        <label class="switch">
+          <input 
+            type="checkbox" 
+            [checked]="settings()[s]"
+            (change)="toggleSetting(s)" 
+          />
+          <span class="slider"></span>
+        </label>
+
+      </div>
+    }
+
+    <button class="btn-primary mt-2" (click)="saveSettings()">Save</button>
+  </section>
+}
+
+
+    </main>
+
   </div>
 </div>

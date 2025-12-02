@@ -44,15 +44,21 @@ export class Profile {
   // ✅ Reactive Forms
   profileForm!: FormGroup;
   passwordForm!: FormGroup;
-
-  // User settings 
-  settings = signal<UserSettings>({ 
-    orderUpdates: true, 
-    promotions: false, 
-    newsletter: true, 
-    dataSharing: false, 
-    activityTracking: true 
+  settings = signal<UserSettings>({
+    orderUpdates: true,
+    promotions: false,
+    newsletter: true,
+    dataSharing: false,
+    activityTracking: true
   });
+  // User settings 
+settingKeys = signal<(keyof UserSettings)[]>([
+  'orderUpdates',
+  'promotions',
+  'newsletter',
+  'dataSharing',
+  'activityTracking'
+])
   private authService = inject(Auth);
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
@@ -192,9 +198,9 @@ export class Profile {
     return newPassword && confirmPassword && newPassword !== confirmPassword;
   }
   toggleSetting(settingName: keyof UserSettings): void {
-    const currentSettings = this.settings();
-    currentSettings[settingName] = !currentSettings[settingName];
-    this.settings.set({ ...currentSettings });
+    const updated = { ...this.settings() };
+    updated[settingName] = !updated[settingName];
+    this.settings.set(updated);
   }
   saveSettings(): void {
     // Normally this would be an API call to save user settings 

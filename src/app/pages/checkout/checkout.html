@@ -1,200 +1,243 @@
-<!-- Loading State -->
-@if (isLoading()) {
-  <div class="container py-4">
-    <div class="text-center py-5">
-      <div class="spinner-border" aria-hidden="true">
-        <span class="visually-hidden">Loading...</span>
-      </div>
-      <p class="mt-3">Loading your cart...</p>
-    </div>
-  </div>
-}
+<div class="checkout-page">
+  <h2 class="page-title">Checkout</h2>
+  <div class="layout">
 
-<!-- Error State -->
-@if (error()) {
-  <div class="container py-4">
-    <div class="alert alert-danger">
-      {{ error() }}
-      <button type="button" class="btn-close float-end" (click)="error.set(null)"></button>
-    </div>
-    <div class="text-center mt-4">
-      <a routerLink="/cart" class="btn btn-primary">Return to Cart</a>
-    </div>
-  </div>
-}
+    <!-- LEFT SIDE -->
+    <div class="left-section">
 
-<!-- Main Checkout -->
-@if (!isLoading() && !error()) {
-  <div class="container py-4">
-    <div class="row">
-      <div class="col-12">
-        <h1 class="mb-4">Checkout</h1>
-        <!-- Checkout Progress -->
-        <div class="checkout-progress mb-4">
-          <div class="step" [class.active]="currentStep() >= 1" [class.completed]="currentStep() > 1">
-            <div class="step-number">1</div>
-            <div class="step-label">Shipping</div>
+      <!-- ADDRESS SECTION -->
+      <section class="section-box">
+        <div class="section-header">
+          <h3>Delivery Address</h3>
+          <button class="add-btn btn-primary" (click)="isAddressModalOpen.set(true)">+ Add New</button>
+        </div>
+
+        @if (addressList().length) {
+          <div class="address-list">
+            @for (a of addressList(); track a._id) {
+              <label class="address-card" 
+                     [class.active]="selectedAddressId() === a._id">
+                <input type="radio"
+                       name="address"
+                       [checked]="selectedAddressId() === a._id"
+                       (change)="selectAddress(a._id)" />
+
+                <div class="info">
+                  <h4>{{ a.fullName }}</h4>
+                  <p>{{ a.line1 }}, {{ a.city }}, {{ a.state }} - {{ a.pincode }}</p>
+                  <p class="phone">📞 {{ a.phone }}</p>
+                </div>
+              </label>
+            }
           </div>
-          <div class="step-connector"></div>
-          <div class="step" [class.active]="currentStep() >= 2" [class.completed]="currentStep() > 2">
-            <div class="step-number">2</div>
-            <div class="step-label">Billing</div>
+        } @else {
+          <p class="no-address">No address found. Add your first address.</p>
+        }
+      </section>
+
+      <!-- DELIVERY OPTIONS -->
+      <section class="section-box">
+        <h3>Delivery Options</h3>
+
+        <label class="delivery-option" 
+               [class.active]="deliveryType() === 'standard'">
+          <input type="radio" name="delivery" value="standard"
+                 (change)="deliveryType.set('standard')" />
+          <div>
+            <h4>Standard Delivery</h4>
+            <p>Delivery in 3-5 days (Free)</p>
           </div>
-          <div class="step-connector"></div>
-          <div class="step" [class.active]="currentStep() >= 3">
-            <div class="step-number">3</div>
-            <div class="step-label">Payment</div>
+        </label>
+
+        <label class="delivery-option"
+               [class.active]="deliveryType() === 'express'">
+          <input type="radio" name="delivery" value="express"
+                 (change)="deliveryType.set('express')" />
+          <div>
+            <h4>Express Delivery</h4>
+            <p>Delivery in 24-48 hours (₹99)</p>
+          </div>
+        </label>
+      </section>
+
+      <!-- PAYMENT -->
+      <section class="section-box">
+        <h3>Payment Method</h3>
+        <label class="payment-option"
+               [class.active]="paymentMethod() === 'online'">
+          <input type="radio" value="online" name="payment" [checked]="paymentMethod() === 'online'"
+                 (change)="paymentMethod.set('online')" />
+          <span>Online Payment (UPI / Card)</span>
+        </label>
+      </section>
+    </div>
+
+    <!-- RIGHT SUMMARY -->
+    <div class="right-section">
+
+      <div class="summary-box">
+        <h3>Order Summary</h3>
+
+        <div class="items">
+          @for (item of cartItems(); track item.productId) {
+            <div class="item">
+              <!-- <pre>{{ item| json }}</pre> -->
+              <img [src]="item?.product?.images[0].url" alt="product" />
+
+              <div class="details">
+                <h4>{{ item.name }}</h4>
+                <p>Qty: {{ item.quantity }}</p>
+                <strong>₹{{ item.price }}</strong>
+              </div>
+            </div>
+          }
+        </div>
+        <!-- COUPON INPUT BOX -->
+        <div class="coupon-box">
+          <label for="coupon">Have a Coupon?</label>
+
+          <div class="coupon-row">
+            <input
+              id="coupon"
+              type="text"
+              placeholder="Enter coupon code"
+              [(ngModel)]="couponCode"
+            />
+
+            <button type="button" class="apply-btn btn-primary" (click)="applyCoupon()">
+              Apply
+            </button>
+          </div>
+
+          @if (couponError()) {
+            <p class="coupon-error">{{ couponError() }}</p>
+          }
+
+          @if (couponSuccess()) {
+            <p class="coupon-success">✔ {{ couponSuccess() }}</p>
+          }
+        </div>
+
+        <div class="price-box">
+          <div class="price-sub-row">
+            <span>Subtotal</span> 
+            <span>₹{{ subTotal() }}</span>
+          </div>
+          <!-- apply coupon -->
+          @if (couponDiscount()) {
+            <div class="price-sub-row">
+              <span>Coupon ({{ couponCode }})</span>
+              <span class="coupon-discounted">-₹{{ couponDiscount() }}</span>
+            </div>
+          }
+          <div class="price-sub-row">
+            <span>Shipping</span>
+            <span>₹{{ deliveryType() === 'express' ? 99 : 0 }}</span>
+          </div>
+
+          <div class="total-row">
+            <strong>Total Amount</strong>
+            <strong>₹{{ totalAmount() + (deliveryType() === 'express' ? 99 : 0) }}</strong>
           </div>
         </div>
-      </div>
-    </div>
 
-    <div class="row">
-      <!-- Checkout Form -->
-      <div class="col-lg-8">
-        <div class="card mb-4">
-          <div class="card-body">
-            @if (currentStep() === 1) {
-              <app-shipping
-                (continue)="nextStep()">
-              </app-shipping>
-            }
-            @if (currentStep() === 2) {
-              <app-billing
-                [addresses]="addressesList()"
-                (addressChange)="setAddress($event)"
-                (addAddress)="addAddress($event)"
-                (continue)="nextStep()">
-              </app-billing>
-            }
-          
-            @if (currentStep() === 3) {
-                <!-- Order Summary -->
-                <div class="col-lg-12">
-                  <div class="card order-summary-card mb-4">
-                    <div class="card-header">
-                      <h5 class="mb-0">Order Summary</h5>
-                    </div>
-                    <div class="card-body">
-                      <div class="cart-items-summary">
-                          <div class="cart-item-summary">
-                        @for(item of cartService.cartItems(); track $index){
-
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                  <div class="item-details d-flex align-items-center">
-                                    <img [src]="item.product.images[0].url" width="100px" height="100px" [alt]="item.name" class="item-thumbnail me-2" loading="lazy">
-                                    <div>
-                                      <div class="item-name">{{ item.name }}</div>
-                                      <div class="item-quantity text-muted small">Qty: {{ item.quantity }}</div>
-                                    </div>
-                                  </div>
-                                  <div class="item-price">₹{{ formatCurrency(item.price * item.quantity) }}</div>
-                                </div>
-                            }
-                          </div>
-                      </div>
-                      <hr>
-                      <!-- Pricing Breakdown -->
-                      <div class="price-summary">
-                          <!-- Coupon Section -->
-                        <!-- Coupon section allows users to apply discount codes to their order -->
-                        <div class="coupon-section mb-3">
-                          <!-- Coupon Input Form - Shown when no coupon is applied -->
-                          <div class="coupon-form">
-                            <div class="input-group">
-                              <input type="text"  class="form-control"  placeholder="Enter coupon code" 
-                                [value]="couponInput()" (input)="couponInput.set($any($event.target).value)"
-                                [disabled]="isCouponLoading()" (keyup.enter)="applyCoupon()"
-                              >
-                              <button class="btn btn-outline-primary" type="button" (click)="applyCoupon()"> Apply </button>
-                            </div>
-                            @if(couponMessage() && !couponCode()){
-                              <div class="coupon-message mt-2" [class.text-danger]="couponError()" [class.text-success]="!couponError()">
-                                {{ couponMessage() }}
-                              </div>
-                            }
-                          </div>
-                          <!-- Applied Coupon Display - Shown when a coupon is successfully applied -->
-                          @if(couponCode()){
-                            <div  class="applied-coupon mt-2">
-                            <div class="d-flex justify-content-between align-items-center">
-                              <div>
-                                <span class="badge bg-success me-2">
-                                  <i class="bi bi-tag-fill me-1"></i>{{ couponCode() }}
-                                </span>
-                                <span class="text-success">Coupon applied</span>
-                              </div>
-                              <button class="btn btn-sm btn-link text-danger p-0" (click)="removeCoupon(couponCode())">
-                                <i class="bi bi-x-circle"></i> Remove
-                              </button>
-                            </div>
-                          </div>
-                          }
-                        </div>
-                        <div class="summary-item d-flex justify-content-between mb-2">
-                          <span>Subtotal</span>
-                          <span>{{ formatCurrency(subTotal()) }}</span>
-                        </div>
-                        
-                        @if (shipping()) {
-                          <div class="summary-item d-flex justify-content-between mb-2">
-                            <span>Shipping Charges  </span>
-                            <span>{{ formatCurrency(shipping()) }}</span>
-                          </div>
-                        }
-                        @if(discount()) {
-                          <div class="summary-item d-flex justify-content-between mt-2 text-success">
-                            <span>Discount</span>
-                            <span>-{{ formatCurrency(discount()) }}</span>
-                          </div>
-                        }
-                        @if (selectedPaymentMethod() === 'cod' && currentStep() === 3) {
-                          <div class="summary-item d-flex justify-content-between mb-2">
-                            <span>Cash on Delivery Fee</span>
-                            <span>₹50</span>
-                          </div>
-                        }
-                        <hr>
-                        <div class="summary-total d-flex justify-content-between align-items-center">
-                          <span>Total</span>
-                          <span class="total-price">
-                            {{ formatCurrency(totalAmount()) }}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <!-- <app-payment (back)="prevStep()" [amount]="totalAmount()" ></app-payment> -->
-                <div class="d-flex justify-content-between">
-                  <button class="btn btn-outline-secondary" (click)="prevStep()" [disabled]="isProcessing()">
-                    &larr; Back
-                  </button>
-                  <button class="btn btn-primary" (click)="placeOrder()" [disabled]="isProcessing()">
-                    @if(!isProcessing()){
-                      Place Order &rarr;
-                    } @else if(isProcessing()){
-                      <span >
-                        <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
-                        <span class="visually-hidden">Loading...</span>
-                      </span>
-                    }
-                  </button>
-                </div>
-              }
-          </div>
-        </div>
+        <button class="place-btn btn-primary" (click)="placeOrder()">
+          Place Order
+        </button>
       </div>
+
     </div>
   </div>
-}
+<!-- ADD ADDRESS MODAL -->
+  @if (isAddressModalOpen()) {
+    <app-pop-up [isOpen]="true" (close)="isAddressModalOpen.set(false)" animation="bottom">
+      <div class="address-form-wrapper">
+        <form [formGroup]="addressForm">
+          <!-- Row 1: Full Name + Phone -->
+          <div class="field-row">
+            <div class="field">
+              <label for="fullName">Full Name</label>
+              <input
+                id="fullName"
+                type="text"
+                placeholder="e.g. Ishwar kale"
+                formControlName="fullName" />
+            </div>
 
+            <div class="field">
+              <label for="phone">Phone Number</label>
+              <input
+                id="phone"
+                type="tel"
+                placeholder="10-digit mobile"
+                formControlName="phone" />
+            </div>
+          </div>
+          <!-- Row 4: Address Line -->
+          <div class="field-row">
+            <div class="field full-width">
+              <label for="line1">Address Line</label>
+              <input
+                id="line1"
+                type="text"
+                placeholder="House no, street, area"
+                formControlName="line1" />
+            </div>
+          </div>
+          <!-- Row 4: Address Line -->
+          <div class="field-row">
+            <div class="field full-width">
+              <label for="line2">Address Line</label>
+              <input
+                id="line2"
+                type="text"
+                placeholder="House no, street, area"
+                formControlName="line2" />
+            </div>
+          </div>
+          <!-- Row 2: Pincode + City -->
+          <div class="field-row">
+            <div class="field">
+              <label for="pincode">Pincode</label>
+              <input
+                id="pincode"
+                type="text"
+                placeholder="e.g. 400001"
+                formControlName="pincode" />
+            </div>
 
-<!-- Order Confirmation -->
-@if (isOrderComplete() && orderResponse()) {
-  <app-order-success 
-    [show]="isOrderComplete()"
-    [order]="orderResponse()"
-    (close)="isOrderComplete.set(false)">
-  </app-order-success>
-}
+            <div class="field">
+              <label for="city">City</label>
+              <input
+                id="city"
+                type="text"
+                placeholder="e.g. Mumbai"
+                formControlName="city" />
+            </div>
+          </div>
+
+          <!-- Row 3: State -->
+          <div class="field-row">
+            <div class="field full-width">
+              <label for="state">State</label>
+              <input
+                id="state"
+                type="text"
+                placeholder="e.g. Maharashtra"
+                formControlName="state" />
+            </div>
+          </div>
+
+          <!-- Footer: Action Button -->
+          <div class="modal-footer">
+            <button
+              type="submit" class="save-btn" (click)="saveAddress(); isAddressModalOpen.set(false);"
+              [disabled]="addressForm.invalid">
+              Save Address
+            </button>
+          </div>
+        </form>
+      </div>
+    </app-pop-up>
+  }
+</div>

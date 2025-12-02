@@ -1,74 +1,76 @@
 import { CommonModule, isPlatformBrowser, ViewportScroller } from '@angular/common';
-import { Component, HostListener, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink, RouterModule } from '@angular/router';
-import { ProductModel } from '../../commons/models/product.model';
-import { ProductCard } from '../../components/product-card/product-card';
-import { Seo } from '../../services/seo';
+import { Component, HostListener, inject, OnInit, PLATFORM_ID, signal, effect } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+
+import { Seo } from '../../services/seo';
 import { CartService } from '../../services/cart';
 import { Product } from '../../services/product';
 import { HomeService } from '../../services/home';
+
+import { ProductModel } from '../../commons/models/product.model';
 import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-product-list',
-  imports: [CommonModule, FormsModule, RouterModule, RouterLink, ProductCard],
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterModule, RouterLink],
   templateUrl: './product-list.html',
-  styleUrls: ['./product-list.scss']   // ✅ fixed (was styleUrl)
+  styleUrls: ['./product-list.scss']
 })
 export class ProductList implements OnInit {
 
-  // Forms Fields
+  // ----------------------------------------------------
+  // Signals
+  // ----------------------------------------------------
   allProducts = signal<ProductModel[]>([]);
-  isLoading = signal<boolean>(false);
+  filteredProducts = signal<ProductModel[]>([]);
+  isLoading = signal<boolean>(true);
 
-  selectedCategories = signal<any[]>([]);
-  selectedBrands = signal<any[]>([]);
-  maxPrice = signal<number>(0);
+  selectedCategories = signal<string[]>([]);
+  selectedBrands = signal<string[]>([]);
+  selectedStorage = signal<string>('');
+  selectedProcessor = signal<string>('');
+  priceRange = signal<[number, number]>([0, 0]);
+
   minPrice = signal<number>(0);
-  priceRange = signal<number[]>([0]);
+  maxPrice = signal<number>(0);
 
   searchQuery = signal<string>('');
-
-  selectedStorage = '';
-  selectedProcessor = '';
-
-  isMobileView = signal<boolean>(false);
-  isFilterDrawerOpen = signal<boolean>(false);
+  viewMode = signal<'grid' | 'list'>('grid');
+  sortOption = signal<string>('featured');
 
   brands = signal<any[]>([]);
   categories = signal<any[]>([]);
 
-  categoryId = signal<string>('');
-  sortOption = signal<string>('featured');
+  categorySlug = signal<string>('');
+  subCategorySlug = signal<string>('');
 
-  get sortOptionValue() {
-    return this.sortOption();
-  }
-  set sortOptionValue(value: string) {
-    this.sortOption.set(value);
-  }
-  get priceRangeValue() {
-    return this.priceRange();
-  }
+  isMobileView = signal<boolean>(false);
+  isFilterDrawerOpen = signal<boolean>(false);
 
-  viewMode = signal<'grid' | 'list'>('grid');
-  filteredProducts = signal<any[]>([]);
-  isCategoryRoute = signal<boolean>(false);
-
-  private readonly seoService = inject(Seo);
+  sortOptionValue: string = '';
+  // ----------------------------------------------------
+  // Inject Services
+  // ----------------------------------------------------
+  private readonly seo = inject(Seo);
   private readonly route = inject(ActivatedRoute);
-  public cartService = inject(CartService);
+  private readonly router = inject(Router);
+  public readonly cartService = inject(CartService);
   private readonly productService = inject(Product);
+  private readonly homeService = inject(HomeService);
   private readonly platformId = inject(PLATFORM_ID);
-  public readonly homeService = inject(HomeService);
-  private scroller = inject(ViewportScroller);
+  private readonly scroller = inject(ViewportScroller);
 
-  @HostListener('window:resize', ['$event'])
-  onResize(event: Event) {
+  // ----------------------------------------------------
+  // Window Resize Listener
+  // ----------------------------------------------------
+  @HostListener('window:resize')
+  onResize() {
     this.checkScreenSize();
   }
 
+  // Close drawer with Escape key
   @HostListener('window:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
     if (event.key === 'Escape' && this.isFilterDrawerOpen()) {
@@ -76,209 +78,308 @@ export class ProductList implements OnInit {
     }
   }
 
+  // ----------------------------------------------------
+  // INIT
+  // ----------------------------------------------------
   ngOnInit(): void {
-    // Check initial screen size
     this.checkScreenSize();
-    this.scroller.scrollToPosition([0, 0]); // safe scroll
-    this.route.queryParams.subscribe(params => {
-      this.isCategoryRoute.set(false);
-      if (params['search']) {
-        this.searchQuery.set(params['search']);
-        this.filterProducts();
-      } else if (params['category']) {
-        this.categoryId.set(params['category']);
-        this.isCategoryRoute.set(true);
+    this.scroller.scrollToPosition([0, 0]);
+    this.categorySlug = signal(this.route.snapshot.params['catSlug'] || '');
+    this.subCategorySlug = signal(this.route.snapshot.params['subSlug'] || '');
+    // Handle route changes (category / sub-category / search)
+    this.route.paramMap.subscribe((params: any) => {
+      const p = params.params;
+      this.categorySlug.set(p['catSlug'] || p['slug'] || '');
+      this.subCategorySlug.set(p['subSlug'] || '');
+
+      if (p['search']) {
+        this.searchQuery.set(p['search']);
       }
+      this.loadDataBasedOnRoute();
     });
     this.loadCategoryAndBrandData();
-    if (!this.isCategoryRoute()) {
-      this.loadAllProducts();
-    } else {
-      this.loadCategoryProducts(this.categoryId());
-    }
 
-    // Set SEO tags
-    this.seoService.updateMetaTags({
-      title: 'Shop Computers, Laptops & Accessories | Computer Shop',
-      description: 'Browse our selection of high-quality laptops, desktops, and computer accessories. Filter by brand, category, and specifications to find the perfect computer for your needs.',
-      keywords: 'computers, laptops, accessories, gaming PC, business laptops, shop computers',
+    // Initial SEO Setup
+    this.seo.updateMetaTags({
+      title: 'Product Listing | Shoppyness',
+      description: 'Browse the best computers, laptops, accessories and more.',
+      keywords: 'laptop, mobile, electronics, computers',
       url: 'https://shoppyness.com/products'
     });
 
-    if (isPlatformBrowser(this.platformId)) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  }
 
-  loadCategoryAndBrandData(): void {
-        forkJoin({
-          brand: this.homeService.getBrand(),
-          category: this.homeService.getCategories()
-        }).subscribe({
-          next: (res: any) => {
-            this.brands.set(res.brand?.data);
-            this.categories.set(res.category?.data);
-          },
-          error: (err) => {
-            console.error('Error fetching data', err);
-          }
-        })
-  }
-  private loadAllProducts(): void {
-    this.productService.getProduct().subscribe({
-      next: (product: any) => {
-        this.allProducts.set(product.data);
-        this.filteredProducts.set(product.data);
-        const prices = product.data.map((p: any) => p.price || 0);
-        this.minPrice.set(Math.min(...prices));
-        this.maxPrice.set(Math.max(...prices));
-        this.priceRange.set([this.minPrice(), this.maxPrice()]);
-        this.isLoading.set(false);
-      },
-      error: (err) => console.error('Error loading products:', err)
+    this.route.queryParams.subscribe(params => {
+      if (params['cat']) {
+        this.selectedCategories.set(params['cat'].split(','));
+      }
+
+      if (params['brand']) {
+        this.selectedBrands.set(params['brand'].split(','));
+      }
+
+      if (params['min'] && params['max']) {
+        this.priceRange.set([Number(params['min']), Number(params['max'])]);
+      }
+
+      this.filterProducts();
     });
+
   }
 
-  private loadCategoryProducts(categoryId: string): void {
-    this.productService.getProductByCategoryId(categoryId).subscribe({
+  // ----------------------------------------------------
+  // Load Categories & Brands
+  // ----------------------------------------------------
+  loadCategoryAndBrandData() {
+    forkJoin({
+      brand: this.homeService.getBrand(),
+      category: this.homeService.getCategories()
+    }).subscribe({
       next: (res: any) => {
-        this.allProducts.set(res.data);
-        this.filteredProducts.set(res.data);
-
-        const prices = res.data.map((p: any) => p.price || 0);
-        this.minPrice.set(Math.min(...prices));
-        this.maxPrice.set(Math.max(...prices));
-        this.priceRange.set([this.minPrice(), this.maxPrice()]);
-        this.isLoading.set(false);
-      },
-      error: (err) => console.error('Error loading category products:', err)
+        this.brands.set(res.brand?.data || []);
+        this.categories.set(res.category?.data || []);
+      }
     });
   }
 
-  // Check if we're in mobile view
-  checkScreenSize(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      this.isMobileView.set(window.innerWidth < 768);
-      // Close filter drawer when switching to desktop
-      if (!this.isMobileView()) {
-        this.isFilterDrawerOpen.set(false);
-      }
-    } else {
-      this.isMobileView.set(false);
+  // ----------------------------------------------------
+  // Main Data Loader (Category/Subcategory/Search)
+  // ----------------------------------------------------
+  loadDataBasedOnRoute() {
+    this.isLoading.set(true);
+
+    // Search only
+    if (this.searchQuery()) {
+      this.loadSearchProducts();
+      return;
     }
+
+    // Sub-category
+    if (this.subCategorySlug()) {
+      this.loadCategoryProducts(this.subCategorySlug());
+      return;
+    }
+
+    // Category only
+    if (this.categorySlug()) {
+      this.loadCategoryProducts(this.categorySlug());
+      return;
+    }
+
+    // Default: all products
+    this.loadAllProducts();
   }
 
-  // Toggle filter drawer for mobile
-  toggleFilterDrawer(): void {
-    this.isFilterDrawerOpen.set(!this.isFilterDrawerOpen());
-
-    if (isPlatformBrowser(this.platformId)) {
-      if (this.isFilterDrawerOpen()) {
-        document.body.classList.add('filter-drawer-open');
-        document.body.style.height = document.documentElement.scrollHeight + 'px';
-      } else {
-        document.body.classList.remove('filter-drawer-open');
-        document.body.style.height = '';
-      }
-    }
+  // ----------------------------------------------------
+  // Load ALL Products
+  // ----------------------------------------------------
+  loadAllProducts() {
+    this.productService.getProduct().subscribe({
+      next: (res: any) => {
+        this.prepareProductList(res.data);
+      },
+      error: (err) => console.error(err)
+    });
   }
 
-  applyFiltersAndClose(): void {
-    this.filterProducts();
-    if (this.isMobileView()) {
-      this.toggleFilterDrawer();
-    }
+  // ----------------------------------------------------
+  // Load CATEGORY or SUBCATEGORY
+  // ----------------------------------------------------
+  loadCategoryProducts(slug: string) {
+    this.productService.getProductByCategoryId(slug).subscribe({
+      next: (res: any) => {
+        this.prepareProductList(res.data);
+      },
+      error: (err) => console.error(err)
+    });
   }
 
-  toggleCategory(category: string): void {
-    if (this.selectedCategories().includes(category)) {
-      this.selectedCategories.set(
-        this.selectedCategories().filter(c => c !== category)
-      );
-    } else {
-      this.selectedCategories.update(cats => [...cats, category]);
-    }
-    if (!this.isMobileView()) this.filterProducts();
+  // ----------------------------------------------------
+  // Load SEARCH PRODUCTS
+  // ----------------------------------------------------
+  loadSearchProducts() {
+    this.productService.searchProducts(this.searchQuery()).subscribe({
+      next: (res: any) => {
+        this.prepareProductList(res.data);
+      },
+      error: (err) => console.error(err)
+    });
   }
 
-  toggleBrand(brand: string): void {
-    if (this.selectedBrands().includes(brand)) {
-      this.selectedBrands.set(
-        this.selectedBrands().filter(b => b !== brand)
-      );
-    } else {
-      this.selectedBrands.update(brands => [...brands, brand]);
-    }
-    if (!this.isMobileView()) this.filterProducts();
+  // ----------------------------------------------------
+  // Prepare Product List (common function)
+  // ----------------------------------------------------
+  private prepareProductList(data: any[]) {
+    const prices = data.map(p => p.price || 0);
+
+    this.minPrice.set(Math.min(...prices));
+    this.maxPrice.set(Math.max(...prices));
+    this.priceRange.set([this.minPrice(), this.maxPrice()]);
+
+    this.allProducts.set(data);
+    this.filteredProducts.set(data);
+    this.isLoading.set(false);
   }
 
-  filterProducts(): void {
+  // ----------------------------------------------------
+  // Filter Products
+  // ----------------------------------------------------
+  filterProducts() {
     this.productService
-      .filterProduct(this.selectedCategories(), this.selectedBrands(), this.priceRangeValue)
+      .filterProduct(
+        this.selectedCategories(),
+        this.selectedBrands(),
+        this.priceRange()
+      )
       .subscribe((res: any) => {
         this.filteredProducts.set(res.data);
       });
   }
 
-  sortProducts(): void {
+  // ----------------------------------------------------
+  // Sorting
+  // ----------------------------------------------------
+  sortProducts() {
     let sorted = [...this.filteredProducts()];
+
     switch (this.sortOption()) {
       case 'price-low':
         sorted.sort((a, b) => a.price - b.price);
         break;
+
       case 'price-high':
-        sorted.sort((a, b) => b.price - a.price);
+        sorted.sort((x, y) => y.price - x.price);
         break;
+
       case 'name-asc':
-        sorted.sort((a, b) => a.name.localeCompare(b.name));
+        sorted.sort((c, d) => c.name.localeCompare(d.name));
         break;
+
       case 'name-desc':
-        sorted.sort((a, b) => b.name.localeCompare(a.name));
+        sorted.sort((j, k) => k.name.localeCompare(j.name));
         break;
-      case 'featured':
+
       default:
-        sorted.sort((a, b) => Number(a.id) - Number(b.id));
+        sorted.sort((y, z) => Number(y.id) - Number(z.id));
         break;
     }
+
     this.filteredProducts.set(sorted);
   }
 
-  resetFilters(): void {
-    this.selectedCategories.set([]);
+  // ----------------------------------------------------
+  // Toggle Brand
+  // ----------------------------------------------------
+toggleBrand(brand: string) {
+  let selected = [...this.selectedBrands()];
+  console.log('selected brand',selected, 'toggling brand',this.selectedBrands());
+  
+  if (selected.includes(brand)) {
+    selected = selected.filter(b => b !== brand);
+  } else {
+    selected.push(brand);
+  }
+
+  this.selectedBrands.set(selected);
+
+  this.updateUrlParams();
+  this.filterProducts();
+}
+
+
+toggleCategory(category: string) {
+  let selected = [...this.selectedCategories()];
+
+  if (selected.includes(category)) {
+    selected = selected.filter(c => c !== category);
+  } else {
+    selected.push(category);
+  }
+
+  this.selectedCategories.set(selected);
+
+  this.updateUrlParams();
+  this.filterProducts();
+}
+
+
+
+updateUrlParams() {
+  const queryParams: any = {};
+
+  // Add brands
+  if (this.selectedBrands().length > 0) {
+    queryParams.brand = this.selectedBrands().join(',');
+  }
+
+  // Add categories (multi select for future use)
+  if (this.selectedCategories().length > 0) {
+    queryParams.cat = this.selectedCategories().join(',');
+  }
+
+  // Add price range
+  queryParams.min = this.priceRange()[0];
+  queryParams.max = this.priceRange()[1];
+
+  // Update URL without reloading the page
+  this.router.navigate([], {
+    relativeTo: this.route,
+    queryParams: queryParams,
+    queryParamsHandling: 'merge'
+  });
+}
+
+
+  // ----------------------------------------------------
+  // Reset Filters
+  // ----------------------------------------------------
+  resetFilters() {
     this.selectedBrands.set([]);
-    this.priceRange.set([this.minPrice(), this.maxPrice()]);
-    this.selectedStorage = '';
-    this.selectedProcessor = '';
+    this.selectedCategories.set([]);
+    this.selectedProcessor.set('');
+    this.selectedStorage.set('');
     this.searchQuery.set('');
+    this.priceRange.set([this.minPrice(), this.maxPrice()]);
     this.filterProducts();
   }
 
-  ngOnDestroy(): void {
+  // ----------------------------------------------------
+  // Filter Drawer (Mobile)
+  // ----------------------------------------------------
+  checkScreenSize() {
     if (isPlatformBrowser(this.platformId)) {
-      document.body.classList.remove('filter-drawer-open');
-      document.body.style.height = '';
+      this.isMobileView.set(window.innerWidth < 768);
+      if (!this.isMobileView()) this.isFilterDrawerOpen.set(false);
     }
   }
 
-   // Add product to cart
-  addToCart(product: any): void {
+  toggleFilterDrawer() {
+    this.isFilterDrawerOpen.set(!this.isFilterDrawerOpen());
+
+    if (isPlatformBrowser(this.platformId)) {
+      document.body.classList.toggle('filter-drawer-open', this.isFilterDrawerOpen());
+    }
+  }
+
+  // ----------------------------------------------------
+  // Add to Cart
+  // ----------------------------------------------------
+  addToCart(product: any) {
     const payload = {
       productId: product,
       quantity: 1,
       variant: null
-    }
-    // Add product to cart through CartService
+    };
+
     this.cartService.addToCart(payload).subscribe({
-      next: (res: any) => {
-        // this.isAddingToCart.set(false);
-        // // Clear success message after 3 seconds
-        // setTimeout(() => {
-        //   this.addedToCartMessage.set('');
-        // }, 3000);
-      },
-      error: (error: Error) => {
-        console.error('Error adding to cart:', error);
-      }
+      next: () => {},
+      error: (err) => console.error(err)
     });
+  }
+
+  // Cleanup
+  ngOnDestroy() {
+    if (isPlatformBrowser(this.platformId)) {
+      document.body.classList.remove('filter-drawer-open');
+    }
   }
 }

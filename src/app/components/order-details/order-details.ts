@@ -1,6 +1,6 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, effect, Inject, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ProfileService } from '../../services/profile-service';
 interface OrderStatus {
   step: string;
@@ -12,7 +12,7 @@ interface OrderStatus {
 
 @Component({
   selector: 'app-order-details',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './order-details.html',
   styleUrl: './order-details.scss'
 })

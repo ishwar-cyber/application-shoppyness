@@ -29,10 +29,6 @@ export class HomeService {
 
   // ⭐ Always fresh data – cache disabled
   getCategoryAndSubcategory() {
-    return this.http.get(`${this.url}/category/header`, {
-      headers: {
-        'Cache-Control': 'no-store',
-      }
-    });
+    return this.http.get(`${this.url}/category/header`);
   }
 }

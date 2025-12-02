@@ -1,365 +1,494 @@
-// Checkout Component Styles
-// Main container styles
-.container {
-max-width: 1200px;
-margin: 0 auto;
+/* ============================
+   MODERN CHECKOUT PAGE
+=============================== */
+.checkout-page {
+  max-width: 1350px;
+  margin: auto;
+  padding: 1.2rem;
+
+  .page-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 1.4rem;
+  }
 }
 
-// Checkout progress bar
-.checkout-progress {
-display: flex;
-align-items: center;
-justify-content: space-between;
-margin-bottom: 2rem;
-padding: 0 1rem;
+/* GRID LAYOUT */
+.layout {
+  display: flex;
+  gap: 2rem;
 
-@media (max-width: 576px) {
-flex-wrap: wrap;
-// justify-content: center;
+  @media (max-width: 900px) {
+    flex-direction: column;
+    gap: 1rem;
+  }
 }
 
-.step {
-display: flex;
-flex-direction: column;
-align-items: center;
-position: relative;
-z-index: 1;
-
-.step-number {  
-  width: 36px;  
-  height: 36px;  
-  border-radius: 50%;  
-  background-color: #eee;  
-  display: flex;  
-  align-items: center;  
-  justify-content: center;  
-  font-weight: bold;  
-  margin-bottom: 0.5rem;  
-  transition: all 0.3s ease;  
-}  
-  
-.step-label {  
-  font-size: 0.9rem;  
-  font-weight: 500;  
-  transition: all 0.3s ease;  
-}  
-  
-&.active {  
-  .step-number {  
-    background-color: #0d6efd;  
-    color: #fff;  
-  }  
-    
-  .step-label {  
-    color: #0d6efd;  
-    font-weight: 600;  
-  }  
-}  
-  
-&.completed {  
-  .step-number {  
-    background-color: #198754;  
-    color: #fff;  
-  }  
+/* LEFT SECTION */
+.left-section {
+  flex: 2;
 }
 
-}
+/* ============================
+   SECTION BOX
+=============================== */
+.section-box {
+  background: #fff;
+  padding: 1.4rem;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  margin-bottom: 1.4rem;
 
-.step-connector {
-flex-grow: 1;
-height: 2px;
-background-color: #eee;
-margin: 0 10px;
-margin-bottom: 1.5rem;
-position: relative;
-z-index: 0;
-
-@media (max-width: 576px) {  
-  display: none;  
-}
-
-}
-}
-
-// Payment methods styling
-.payment-methods {
-.payment-method-card {
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
-border: 1px solid #dee2e6;
-border-radius: 8px;
-padding: 1rem;
-height: 100px;
-cursor: pointer;
-transition: all 0.2s ease;
-
-i {  
-  font-size: 1.8rem;  
-  margin-bottom: 0.5rem;  
-  color: #6c757d;  
-}  
-  
-span {  
-  font-size: 0.9rem;  
-  font-weight: 500;  
-  text-align: center;  
-}  
-  
-&:hover {  
-  border-color: #adb5bd;  
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);  
-}  
-  
-&.active {  
-  border-color: #0d6efd;  
-  background-color: rgba(13, 110, 253, 0.05);  
-    
-  i {  
-    color: #0d6efd;  
-  }  
-    
-  span {  
-    color: #0d6efd;  
-    font-weight: 600;  
-  }  
-}
-
-}
-}
-
-.payment-details-form {
-margin-top: 1.5rem;
-padding: 1.5rem;
-border-radius: 8px;
-background-color: #f8f9fa;
-}
-
-// Processing spinner animation
-.spin {
-animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-from { transform: rotate(0deg); }
-to { transform: rotate(360deg); }
-}
-
-// Order summary card styling
-.order-summary-card {
-position: sticky;
-top: 20px;
-
-.card-header {
-background-color: #f8f9fa;
-border-bottom: 1px solid rgba(0, 0, 0, 0.125);
-}
-
-.summary-items {
-max-height: 300px;
-overflow-y: auto;
-margin-bottom: 1rem;
-
-.summary-item {  
-  display: flex;  
-  align-items: center;  
-  margin-bottom: 1rem;  
-    
-  &:last-child {  
-    margin-bottom: 0;  
-  }  
-    
-  .summary-item-image {  
-    width: 60px;  
-    height: 60px;  
-    border-radius: 8px;  
-    overflow: hidden;  
-    margin-right: 1rem;  
-    border: 1px solid #eee;  
-      
-    img {  
-      width: 100%;  
-      height: 100%;  
-      object-fit: cover;  
-    }  
-  }  
-    
-  .summary-item-info {  
-    flex: 1;  
-      
-    .summary-item-title {  
-      font-size: 0.9rem;  
-      font-weight: 500;  
-      margin-bottom: 0.25rem;  
-      line-height: 1.2;  
-    }  
-      
-    .summary-item-meta {  
-      display: flex;  
-      justify-content: space-between;  
-      font-size: 0.85rem;  
-      color: #6c757d;  
-        
-      .summary-item-price {  
-        font-weight: 500;  
-      }  
-    }  
-  }  
-}
-
-}
-
-.summary-totals {
-.summary-total-row {
-display: flex;
-justify-content: space-between;
-margin-bottom: 0.5rem;
-font-size: 0.9rem;
-
-&.total {  
-    font-size: 1.1rem;  
-    font-weight: 600;  
-    margin-top: 0.5rem;  
-    padding-top: 0.5rem;  
-    border-top: 1px solid #dee2e6;  
-  }  
-}
-
-}
-}
-
-.order-confirmation {
-  text-align: center;
-  padding: 2rem 0;
-
-  &__icon {
-    font-size: 5rem;
-    color: #198754;
-    margin-bottom: 1.5rem;
+  h3 {
+    margin-bottom: 12px;
+    font-size: 18px;
+    font-weight: 700;
   }
 
-  &__title {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
-  &__number {
-    font-size: 1.2rem;
+  .add-btn {
+    padding: 6px 14px;
+    border-radius: 6px;
+    background: var(--primary);
+    color: #fff;
+    font-size: 14px;
     font-weight: 600;
-    color: #0d6efd;
-    margin-bottom: 1.5rem;
-  }
+    transition: 0.2s;
 
-  &__message {
-    font-size: 1.1rem;
-    max-width: 600px;
-    margin: 0 auto 2rem;
-    color: #6c757d;
-  }
-
-  &__details {
-    max-width: 768px;
-    margin: 0 auto 2rem;
-    text-align: left;
-
-    h2 {
-      margin-bottom: 1rem;
-      font-size: 1.5rem;
+    &:hover {
+      background: var(--primary);
     }
-  }
-
-  &__shipping {
-    max-width: 768px;
-    margin: 0 auto 2rem;
-    text-align: left;
-
-    h3 {
-      font-size: 1.2rem;
-      margin-bottom: 1rem;
-    }
-
-    address {
-      font-style: normal;
-      line-height: 1.6;
-    }
-  }
-
-  &__actions {
-    margin-top: 2rem;
   }
 }
 
-
-// Mobile responsiveness
-@media (max-width: 767.98px) {
-.order-summary-card {
-position: static;
-margin-top: 2rem;
-}
-}
-
-
-// Coupon Section Styles
-.coupon-section {
-  padding: 15px;
-  background-color: #f8f9fa;
-  border-radius: 8px;
+/* ============================
+   ADDRESS CARD
+=============================== */
+.address-list {
   margin-top: 10px;
-  
-  .coupon-form {
-    .input-group {
-      .form-control {
-        border-right: 0;
-        &:focus {
-          box-shadow: none;
-          border-color: #ced4da;
-        }
-      }
-      
-      .btn {
-        border-left: 0;
-        background-color: white;
-        &:hover {
-          background-color: #f0f0f0;
-        }
-      }
+}
+
+.address-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  cursor: pointer;
+  transition: 0.25s;
+  margin-bottom: 12px;
+  background: #fafafa;
+
+  input {
+    margin-top: 4px;
+  }
+
+  &:hover {
+    background: #f1f5ff;
+  }
+
+  &.active {
+    border-color: var(--primary);
+    background: #eef2ff;
+    box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.15);
+  }
+
+  .info {
+    h4 {
+      font-size: 15px;
+      margin: 0 0 4px 0;
+      font-weight: 700;
     }
-    
-    .coupon-message {
-      font-size: 0.9rem;
-      margin-top: 8px;
-      &.text-danger {
-        color: #dc3545;
-      }
-      &.text-success {
-        color: #28a745;
-      }
+
+    p {
+      margin: 0;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .phone {
+      color: #6b7280;
+      font-size: 13px;
+      margin-top: 4px;
     }
   }
-  
-  .applied-coupon {
-    .badge {
-      font-size: 0.8rem;
-      padding: 0.35em 0.65em;
-      
-      i {
-        font-size: 0.7rem;
+}
+
+/* ============================
+   DELIVERY OPTION
+=============================== */
+.delivery-option {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  background: #fafafa;
+  transition: 0.25s;
+  margin-bottom: 12px;
+
+  input { margin-top: 4px; }
+
+  &:hover {
+    background: #f1f5ff;
+  }
+
+  &.active {
+    border-color: var(--primary);
+    background: #eef2ff;
+  }
+
+  h4 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 3px 0 0 0;
+    font-size: 13px;
+    color: #6b7280;
+  }
+}
+
+/* ============================
+   PAYMENT OPTION
+=============================== */
+.payment-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: #fafafa;
+  margin-bottom: 12px;
+  cursor: pointer;
+
+  input { margin-top: 1px; }
+
+  &.active {
+    border-color: var(--primary);
+    background: #eef2ff;
+  }
+}
+/* ============================
+   COUPON BOX DESIGN
+=============================== */
+
+.coupon-box {
+  margin-bottom: 1.4rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  background: #f9fafb;
+  border-radius: 12px;
+
+  label {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 8px;
+  }
+
+  .coupon-row {
+    display: flex;
+    gap: 10px;
+
+    input {
+      flex: 1;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      background: white;
+      font-size: 14px;
+      transition: 0.25s ease;
+
+      &:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.18);
+        outline: none;
       }
     }
-    
-    .btn-link {
-      font-size: 0.9rem;
-      text-decoration: none;
-      padding: 0;
-      
+
+    .apply-btn {
+      padding: 12px 18px;
+      background: var(--primary);
+      color: white;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      white-space: nowrap;
+      transition: 0.25s ease;
+
       &:hover {
-        text-decoration: underline;
+        background: var(--primary);
       }
     }
-    
-    .summary-item {
-      font-size: 0.9rem;
+  }
+
+  .coupon-error {
+    margin-top: 8px;
+    color: #dc2626; /* red */
+    font-size: 13px;
+  }
+
+  .coupon-success {
+    margin-top: 8px;
+    color: #059669; /* green */
+    font-size: 13px;
+    font-weight: 600;
+  }
+}
+
+/* ============================
+   ORDER SUMMARY
+=============================== */
+.right-section {
+  flex: 1;
+  position: sticky;
+  top: 80px;
+
+  @media (max-width: 900px) {
+    position: static;
+  }
+}
+
+.summary-box {
+  padding: 1.4rem;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+
+  h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  .item {
+    display: flex;
+    gap: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 12px;
+
+    img {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+
+    h4 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 600;
     }
   }
+
+  .price-box {
+    margin-top: 1rem;
+
+    .price-sub-row, .total-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      font-size: 14px;
+    }
+
+    .total-row {
+      margin-top: 6px;
+      border-top: 1px solid #ddd;
+      padding-top: 12px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .coupon-discounted {
+      color: #059669; /* green */
+      font-weight: 700;
+    }
+  }
+
+  .place-btn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 1.2rem;
+    border-radius: 10px;
+    background: var(--primary);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    transition: 0.25s;
+
+    &:hover {
+      background:var(--primary);
+    }
+  }
+}
+
+/* ============================
+   FORM LAYOUT
+=============================== */
+/* ============================
+   MODERN ADDRESS FORM DESIGN
+=============================== */
+
+.address-form-wrapper {
+  padding: 0.5rem;
+}
+
+/* GROUP LAYOUT */
+.field-row {
+  display: flex;
+  gap: 1.2rem;
+  margin-bottom: 1.3rem;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+/* INDIVIDUAL FIELD */
+.field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+  label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+    text-align: left !important;
+    margin-bottom: 6px;
+    letter-spacing: 0.2px;
+  }
+
+  input {
+    width: 100%;
+    padding: 13px 14px;
+    border-radius: 12px;
+    border: 1px solid #e3e5e8;
+    background: #f9fafb;
+    font-size: 15px;
+    transition: all 0.22s ease;
+    outline: none;
+
+    &:hover {
+      background: #ffffff;
+      border-color: #d0d1d4;
+    }
+
+    &:focus {
+      border-color: var(--primary);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.18);
+    }
+  }
+}
+
+/* FULL-WIDTH FIELD */
+.full-width {
+  flex: 100%;
+}
+
+/* INPUT PLACEHOLDER STYLE */
+input::placeholder {
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+/* FORM FOOTER */
+.modal-footer {
+  margin-top: 1.5rem;
+
+  .save-btn {
+    width: 100%;
+    padding: 14px;
+    font-size: 17px;
+    font-weight: 600;
+    border-radius: 12px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    transition: 0.3s ease;
+
+    &:hover:not([disabled]) {
+      background: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(var(--primary-rgb), 0.3);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+  }
+}
+
+/* OPTIONAL - Nice Divider */
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 1.4rem;
+}
+
+/* ============================
+   SUBMIT BUTTON
+=============================== */
+
+.modal-footer {
+  margin-top: 1.4rem;
+
+  .save-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    transition: 0.25s ease;
+
+    &:hover:not([disabled]) {
+      background: var(--primary);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
+
+@keyframes popupIn {
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

@@ -1,24 +1,48 @@
-<div class="h-100 product-card" itemscope itemtype="https://schema.org/Product">
-  <meta itemprop="sku" [content]="product.sku" />
-  <meta itemprop="mpn" [content]="product.id" />
-  
-  @if(product.images && product.images.length > 0) {
-    <img [src]="product.images[0].url" class="card-img-top" loading="lazy" (click)="navigateToProduct(product.slug)" loading="lazy" [alt]="product.name" itemprop="image" />
-  }
+<div class="product-card" (click)="navigateToProduct(product.slug)">
 
-  <div class="card-body d-flex flex-column" (click)="navigateToProduct(product.slug)">
-    <h5 class="card-title text-truncate" itemprop="name" data-bs-toggle="tooltip">{{ product.name }}</h5>
-    <div class="d-flex justify-content-between align-items-center mb-2">
-      <span class="card-text" itemprop="brand"><span class="">SKU</span>: {{ product.sku | uppercase}}</span>
-      <span class="card-text"><span itemprop="brand">{{ product.brand.name | uppercase}}</span></span>
+  <!-- Wishlist -->
+  <button 
+    class="wishlist-btn"
+    (click)="toggleWishlist(); $event.stopPropagation()"
+    [class.active]="isWishlisted()"
+  >
+    <i class="bi" [class.bi-heart]="!isWishlisted()" [class.bi-heart-fill]="isWishlisted()"></i>
+  </button>
+
+  <!-- Product Image -->
+  <div class="image-wrapper">
+    <img 
+      [src]="product?.images?.[0]?.url" 
+      [alt]="product?.name"
+      loading="lazy"
+    />
+  </div>
+
+  <!-- Product Info -->
+  <div class="info">
+    <h3 class="name">{{ product?.name }}</h3>
+
+    <!-- Price -->
+    <div class="price-box">
+      <span class="price">₹{{ product?.price | number:'1.0-0' }}</span>
+
+      <span class="old-price" *ngIf="product?.oldPrice">
+        ₹{{ product?.oldPrice | number:'1.0-0' }}
+      </span>
+
+      <span class="discount" *ngIf="product?.oldPrice">
+        {{
+          ((product?.oldPrice - product?.price) / product?.oldPrice * 100) 
+          | number:'1.0-0'
+        }}% OFF
+      </span>
+    </div>
+
+    <!-- Rating -->
+    <div class="rating" *ngIf="product?.rating">
+      <i class="bi bi-star-fill"></i>
+      <span>{{ product?.rating }}</span>
     </div>
 
   </div>
-    <div class="mt-auto d-flex justify-content-between align-items-center border-top p-2">
-      <span class="fw-bold" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
-        <meta itemprop="priceCurrency" content="INR" />
-        <span itemprop="price">₹{{ product.price }}</span>
-      </span>
-      <button class="btn btn-outline-primary btn-sm" (click)="addToCart1(product._id)" [disabled]="product.stock === 'in' ? '' : product.stock <= 0">Add to Cart</button>
-    </div>
 </div>

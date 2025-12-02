@@ -1,23 +1,78 @@
-<div class="order-tracking-container">
-  <div class="order-header">
+<div class="order-details-wrapper" *ngIf="ORDER_STEPS()">
+  <!-- CONTINUE SHOPPING BUTTON -->
+<div class="continue-shopping-box">
+  <button class="btn-shop" routerLink="/products">
+    <i class="bi bi-bag"></i>
+    Continue Shopping
+  </button>
+</div>
+
+  <!-- ORDER HEADER -->
+  <div class="header-box">
     <h2>Order Tracking</h2>
-    <p>Order ID: <strong>{{orderId()}}</strong></p>
-    <p>Estimated Delivery: <span class="date">{{estimatedDelivery()}}</span></p>
+    <p>Order #{{ orderId() }}</p>
+
+    <div class="dates">
+      <span>Order Date: {{ orderDate() }}</span>
+      <span>Estimated Delivery: {{ estimatedDelivery() }}</span>
+    </div>
   </div>
 
-  <div class="progressbar">
-    <div class="progress" style="width: 60%;"></div>
-  </div>
+  <!-- TIMELINE -->
+  <div class="tracking-timeline">
 
-  <div class="timeline">
-    @for (item of ORDER_STEPS(); track $index) {
-      <div class="step" [class.completed]="item.completed">
-        <div class="circle"></div>
-        <div class="label">
-          <h4>{{item.label}}</h4>
-          <!-- <p>{{item.date}}</p> -->
+    <div
+      class="timeline-step"
+      *ngFor="let step of ORDER_STEPS(); let i = index"
+    >
+      
+      <!-- DOT + CHECK CIRCLE -->
+      <div class="circle" [class.completed]="step.completed">
+        <ng-container *ngIf="step.completed; else pending">
+          <span class="check">&#10003;</span>
+        </ng-container>
+
+        <ng-template #pending>
+          <div class="dot"></div>
+        </ng-template>
+      </div>
+
+      <!-- LABEL + DATE -->
+      <div class="content">
+        <div class="label">{{ step.label }}</div>
+        <div class="date" *ngIf="step.completed">
+          <!-- {{ step.createdAt | date:'mediumDate' }} -->
         </div>
       </div>
-    }
+
+      <!-- CONNECTING LINE -->
+      <div
+        class="line"
+        *ngIf="(i + 1) < ORDER_STEPS().length"
+        [class.completed]="ORDER_STEPS()[i + 1].completed"
+      ></div>
+
+    </div>
   </div>
+
+  <!-- BOTTOM SUMMARY CARD -->
+  <div class="summary-card">
+    <h3>Order Summary</h3>
+
+    <div class="summary-row">
+      <span>Order Number</span>
+      <strong>{{ orderId() }}</strong>
+    </div>
+
+    <div class="summary-row">
+      <span>Order Date</span>
+      <strong>{{ orderDate() }}</strong>
+    </div>
+
+    <div class="summary-row">
+      <span>Estimated Delivery</span>
+      <strong>{{ estimatedDelivery() }}</strong>
+    </div>
+  </div>
+
 </div>

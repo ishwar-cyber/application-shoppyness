@@ -15,6 +15,9 @@ export interface CartData {
   updatedAt: string;
   itemCount: number;
   subTotal: number;
+  shippingCharge: number;
+  discount: number;
+  totalPrice: number;
   total: number;
   id: string;
 }

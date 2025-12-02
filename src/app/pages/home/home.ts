@@ -38,6 +38,16 @@ export class Home implements OnInit{
     { title: 'Secure Payment', description: '100% secure payment', icon: 'bi-shield-lock' },
     { title: 'Easy Returns', description: '30-day return policy', icon: 'bi-arrow-counterclockwise' }
   ]);
+
+  bannerImages = signal([
+    { id: 1, url: 'assets/banners/banner1.jpg', alt: 'Latest Deals Electronics' },
+    { id: 2, url: 'assets/banners/banner2.jpg', alt: 'New Launches Gadgets' },
+    { id: 3, url: 'assets/banners/banner3.jpg', alt: 'Best Discounts on Accessories' }
+  ]);
+
+  currentSlide = signal(0);
+
+  autoSlideInterval: any;
   private readonly product = inject(Product);
   private readonly home = inject(HomeService)
   @ViewChild('scrollContainer') scrollContainer!: ElementRef;
@@ -48,6 +58,7 @@ export class Home implements OnInit{
 
   ngOnInit(): void {
     // Set SEO meta tags for home page
+     this.startAutoSlide();
     this.seoService.updateMetaTags({
       title: 'Computer Shop - Premium Laptops, Desktops & Accessories',
       description: 'Shop the latest laptops, desktops, and computer accessories at the best prices. Free shipping, extended warranty, and expert support available.',
@@ -72,6 +83,13 @@ export class Home implements OnInit{
 
     this.homeService.getCategoryAndSubcategory();
   }
+
+  startAutoSlide() {
+    this.autoSlideInterval = setInterval(() => {
+      this.nextSlide();
+    }, 4500);
+  }
+
   
   getCategoryIcon(category: string): string {
     switch(category.toLowerCase()) {
@@ -94,6 +112,20 @@ export class Home implements OnInit{
 
   scrollRight() {
     this.scrollContainer.nativeElement.scrollBy({ left: 220, behavior: 'smooth' });
+  }
+    nextSlide() {
+    const total = this.bannerImages().length;
+    this.currentSlide.set((this.currentSlide() + 1) % total);
+  }
+    goToSlide(index: number) {
+    this.currentSlide.set(index);
+  }
+
+  prevSlide() {
+    const total = this.bannerImages().length;
+    this.currentSlide.set(
+      (this.currentSlide() - 1 + total) % total
+    );
   }
 }
 

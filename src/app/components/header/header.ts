@@ -1,119 +1,208 @@
-import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, computed, HostListener, inject, OnInit, PLATFORM_ID, Signal, signal } from '@angular/core';
-import { ActivatedRoute, NavigationEnd, Router, RouterLink, RouterModule } from '@angular/router';
+import {
+  CommonModule,
+  isPlatformBrowser
+} from '@angular/common';
+import {
+  Component,
+  HostListener,
+  inject,
+  PLATFORM_ID,
+  signal,
+  computed,
+  effect,
+  runInInjectionContext
+} from '@angular/core';
+import {
+  Router,
+  RouterModule,
+  RouterLink,
+  NavigationEnd
+} from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Auth } from '../../services/auth';
 import { Product } from '../../services/product';
-import { Search } from "../search/search";
 import { CartService } from '../../services/cart';
 import { HomeService } from '../../services/home';
 
-interface CategoryItem {
-  name: string;
-  slug: string;
-  subcategories: SubcategoryItem[];
-}
-
-interface SubcategoryItem {
-  name: string;
-  slug: string;
-}
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterModule, CommonModule, RouterLink, FormsModule, Search],
+  imports: [RouterModule, CommonModule, RouterLink, FormsModule],
   templateUrl: './header.html',
   styleUrl: './header.scss'
 })
-export class Header implements OnInit{
+export class Header {
 
-  searchQuery = '';
-  isSearchFocused = false;
-  toggleUserDropdown =signal<boolean>(false)
-  selectedBottomMenu = signal<string>('')
-  filteredProducts = signal<any>([]);
-  
+  // UI Signals
+  searchQuery = signal('');
+  isSearchFocused = signal(false);
+  toggleUserDropdown = signal(false);
+  selectedBottomMenu = signal('home');
+
+  // Data Signals
+  categories = signal<any[]>([]);
+  cartCount = signal(0);
+  userName = signal('');
+  isBrowser = signal(false);
+
+  searchResults = signal<any[]>([]);
+  searchTimeout: any = null;
+  // Screen width
+  screenWidth = signal(1200);
+  isMobileView = computed(() => this.screenWidth() <= 768);
+
+  // Inject services
   private readonly router = inject(Router);
-  private readonly route = inject(ActivatedRoute);
-  public authService = inject(Auth); // Assuming AuthService is available for login state
-  private readonly product = inject(Product);
-  public cartService = inject(CartService);
+  public readonly authService = inject(Auth);
+  private readonly productService = inject(Product);
+  private readonly cartService = inject(CartService);
+  private readonly homeService = inject(HomeService);
   private readonly platformId = inject(PLATFORM_ID);
-  public readonly home = inject(HomeService);
-  isBrowser = signal<boolean>(isPlatformBrowser(this.platformId));
-  // Signal to track screen width
-  screenWidth = signal<number>(this.isBrowser() ? window.innerWidth : 1200); // default fallback
 
-  // Active Category for Mega Menu
-  activeCategory: string | null = null;
-  cartCount = signal<number>(0);
-  userName = signal<any>('');
-  // Categories data with subcategories
-  categories = signal<CategoryItem[]>([]);
+  constructor() {
 
-  ngOnInit(): void {
+    // ----------------------------------
+    //  FIX: effect() inside constructor 
+    // ----------------------------------
+    // runInInjectionContext(this, () => {
+      effect(() => {
+        this.cartCount.set(this.cartService.cartCount());
+      });
+    // });
 
-   this.loadCategories();
+    // router menu update
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        const segment = event.urlAfterRedirects.split('/')[1];
+        this.selectedBottomMenu.set(segment || 'home');
 
-  this.router.events.subscribe(event => {
-    if (event instanceof NavigationEnd) {
-      this.loadCategories(); // auto refresh
-    }
-  });
-
-    if(isPlatformBrowser(this.platformId)){
-      this.userName.set(sessionStorage.getItem('userName'));
-    }
-   this.router.events.subscribe(event => {
-    if (event instanceof NavigationEnd) {
-      const segment = event.urlAfterRedirects.split('/')[1];
-      this.selectedBottomMenu.set(segment || 'home');
-    }
-  });
+        this.toggleUserDropdown.set(false);
+      }
+    });
   }
 
-  
-  // pdate screen width when window is resized
+  ngOnInit(): void {
+    // Enable browser mode
+    this.isBrowser.set(isPlatformBrowser(this.platformId));
+    if (this.isBrowser()) {
+    //   document.addEventListener('click', (e: any) => {
+    //   if (!e.target.closest('.search-wrapper')) {
+    //     this.isSearchFocused.set(false);
+    //   }
+    // });
+      this.screenWidth.set(window.innerWidth);
+      this.userName.set(sessionStorage.getItem('userName') || '');
+    }
+    this.loadCategories();
+
+    
+  }
+
+  // ----------------------------------
+  //  Window Resize
+  // ----------------------------------
   @HostListener('window:resize')
   onResize() {
-    if(isPlatformBrowser(this.platformId)){
+    if (this.isBrowser()) {
       this.screenWidth.set(window.innerWidth);
     }
   }
-  isMobileView(): boolean {
-    return this.screenWidth() <= 768;
-  }
-  // Megamenu functions
-  showMegaMenu(slug: string): void {
-    this.activeCategory = slug;
-  }
-  
-  hideMegaMenu(): void {
-    this.activeCategory = null;
-  }
-  getFirstRouteSegment() {
-      const firstRoute = this.router.url.split('/')[1]; // e.g., /products → "products"
 
-      if (firstRoute) {
-        this.selectedBottomMenu.set(firstRoute);
-      }
-  }
-
+  // ----------------------------------
+  //  Load Categories
+  // ----------------------------------
   loadCategories() {
-    this.home.getCategoryAndSubcategory().subscribe({
-      next: (res:any) => {
-        this.categories.set(res);
-        console.log('UPDATED HEADER DATA:', res);
-      },
+    this.homeService.getCategoryAndSubcategory().subscribe({
+      next: (res: any) => this.categories.set(res),
       error: (err) => console.error(err)
     });
   }
-  logout(): void {
-    this.authService.isLoggedInSignal.set(false);
+
+  // ----------------------------------
+  //  Mega Menu
+  // ----------------------------------
+  activeCategory = signal<string | null>(null);
+
+  openMegaMenu(cat: any) {
+    this.activeCategory.set(cat.slug);
+  }
+
+  closeMegaMenu() {
+    this.activeCategory.set(null);
+  }
+
+  // ----------------------------------
+  //  Logout
+  // ----------------------------------
+  logout() {
     this.authService.logout();
+    this.toggleUserDropdown.set(false);
     this.router.navigate(['/']);
   }
-  selectBottomMenu(menu: string){
+
+  // ----------------------------------
+  // Bottom Menu Switcher
+  // ----------------------------------
+  selectBottomMenu(menu: string) {
     this.selectedBottomMenu.set(menu);
   }
+
+  // ----------------------------------
+  // SEARCH LOGIC
+  // ----------------------------------
+  onSearchEnter() {
+    const q = this.searchQuery().trim();
+    if (!q) return;
+
+    this.router.navigate(['/products'], {
+      queryParams: { search: q }
+    });
+
+    this.searchQuery.set('');
+  }
+  onSearchChange() {
+  const query = this.searchQuery().trim();
+
+  if (this.searchTimeout) clearTimeout(this.searchTimeout);
+
+  // Debounce for smooth UX
+  this.searchTimeout = setTimeout(() => {
+    if (query.length < 2) {
+      this.searchResults.set([]);
+      return;
+    }
+
+    this.productService.searchProducts(query).subscribe({
+      next: (res: any) => this.searchResults.set(res),
+      error: (err) => console.error(err)
+    });
+
+  }, 300);
+}
+
+performSearch() {
+  const q = this.searchQuery().trim();
+  if (!q) return;
+
+  this.router.navigate(['/products'], {
+    queryParams: { search: q }
+  });
+
+  this.searchQuery.set('');
+  this.isSearchFocused.set(false);
+}
+
+openProduct(slug: string) {
+  this.isSearchFocused.set(false);
+  this.searchQuery.set('');
+  this.router.navigate(['/product', slug]);
+
+}
+
+onFocusSearch() {
+  this.isSearchFocused.set(true);
+}
+
+
+
 }

@@ -1,226 +1,155 @@
-<div class="auth-container">
+<div class="auth-wrapper">
+
   <div class="auth-card">
-    <div class="auth-header">
-      <h1>Welcome</h1>
-      <p>Please login or create an account to continue</p>
-    </div>
-    
+
+    <!-- TAB SWITCH -->
     <div class="auth-tabs">
-      <button 
+      <button
+        class="tab"
         [class.active]="activeTab() === 'login'"
         (click)="switchTab('login')"
       >
         Login
       </button>
-      <button 
+
+      <button
+        class="tab"
         [class.active]="activeTab() === 'register'"
         (click)="switchTab('register')"
       >
         Register
       </button>
     </div>
-    
-    <!-- Error and Success Messages -->
-    @if (error()) {
-      <div class="auth-message error-message">
-        {{ error() }}
-      </div>
+
+    <!-- SUCCESS / ERROR -->
+    @if(success()){
+      <p class="alert success">✔{{ success() }}</p>
+    } @else if(error()) {
+      <p class="alert error">⚠{{ error() }}</p>
     }
-    
-    @if (success()) {
-      <div class="auth-message success-message">
-        {{ success() }}
-      </div>
-    }
-    
-    <!-- Login Form -->
+
+    <!-- ============================
+          LOGIN TAB
+    ============================= -->
     @if (activeTab() === 'login') {
-      <form [formGroup]="loginForm" class="auth-form">
+      <form [formGroup]="loginForm" (ngSubmit)="login()"class="auth-form">
+
+        <h2 class="title">Welcome Back 👋</h2>
+        <p class="subtitle">Login to continue</p>
+
+        <!-- Email -->
         <div class="form-group">
-          <label for="register-email">Email</label>
-          <input 
-            type="email" 
-            id="register-email" 
-            formControlName="email" 
+          <label>Email</label>
+          <input
+            type="email"
+            formControlName="email"
+            class="form-input"
             placeholder="Enter your email"
-            [class.invalid]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
-          >
-          @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
-            <div class="error-text">
-              @if (registerForm.get('email')?.errors?.['required']) {
-                Email is required
-              } @else if (registerForm.get('email')?.errors?.['email']) {
-                Please enter a valid email address
-              }
-            </div>
-          }
+          />
         </div>
-        
+
+        <!-- Password -->
         <div class="form-group">
-          <label for="login-password">Password</label>
-          <input 
-            type="password" 
-            id="login-password" 
-            formControlName="password" 
+          <label>Password</label>
+          <input
+            type="password"
+            formControlName="password"
+            class="form-input"
             placeholder="Enter your password"
-            [class.invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
-          >
-          @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
-            <div class="error-text">
-              @if (loginForm.get('password')?.errors?.['required']) {
-                Password is required
-              } @else if (loginForm.get('password')?.errors?.['minlength']) {
-                Password must be at least 6 characters
-              }
-            </div>
-          }
-        </div>
-        
-        <div class="form-actions">
-          <div class="forgot-password">
-            <a>Forgot Password?</a>
+          />
+
+          <!-- Forgot password link -->
+          <div class="forgot-link">
+            <a routerLink="/forgot-password">Forgot Password?</a>
           </div>
-          
-          <button 
-            type="submit" 
-            class="btn btn-primary" (click)="login()"
-            [disabled]="loginForm.invalid || isLoading()"
-          >
-            @if (isLoading()) {
-              <span class="spinner"></span>
-              Logging in...
-            } @else {
-              Login
-            }
-          </button>
         </div>
+
+        <!-- Button -->
+        <button type="submit" class="btn-primary auth-btn">
+          <span *ngIf="!isLoading()">Login</span>
+          <span *ngIf="isLoading()">Please wait...</span>
+        </button>
       </form>
     }
-    
-    <!-- Register Form -->
+  
+
+    <!-- ============================
+          REGISTER TAB
+    ============================= -->
     @if (activeTab() === 'register') {
-      <form [formGroup]="registerForm" class="auth-form">
-        <div class="form-group">
-          <label for="register-name">Name</label>
-          <input 
-            type="text" 
-            id="register-name" 
-            formControlName="name" 
-            placeholder="Rajesh Patil"
-            [class.invalid]="registerForm.get('name')?.invalid && registerForm.get('name')?.touched"
-          >
-          @if (registerForm.get('name')?.invalid && registerForm.get('name')?.touched) {
-            <div class="error-text">
-              @if (registerForm.get('name')?.errors?.['required']) {
-                Name is required
-              } 
-            </div>
-          }
-        </div>
-        <div class="form-group">
-          <label for="register-email">Email</label>
-          <input 
-            type="email" 
-            id="register-email" 
-            formControlName="email" 
-            placeholder="Ex. rajesh@gmail.com"
-            [class.invalid]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
-          >
-          @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
-            <div class="error-text">
-              @if (registerForm.get('email')?.errors?.['required']) {
-                Email is required
-              } @else if (registerForm.get('email')?.errors?.['email']) {
-                Please enter a valid email address
-              }
-            </div>
-          }
-        </div>
+    <form [formGroup]="registerForm" (ngSubmit)="register()" class="auth-form">
+      <h2 class="title">Create Account ✨</h2>
+      <p class="subtitle">Join Shoppyness today</p>
 
-        <div class="form-group">
-          <label for="register-phone">Phone</label>
-          <input 
-            type="tel" maxlength="10" min="10"
-            id="register-phone" 
-            formControlName="phone" 
-            placeholder="Ex. 9809890987"
-            [class.invalid]="registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched"
-          >
-          @if (registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched) {
-            <div class="error-text">
-              @if (registerForm.get('phone')?.errors?.['required']) {
-                Phone is required
-              }
-            </div>
-          }
-        </div>
+      <!-- Name -->
+      <div class="form-group">
+        <label>Name</label>
+        <input
+          type="text"
+          class="form-input"
+          formControlName="name"
+          placeholder="Enter name"
+        />
+      </div>
 
-        <div class="form-group">
-          <label for="register-password">Password</label>
-          <input 
-            type="password"  required
-            id="register-password" 
-            formControlName="password" 
-            placeholder="Create a password"
-            [class.invalid]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
-          >
-          @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
-            <div class="error-text">
-              @if (registerForm.get('password')?.errors?.['required']) {
-                Password is required
-              } @else if (registerForm.get('password')?.errors?.['minlength']) {
-                Password must be at least 6 characters
-              }
-            </div>
-          }
-        </div>
-        
-        <div class="form-group">
-          <label for="register-confirm-password">Confirm Password</label>
-          <input 
-            type="password"  required
-            id="register-confirm-password" 
-            formControlName="confirmPassword" 
-            placeholder="Confirm your password"
-            [class.invalid]="getPasswordMatchError() || (registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched)"
-          >
-          @if (registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched) {
-            <div class="error-text">
-              Confirm password is required
-            </div>
-          }
-          @if (getPasswordMatchError() && !registerForm.get('confirmPassword')?.invalid) {
-            <div class="error-text">
-              Passwords do not match
-            </div>
-          }
-        </div>
-        
-        <div class="form-actions">
-          <button 
-            type="submit" 
-            class="btn btn-primary" (click)="register()"
-            [disabled]="registerForm.invalid || isLoading()"
-          >
-            @if (isLoading()) {
-              <span class="spinner"></span>
-              Registering...
-            } @else {
-              Create Account
-            }
-          </button>
-        </div>
-      </form>
-    }
-    
-    <div class="auth-footer">
-      <p>
-        @if (activeTab() === 'login') {
-          Don't have an account? <a href="javascript:void(0)" (click)="switchTab('register')">Register</a>
-        } @else {
-          Already have an account? <a href="javascript:void(0)" (click)="switchTab('login')">Login</a>
+      <!-- Email -->
+      <div class="form-group">
+        <label>Email</label>
+        <input
+          type="email"
+          class="form-input"
+          formControlName="email"
+          placeholder="Enter email"
+        />
+      </div>
+
+      <!-- Phone -->
+      <div class="form-group">
+        <label>Phone</label>
+        <input
+          type="text"
+          maxlength="10"
+          class="form-input"
+          formControlName="phone"
+          placeholder="Enter mobile number"
+        />
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <label>Password</label>
+        <input
+          type="password"
+          class="form-input"
+          formControlName="password"
+          placeholder="Enter password"
+        />
+      </div>
+
+      <!-- Confirm Password -->
+      <div class="form-group">
+        <label>Confirm Password</label>
+        <input
+          type="password"
+          class="form-input"
+          formControlName="confirmPassword"
+          placeholder="Confirm password"
+        />
+        @if(getPasswordMatchError()) {
+          <div class="password-error">
+            Passwords do not match
+          </div>
         }
-      </p>
-    </div>
+      </div>
+
+      <button type="submit" class="btn-primary auth-btn">
+        @if (!isLoading()) {
+          <span>Create Account</span>
+        } @else {
+          <span>Please wait...</span>
+        }
+      </button>
+    </form>
+    }
   </div>
 </div>

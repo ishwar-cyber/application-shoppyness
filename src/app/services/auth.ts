@@ -67,4 +67,8 @@ export class Auth {
       this.updateLoginStatus();
     }
   }
+
+  forgotPassword(payload: { email: string }) {
+    return this.http.post(`${this.BASE_URL}/forgot-password`, payload);
+  }
 }

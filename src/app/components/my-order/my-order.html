@@ -1,0 +1,60 @@
+<div class="orders-wrapper" *ngIf="orders() && orders().length > 0">
+  <h2 class="title">My Orders</h2>
+
+  <div class="order-card" *ngFor="let ord of orders()">
+    
+    <div class="order-header">
+      <div>
+        <h3>Order #{{ ord.orderNumber }}</h3>
+        <p class="date">Placed on {{ ord.createdAt | date:'mediumDate' }}</p>
+      </div>
+
+      <span 
+        class="status-badge"
+        [class.delivered]="ord.orderStatus === 'delivered'"
+        [class.shipped]="ord.orderStatus === 'shipped'"
+        [class.packed]="ord.orderStatus === 'packed'"
+        [class.pending]="ord.orderStatus === 'pending'"
+      >
+        {{ ord.orderStatus | uppercase }}
+      </span>
+    </div>
+
+    <!-- PRODUCTS -->
+    <div class="items-list">
+      <div class="item" *ngFor="let item of ord.items">
+        <img [src]="item.image" class="item-img" />
+        <div class="item-info">
+          <p class="name">{{ item.name }}</p>
+          <p class="qty">Qty: {{ item.quantity }}</p>
+          <p class="price">₹{{ item.price }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="order-footer">
+      <p class="total">
+        Total Amount:
+        <strong>₹{{ ord.totalAmount }}</strong>
+      </p>
+
+      <button 
+        class="btn-primary details-btn"
+        [routerLink]="['/order-details']"
+        [queryParams]="{ orderId: ord._id }"
+      >
+        View Details
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- EMPTY STATE -->
+<div class="empty-state" *ngIf="orders.length === 0">
+  <img src="assets/empty-orders.svg" />
+  <h3>No Orders Yet</h3>
+  <p>Looks like you haven’t placed any orders.</p>
+  <button routerLink="/products" class="btn-primary">Start Shopping</button>
+</div>

@@ -1,27 +1,37 @@
+<div class="categories-page">
 
-<!-- Category Section with schema.org itemtype - Enhanced with better visuals -->
-<section class="home-categories mb-5" aria-labelledby="category-heading" itemscope itemtype="https://schema.org/ItemList">
-  <div class="container">
-    <meta itemprop="itemListOrder" content="Unordered" />
-    <meta itemprop="numberOfItems" content="4" />
-    <div class="row g-4">
-        @for (category of categories(); track $index) {
-            <div class="col-6 col-md-3" [routerLink]="['/products/']"   [queryParams]="{category: category.slug}">
-                <div class="category-card" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                <meta itemprop="position" content="{{$index+1}}" />
-                @if(category?.image?.url) {
-                  <div class="category-icon" [ngClass]="'category-' + category.name.toLowerCase()">
-                      <img [src]="category?.image?.url" loading="lazy" [alt]="category.name.toLowerCase()">
-                  </div>
-                } @else {
-                  <div class="category-icon default-category">
-                   <img src="https://m.media-amazon.com/images/G/31/img21/Smartchoice/7/Basic-laptops._CB792520270_.png" loading="lazy" alt="default-category" >
-                  </div>
-                }
-                <div class="category-name" itemprop="name">{{ category.name }}</div>
-                </div>
-            </div>
-        }
-    </div>
+  <h2 class="title">Shop by Category</h2>
+
+  @if (categories().length === 0) {
+    <p class="loading-text">Loading categories...</p>
+  }
+
+  <div class="categories-grid">
+
+    @for (cat of categories(); track cat._id) {
+
+      <a 
+        class="category-card"
+        [routerLink]="['/products']"
+        [queryParams]="{ category: cat.slug }">
+
+        <div class="icon-box">
+          <img 
+            [src]="cat.image || 'assets/default-category.svg'" 
+            [alt]="cat.name"
+            loading="lazy"
+          />
+        </div>
+
+        <h3>{{ cat.name }}</h3>
+
+      </a>
+
+    }
+
+    @empty {
+      <p class="no-data">No categories found.</p>
+    }
+
   </div>
-</section>
+</div>
