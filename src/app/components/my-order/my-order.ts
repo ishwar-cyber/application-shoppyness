@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { Router } from 'express';
+import { Router } from '@angular/router';
 import { ProfileService } from '../../services/profile-service';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';

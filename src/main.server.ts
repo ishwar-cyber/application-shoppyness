@@ -1,7 +1,14 @@
-import { bootstrapApplication } from '@angular/platform-browser';
+import { bootstrapApplication, BootstrapContext } from '@angular/platform-browser';
+import { mergeApplicationConfig } from '@angular/core';
+
 import { App } from './app/app';
-import { config } from './app/app.config.server';
+import { config as serverAppConfig } from './app/app.config.server';
 
-const bootstrap = () => bootstrapApplication(App, config);
-
-export default bootstrap;
+// IMPORTANT: must accept and forward BootstrapContext
+export default function bootstrap(context: BootstrapContext) {
+  return bootstrapApplication(
+    App,
+    serverAppConfig,
+    context   // <-- REQUIRED in Angular 20 SSR
+  );
+}

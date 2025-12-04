@@ -14,7 +14,7 @@ interface Product {
   selector: 'app-product-scroll',
   imports: [CommonModule],
   templateUrl: './product-scroll.html',
-  styleUrl: './product-scroll.scss'
+  styleUrls: ['./product-scroll.scss']
 })
 export class ProductScroll {
   // Default placeholder

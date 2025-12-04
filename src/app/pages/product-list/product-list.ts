@@ -9,7 +9,8 @@ import { Product } from '../../services/product';
 import { HomeService } from '../../services/home';
 
 import { ProductModel } from '../../commons/models/product.model';
-import { forkJoin } from 'rxjs';
+import { forkJoin, map } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-product-list',
@@ -77,11 +78,21 @@ export class ProductList implements OnInit {
       this.toggleFilterDrawer();
     }
   }
-
+// derived route params (SSR-safe using toSignal)
+paramsSignal = toSignal(
+  this.route.paramMap.pipe(
+  map(pm => ({
+    category: pm.get('catSlug'),
+    sub: pm.get('subSlug'),
+    product: pm.get('slug')
+    }))
+  )
+);
   // ----------------------------------------------------
   // INIT
   // ----------------------------------------------------
   ngOnInit(): void {
+    this.loadAllProducts();
     this.checkScreenSize();
     this.scroller.scrollToPosition([0, 0]);
     this.categorySlug = signal(this.route.snapshot.params['catSlug'] || '');

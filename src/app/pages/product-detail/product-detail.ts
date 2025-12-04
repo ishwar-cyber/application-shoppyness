@@ -140,6 +140,37 @@ export class ProductDetail implements OnInit, OnDestroy {
       image: product.images[0].url,
       url: `https://yourdomain.com/product/${product.slug}`
     });
+
+    // Add JSON-LD Product structured data for better SEO
+    try {
+      const price = this.selectedVariant()?.price ?? product.price ?? null;
+      const currency = product.currency || 'INR';
+      const availability = (this.selectedVariant()?.stock ?? product.stock) === 'in' ? 'http://schema.org/InStock' : 'http://schema.org/OutOfStock';
+
+      const jsonLd: any = {
+        "@context": "https://schema.org/",
+        "@type": "Product",
+        name: product.name,
+        image: Array.isArray(product.images) ? product.images.map((i: any) => i.url) : [product.images?.url].filter(Boolean),
+        description: product.description || '',
+        sku: product.sku || product._id || product.id || '',
+        url: `https://yourdomain.com/product/${product.slug}`,
+      };
+
+      if (price != null) {
+        jsonLd.offers = {
+          "@type": "Offer",
+          price: price.toString(),
+          priceCurrency: currency,
+          availability,
+          url: `https://yourdomain.com/product/${product.slug}`
+        };
+      }
+
+      this.seoService.addStructuredData(jsonLd);
+    } catch (e) {
+      console.warn('Failed to generate JSON-LD', e);
+    }
   }
 
   // UI helpers
@@ -175,8 +206,9 @@ export class ProductDetail implements OnInit, OnDestroy {
   // Variant selection
   selectVariant(variant: Variant) {
     this.selectedVariant.set(variant);
-    if (variant?.image && this.product()?.images?.length) {
-      const imgs = this.product()!.images as any[];
+    const images = this.product()?.images ?? [];
+    if (variant?.image && Array.isArray(images) && images.length > 0) {
+      const imgs = images as any[];
       const idx = imgs.findIndex(i => i.url === variant?.image);
       if (idx >= 0) this.selectedImageIndex.set(idx);
     }
@@ -193,7 +225,7 @@ export class ProductDetail implements OnInit, OnDestroy {
 
   // Add to Cart
   addToCart(product: any): void {
-    const hasVariants = product?.variants && product.variants.length > 0;
+    const hasVariants = Array.isArray(product?.variants) && product.variants.length > 0;
     const stock = hasVariants
       ? (this.selectedVariant()?.stock ?? 'in')
       : (product?.stock ?? 'in');

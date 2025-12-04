@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, inject, input, signal } from '@angular/core';
 import { load } from '@cashfreepayments/cashfree-js';
-import { Router } from 'express';
+import { Router } from '@angular/router';
 import { environment } from '../../../../environments/environment';
 @Component({
   selector: 'app-payment',

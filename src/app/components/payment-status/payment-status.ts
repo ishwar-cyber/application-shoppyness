@@ -61,7 +61,7 @@ export interface VerifyPay {
   standalone: true,
   imports: [CommonModule],
   templateUrl: './payment-status.html',
-  styleUrl: './payment-status.scss',
+  styleUrls: ['./payment-status.scss'],
 })
 export class PaymentStatus implements OnInit {
   loading = signal(true);

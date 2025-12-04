@@ -5,7 +5,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   selector: 'app-pop-up',
   imports: [CommonModule],
   templateUrl: './pop-up.html',
-  styleUrl: './pop-up.scss'
+  styleUrls: ['./pop-up.scss']
 })
 export class PopUp {
 

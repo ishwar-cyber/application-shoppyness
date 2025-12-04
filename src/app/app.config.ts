@@ -8,6 +8,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { provideToastr } from 'ngx-toastr';
 import { CartService } from './services/cart';
 import { authInterceptor } from './commons/interceptors/auth-interceptor';
+import { provideServerRendering } from '@angular/ssr';
 
 export function appLoadCard(cartService:CartService){
   return ()=> cartService.loadCart();
@@ -17,6 +18,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
+    provideServerRendering(),
     provideHttpClient( withFetch(),
       withInterceptors([authInterceptor])
     ),

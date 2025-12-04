@@ -74,4 +74,21 @@ export class Seo {
       this.document.head.appendChild(link);
     }
   }
+
+  /**
+   * Add or replace JSON-LD structured data in the document head
+   */
+  addStructuredData(jsonLd: object): void {
+    if (!isPlatformBrowser(this.platformId) || !this.document) return;
+
+    // Remove previous ld+json script if present
+    const existing = this.document.querySelector('script[type="application/ld+json"][data-ngx-seo]');
+    if (existing) existing.remove();
+
+    const script = this.document.createElement('script');
+    script.setAttribute('type', 'application/ld+json');
+    script.setAttribute('data-ngx-seo', 'true');
+    script.text = JSON.stringify(jsonLd);
+    this.document.head.appendChild(script);
+  }
 }

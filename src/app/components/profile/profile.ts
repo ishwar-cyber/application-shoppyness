@@ -30,7 +30,7 @@ interface UserSettings {
   selector: 'app-profile',
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './profile.html',
-  styleUrl: './profile.scss'
+  styleUrls: ['./profile.scss']
 })
 export class Profile {
 

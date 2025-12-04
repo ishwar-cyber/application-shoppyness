@@ -6,7 +6,6 @@ import { ProductCard } from '../../components/product-card/product-card';
 import { Product } from '../../services/product';
 import { HomeService } from '../../services/home';
 import { forkJoin } from 'rxjs';
-import { info } from 'console';
 interface Category {
   id:string,
   slug:string,
@@ -23,7 +22,7 @@ interface image {
   selector: 'app-home',
   imports: [CommonModule, RouterModule, ProductCard],
   templateUrl: './home.html',
-  styleUrl: './home.scss'
+  styleUrls: ['./home.scss']
 })
 export class Home implements OnInit{
   products = signal<any[]>([]); // Show only first 4 products

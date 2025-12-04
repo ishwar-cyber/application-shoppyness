@@ -7,7 +7,7 @@ import { ToastrService } from 'ngx-toastr';
   selector: 'app-product-card',
   imports: [CommonModule, RouterModule],
   templateUrl: './product-card.html',
-  styleUrl: './product-card.scss'
+  styleUrls: ['./product-card.scss']
 })
 export class ProductCard {
   private router = inject(Router);

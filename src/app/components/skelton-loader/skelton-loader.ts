@@ -5,7 +5,7 @@ import { Component, signal } from '@angular/core';
   selector: 'app-skelton-loader',
   imports: [CommonModule],
   templateUrl: './skelton-loader.html',
-  styleUrl: './skelton-loader.scss'
+  styleUrls: ['./skelton-loader.scss']
 })
 export class SkeltonLoader {
  // Number of skeleton cards

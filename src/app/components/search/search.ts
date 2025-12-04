@@ -7,7 +7,7 @@ import { Product } from '../../services/product';
   selector: 'app-search',
   imports: [CommonModule, FormsModule,RouterModule],
   templateUrl: './search.html',
-  styleUrl: './search.scss'
+  styleUrls: ['./search.scss']
 })
 export class Search {
   searchQuery = '';

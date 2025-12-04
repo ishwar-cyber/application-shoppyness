@@ -1,26 +1,19 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { Shipping } from './shipping/shipping';
-import { Address, Billing } from './billing/billing';
-import { Payment } from './payment/payment';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CartService } from '../../services/cart';
 import { CheckoutService } from '../../services/checkout';
-import { OrderSuccess } from '../../components/order-success/order-success';
-import { load } from '@cashfreepayments/cashfree-js';
-import { single } from 'rxjs';
 import { ProfileService } from '../../services/profile-service';
 import { PopUp } from '../../components/pop-up/pop-up';
 import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { sign } from 'crypto';
 
 @Component({
   selector: 'app-checkout',
   imports: [CommonModule, RouterModule, FormsModule, ReactiveFormsModule, PopUp],
   templateUrl: './checkout.html',
-  styleUrl: './checkout.scss'
+  styleUrls: ['./checkout.scss']
 })
 export class Checkout implements OnInit{
   cartItems = signal<any[]>([]);

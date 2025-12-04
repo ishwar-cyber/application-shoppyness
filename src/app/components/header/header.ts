@@ -29,7 +29,7 @@ import { HomeService } from '../../services/home';
   standalone: true,
   imports: [RouterModule, CommonModule, RouterLink, FormsModule],
   templateUrl: './header.html',
-  styleUrl: './header.scss'
+  styleUrls: ['./header.scss']
 })
 export class Header {
 
