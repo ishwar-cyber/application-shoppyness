@@ -43,12 +43,32 @@ app.use(
  * Handle all other requests by rendering the Angular application.
  */
 app.use((req, res, next) => {
-  angularApp
+  console.log(`[ssr] ${req.method} ${req.originalUrl}`);
+
+  return angularApp
     .handle(req)
-    .then((response) =>
-      response ? writeResponseToNodeResponse(response, res) : next(),
-    )
-    .catch(next);
+    .then((response) => {
+      if (response) {
+        writeResponseToNodeResponse(response, res);
+        return undefined;
+      }
+
+      // If Angular SSR returns no response, log and fall back to
+      // serving the static SPA index.html to avoid a plain 404 on refresh.
+      console.warn(`[ssr] no SSR response for ${req.originalUrl} — serving SPA index.html fallback`);
+      const indexPath = join(browserDistFolder, 'index.html');
+      // `res.sendFile` doesn't return a value; return undefined explicitly
+      // so TypeScript can see the callback returns a value on this path.
+      res.sendFile(indexPath, (err) => {
+        if (err) next(err);
+      });
+      return undefined;
+    })
+    .catch((err) => {
+      console.error('[ssr] render error', err);
+      next(err);
+      return undefined;
+    });
 });
 
 /**
