@@ -3,7 +3,7 @@
   <!-- =============================
        MOBILE FILTER BUTTON
   ============================== -->
-  @if (isMobileView() && mode !== 'external') {
+  @if (isMobileView()) {
     <button class="filter-toggle-btn btn-primary" (click)="toggleFilterDrawer()">
       <i class="bi bi-funnel"></i> Filters
     </button>
@@ -14,7 +14,7 @@
     <!-- =============================
          SIDEBAR (Desktop + Drawer)
     ============================== -->
-    @if (mode !== 'external') {
+    <!-- @if (mode !== 'external') { -->
     <aside 
       class="sidebar" 
       [class.open]="isFilterDrawerOpen()"
@@ -84,7 +84,7 @@
       <button class="reset-btn" (click)="resetFilters()">Reset</button>
 
     </aside>
-    }
+    <!-- } -->
 
     <!-- =============================
          PRODUCT LIST AREA
@@ -92,11 +92,8 @@
     <section class="products-area">
 
       <!-- SORT + VIEW MODE -->
-      @if (mode !== 'external') {
       <div class="top-bar">
-
         <div class="actions">
-
           <!-- VIEW MODE -->
           <div class="view-buttons">
             <button 
@@ -122,12 +119,8 @@
             <option value="name-asc">Name A-Z</option>
             <option value="name-desc">Name Z-A</option>
           </select>
-
         </div>
-
       </div>
-      }
-
       <!-- LOADER -->
       @if (isLoading()) {
         <div class="grid-view skeleton-grid">

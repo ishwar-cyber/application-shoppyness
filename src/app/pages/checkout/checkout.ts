@@ -96,37 +96,20 @@ export class Checkout implements OnInit{
       paymentMethod: this.paymentMethod(),
       items: this.cartService.cartItems() || this.cartItems(),
       totalAmount: this.totalAmount(),
-
       couponDiscount: this.couponDiscount() || null
     };
 
     this.checkoutService.createOrder(orderPayload).subscribe({
       next: (res: any) => {
         console.log('payments response', res);
-        
-        this.router.navigate(['/order-success'], {
-          queryParams: { orderId: res?.orderId }
-        });
+           this.router.navigate([`/payment-success?orderId=${res.orderNumber}`]);
+        // this.router.navigate(['/order-success'], {
+        //   queryParams: { orderId: res?.orderId }
+        // });
       },
       error: (err) => console.error(err)
     });
-  }
-
-  createOrder(amount: number) {
-    return this.http.post<any>(
-      `${environment.apiUrl}/payment/create-order`,
-      {
-        orderId: 'order_' + Date.now(),
-        amount,
-        customerName: 'Ishwar',
-        customerPhone: '9876543210',
-        customerEmail: 'ishwar@test.com',
-        returnUrl: `${environment.apiUrl}/payment-success`,
-        notifyUrl: `${environment.apiUrl}/payment/webhook`
-      }
-    );
-  }
-  
+  }  
   applyCoupon() {
     if (!this.couponCode.trim()) {
       this.couponError.set('Please enter a coupon code.');

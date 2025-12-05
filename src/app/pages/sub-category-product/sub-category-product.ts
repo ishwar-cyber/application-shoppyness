@@ -16,7 +16,6 @@ export class SubCategoryProduct {
   route = inject(ActivatedRoute);
   ngOnInit(): void {
     sessionStorage.setItem('mode', 'subcategory');
-
     this.route.paramMap.subscribe(params => {
       const subSlug = params.get('subSlug') || '';
       this.apiParams = { subSlug };

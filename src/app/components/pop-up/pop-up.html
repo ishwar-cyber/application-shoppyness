@@ -1,11 +1,12 @@
 @if(isOpen) {
 <div class="popup-overlay" (click)="closePopup()">
+   <button class="close-btn" (click)="closePopup()">✖</button>
   <div
     class="popup-content"
     [ngClass]="animation"
     (click)="$event.stopPropagation()"
   >
-    <button class="close-btn" (click)="closePopup()">✖</button>
+   
 
     <div class="popup-body">
       <ng-content></ng-content>

@@ -24,7 +24,7 @@ export class ProductList implements OnInit {
   // -------------------------------------------
   // ❤️ REUSABLE COMPONENT INPUTS / OUTPUTS
   // -------------------------------------------
-  @Input() mode: 'default' | 'category' | 'subcategory' | 'search' | 'external' = 'default';
+  @Input() mode: 'category' | 'subcategory' | 'search' | 'external'= 'external';
   @Input() apiParams: any = {};
   @Input() products: ProductModel[] | null = null;
 
@@ -110,7 +110,7 @@ export class ProductList implements OnInit {
     if (this.mode === 'external' && this.products) {
       this.prepareProductList(this.products);
       this.isLoading.set(false);
-      this.loadCategoryAndBrandData();
+      this.loadAllProducts();
       return;
     }
 
@@ -218,8 +218,6 @@ export class ProductList implements OnInit {
   }
 
   loadCategoryProducts(slug: string) {
-    console.log();
-    
     this.productService.getProductByCategoryId(slug).subscribe((res: any) => {
       console.log('response', res);
       this.prepareProductList(res.data);
@@ -292,6 +290,11 @@ export class ProductList implements OnInit {
      PRICE FILTER
   ---------------------------------------------------------- */
   filterProducts() {
+    this.isFilterDrawerOpen.set(!this.isFilterDrawerOpen());
+
+    if (isPlatformBrowser(this.platformId)) {
+      document.body.classList.toggle('filter-drawer-open', this.isFilterDrawerOpen());
+    }
     this.updateParams();
   }
    toggleCategory(slug: string) {
@@ -346,8 +349,19 @@ export class ProductList implements OnInit {
   // ----------------------------------------------------
   // FILTER DRAWER (Unchanged)
   // ----------------------------------------------------
-  checkScreenSize() { /* unchanged */ }
-  toggleFilterDrawer() { /* unchanged */ }
+  checkScreenSize() { 
+    if (isPlatformBrowser(this.platformId)) {
+      this.isMobileView.set(window.innerWidth < 768);
+      if (!this.isMobileView()) this.isFilterDrawerOpen.set(false);
+    }
+   }
+  toggleFilterDrawer() { 
+    this.isFilterDrawerOpen.set(!this.isFilterDrawerOpen());
+
+    if (isPlatformBrowser(this.platformId)) {
+      document.body.classList.toggle('filter-drawer-open', this.isFilterDrawerOpen());
+    }
+   }
 
   // ----------------------------------------------------
   // Add to Cart (EXTENDED)
