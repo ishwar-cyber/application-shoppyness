@@ -1,8 +1,7 @@
 import { CommonModule, ViewportScroller, isPlatformBrowser } from '@angular/common';
 import { Component, HostListener, inject, PLATFORM_ID, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, RouterLink, RouterModule } from '@angular/router';
-import { Router } from 'express';
+import { ActivatedRoute, Router, RouterLink, RouterModule } from '@angular/router';
 import { map, forkJoin } from 'rxjs';
 import { ProductModel } from '../../commons/models/product.model';
 import { CartService } from '../../services/cart';
