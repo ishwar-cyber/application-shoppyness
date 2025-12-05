@@ -46,7 +46,34 @@ const getCategoryPrerenderParams = async () => {
 };
 
 export const serverRoutes: ServerRoute[] = [
-
+  {
+    path: '',
+    renderMode: RenderMode.Prerender
+  },
+  {
+    path: 'about',
+    renderMode: RenderMode.Prerender
+  },
+  {
+    path: 'return-and-refund',
+    renderMode: RenderMode.Prerender
+  },
+  {
+    path: 'shipping-policy',
+    renderMode: RenderMode.Prerender
+  },
+  {
+    path: 'help-center',
+    renderMode: RenderMode.Prerender
+  },
+  {
+    path: 'terms-and-conditions',
+    renderMode: RenderMode.Prerender
+  },
+  {
+    path: 'contact-us',
+    renderMode: RenderMode.Prerender
+  },
   // PRERENDER product detail pages (if you prefer not to prerender these,
   // change `renderMode` to `RenderMode.Server`)
   {

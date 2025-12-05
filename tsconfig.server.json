@@ -1,16 +1,17 @@
 {
-  "extends": "./tsconfig.app.json",
+  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "./out-tsc/server",
-    "types": ["node"]
+    "outDir": "./dist/server",
+    "module": "NodeNext",
+    "target": "ES2022",
+    "types": ["node"],
+    "moduleResolution": "NodeNext"
   },
-  "angularCompilerOptions": {
-    "enableIvy": true
-  },
-  "include": [
-    "src/**/*.ts"
+  "files": [
+    "src/main.server.ts"
   ],
-  "exclude": [
-    "src/**/*.spec.ts"
-  ]
+  "angularCompilerOptions": {
+    "enableIvy": false
+  }
 }
+
