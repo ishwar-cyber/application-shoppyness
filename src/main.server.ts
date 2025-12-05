@@ -1,5 +1,4 @@
 import { bootstrapApplication, BootstrapContext } from '@angular/platform-browser';
-import { mergeApplicationConfig } from '@angular/core';
 
 import { App } from './app/app';
 import { config as serverAppConfig } from './app/app.config.server';

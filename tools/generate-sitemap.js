@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const API = process.env.SITEMAP_API_URL || 'http://localhost:8000/api/v1';
+const API = process.env.SITEMAP_API_URL || 'https://shoppyness-backend.onrender.com/api/v1';
 
 async function fetchJson(url) {
   const res = await fetch(url);
