@@ -283,8 +283,6 @@ export class ProductDetail implements OnInit, OnDestroy {
   }
 
   currentStock(): string {
-    console.log('this stock', this.selectedVariant());
-    
     return this.selectedVariant()?.stock ?? this.product()?.stock ?? 'in';
   }
 

@@ -1,0 +1,228 @@
+<div class="product-page">
+
+  <!-- =============================
+       MOBILE FILTER BUTTON
+  ============================== -->
+  @if (isMobileView()) {
+    <button class="filter-toggle-btn btn-primary" (click)="toggleFilterDrawer()">
+      <i class="bi bi-funnel"></i> Filters
+    </button>
+  }
+
+  <div class="layout">
+    
+    <!-- =============================
+         SIDEBAR (Desktp + Drawer)
+    ============================== -->
+    <aside 
+      class="sidebar" 
+      [class.open]="isFilterDrawerOpen()"
+      [class.mobile]="isMobileView()">
+
+      <div class="sidebar-header">
+        <h3>Filters</h3>
+
+        @if (isMobileView()) {
+          <button class="close-btn" (click)="toggleFilterDrawer()">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        }
+      </div>
+
+      <!-- CATEGORY FILTER -->
+      <div class="filter-group">
+        <h4>Category</h4>
+
+        @for (cat of categories(); track cat._id) {
+          <label class="filter-item">
+            <input 
+              type="checkbox"
+              [checked]="selectedCategories().includes(cat.slug)"
+              (change)="toggleCategory(cat.slug)"
+            />
+            <span>{{ cat.name }}</span>
+          </label>
+        }
+      </div>
+
+      <!-- BRAND FILTER -->
+      <div class="filter-group">
+        <h4>Brand</h4>
+
+        @for (brand of brands(); track brand._id) {
+          <label class="filter-item">
+            <input 
+              type="checkbox"
+              [checked]="selectedBrands().includes(brand.name)"
+              (change)="toggleBrand(brand.name)"
+            />
+            <span>{{ brand.name }}</span>
+          </label>
+        }
+      </div>
+
+      <!-- PRICE FILTER -->
+      <div class="filter-group">
+        <h4>Price</h4>
+        <input 
+          type="range"
+          min="{{ minPrice() }}"
+          max="{{ maxPrice() }}"
+          [(ngModel)]="priceRange()[1]"
+          (change)="filterProducts()"
+        />
+        <p class="price-label">
+          ₹{{ minPrice() }} - ₹{{ priceRange()[1] }}
+        </p>
+      </div>
+
+      <!-- APPLY FILTER BUTTON MOBILE -->
+      @if (isMobileView()) {
+        <button class="apply-btn" (click)="filterProducts()">Apply Filters</button>
+      }
+
+      <button class="reset-btn" (click)="resetFilters()">Reset</button>
+
+    </aside>
+
+    <!-- =============================
+         PRODUCT LIST AREA
+    ============================== -->
+    <section class="products-area">
+
+      <!-- SORT + VIEW MODE -->
+      <div class="top-bar">
+        <!-- <h2 class="title">
+          @if (isCategoryRoute()) {
+            Category Products
+          } @else {
+            All Products
+          }
+        </h2> -->
+
+        <div class="actions">
+          <!-- VIEW MODE -->
+          <div class="view-buttons">
+            <button 
+              [class.active]="viewMode() === 'grid'" type="button"
+              (click)="viewMode.set('grid')">
+              <i class="bi bi-grid"></i>
+            </button>
+
+            <button 
+              [class.active]="viewMode() === 'list'" type="button"
+              (click)="viewMode.set('list')">
+              <i class="bi bi-card-list"></i>
+            </button>
+          </div>
+
+          <!-- SORT DROPDOWN -->
+          <select class="sort-dropdown" [(ngModel)]="sortOption" (change)="sortProducts()">
+            <option value="featured">Featured</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+            <option value="name-asc">Name A-Z</option>
+            <option value="name-desc">Name Z-A</option>
+          </select>
+
+        </div>
+      </div>
+
+      <!-- LOADER -->
+      @if (isLoading()) {
+       <!-- SKELETON LOADER (Grid) -->
+        <div class="grid-view skeleton-grid">
+          @for (i of [1,2,3,4,5,6,7,8]; track $index) {
+            <div class="skeleton-card">
+              <div class="skeleton-img shimmer"></div>
+              <div class="skeleton-line shimmer w-80"></div>
+              <div class="skeleton-line shimmer w-60"></div>
+              <div class="skeleton-line shimmer w-40"></div>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- GRID MODE -->
+      @if (viewMode() === 'grid') {
+        <div class="grid-view">
+          @for (productGrid of filteredProducts(); track productGrid.id) {
+            
+            <div class="product-card-modern" [routerLink]="['/product', productGrid.slug]">
+              <!-- <pre>{{productGrid.images.url | json}}</pre>/ -->
+             @if (productGrid.images?.length > 0) {
+                <div class="img-box">
+                  <img [src]="productGrid?.images[0]?.url"[alt]="productGrid.name || 'Product Image'" />
+                </div>
+              } @else {
+                <div class="img-box">
+                  <img src="assets/images/placeholder.png" alt="No Image" />
+                </div>
+              }
+             
+
+              <div class="details">
+                <h3>{{ productGrid.name }}</h3>
+              
+                  <p class="brand">{{ productGrid.brand?.name || '' }}</p>
+                
+                <div class="price-row">
+                  <strong class="price">₹{{ productGrid.price }}</strong>
+                </div>
+
+                <button class="btn-primary btn-sm">View</button>
+              </div>
+
+            </div>
+
+          } @empty {
+            <p class="no-data">No products found.</p>
+          }
+        </div>
+      }
+
+      <!-- LIST MODE -->
+      @if (viewMode() === 'list') {
+        <div class="list-view">
+          @for (productList of filteredProducts(); track productList.id) {
+
+            <div class="list-item" [routerLink]="['/product', productList.slug]">
+              
+              <img [src]="productList.images?.[0]?.url" class="list-img" />
+
+              <div class="list-info">
+                <h3>{{ productList.name }}</h3>
+                <p class="brand">{{ productList.brand?.name }}</p>
+
+                <p class="desc">
+                  {{ productList.description | slice:0:120 }}...
+                </p>
+
+                <strong class="price">₹{{ productList.price }}</strong>
+              </div>
+
+            </div>
+
+          } @empty {
+            <p class="no-data">No products found.</p>
+          }
+        </div>
+      } @if (isLoading() && viewMode() === 'list') {
+        <div class="list-view skeleton-list">
+          @for (i of [1,2,3,4,5]; track $index) {
+            <div class="skeleton-list-item">
+              <div class="skeleton-list-img shimmer"></div>
+
+              <div class="list-info">
+                <div class="skeleton-line shimmer w-70"></div>
+                <div class="skeleton-line shimmer w-50"></div>
+                <div class="skeleton-line shimmer w-40"></div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+  </div>
+</div>

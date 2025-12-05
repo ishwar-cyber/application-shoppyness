@@ -151,11 +151,7 @@
           <nav class="category-nav">
 
             @for (cat of categories(); track cat.slug) {
-
-              <div class="category-item"
-                   (mouseover)="openMegaMenu(cat)"
-                   >
-
+              <div class="category-item" (mouseover)="openMegaMenu(cat)" >
                 <button class="category-btn"
                         [class.active]="activeCategory() === cat.slug"
                         [routerLink]="['/category', cat.slug]">

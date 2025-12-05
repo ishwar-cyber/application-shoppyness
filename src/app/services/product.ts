@@ -39,6 +39,9 @@ export class Product {
   getProductByCategoryId(id: string) {
     return this.http.get(`${this.URL}/products/category/${id}`);
   }
+  getProductBySubCategoryId(slug: string) {
+    return this.http.get(`${this.URL}/products/subcategory/${slug}`);
+  }
 
   filterProduct(categorys: string[], brands: string[], price: any) {
     let params = new HttpParams();
