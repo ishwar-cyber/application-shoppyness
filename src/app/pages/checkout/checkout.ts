@@ -6,7 +6,6 @@ import { CartService } from '../../services/cart';
 import { CheckoutService } from '../../services/checkout';
 import { ProfileService } from '../../services/profile-service';
 import { PopUp } from '../../components/pop-up/pop-up';
-import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 
 @Component({

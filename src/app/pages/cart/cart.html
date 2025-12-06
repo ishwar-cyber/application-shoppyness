@@ -2,11 +2,60 @@
 
   <!-- LOADING -->
   @if (isLoading()) {
-    <div class="loader">Loading your cart...</div>
+    <div class="cart-skeleton">
+
+  <!-- LEFT SIDE -->
+  <div class="cart-left">
+    <h2 class="page-title skeleton skeleton-text"></h2>
+
+    @for (i of [1,2,3]; track i) {
+      <div class="cart-item-skeleton">
+        <div class="details">
+          <div class="skeleton skeleton-title"></div>
+          <div class="skeleton skeleton-price"></div>
+
+          <div class="qty-row">
+            <div class="skeleton skeleton-btn"></div>
+            <div class="skeleton skeleton-qty"></div>
+            <div class="skeleton skeleton-btn"></div>
+          </div>
+
+          <div class="skeleton skeleton-remove"></div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- RIGHT SIDE -->
+  <div class="cart-right">
+    <div class="summary-box">
+      <div class="skeleton skeleton-heading"></div>
+
+      <div class="row">
+        <div class="skeleton skeleton-line"></div>
+        <div class="skeleton skeleton-line small"></div>
+      </div>
+
+      <div class="row">
+        <div class="skeleton skeleton-line"></div>
+        <div class="skeleton skeleton-line small"></div>
+      </div>
+
+      <div class="row total">
+        <div class="skeleton skeleton-line"></div>
+        <div class="skeleton skeleton-line small"></div>
+      </div>
+
+      <div class="skeleton skeleton-button"></div>
+    </div>
+  </div>
+
+</div>
+
   }
 
   <!-- EMPTY -->
-  @if (!isLoading() && (!cartService.cartItems() || cartService.cartItems()!.length === 0)) {
+  @if (!isLoading() && (!cartService.cartItems() || cartService.cartItems()?.length === 0)) {
     <div class="empty-cart-modern">
       <div class="empty-box">
         <img src="assets/empty-cart.svg" class="empty-img" />
@@ -22,7 +71,7 @@
   }
 
   <!-- CART -->
-  @if (cartService.cartItems() && cartService.cartItems()!.length > 0) {
+  @if (!isLoading() && cartService.cartItems() && cartService.cartItems()!.length > 0) {
 
     <div class="cart-left">
       <h2 class="page-title">Shopping Cart</h2>

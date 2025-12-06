@@ -8,19 +8,25 @@ import { CartService } from '../../services/cart';
 import { Product } from '../../services/product';
 import { HomeService } from '../../services/home';
 import { ProductModel } from '../../commons/models/product.model';
-
-import { forkJoin, map } from 'rxjs';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { trigger, state, style, transition, animate } from '@angular/animations';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-product-list',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
+    animations: [
+    trigger('cardClick', [
+      state('default', style({ transform: 'scale(1)', opacity: 1 })),
+      state('clicked', style({ transform: 'scale(0.95)', opacity: 0.6 })),
+      transition('default → clicked', animate('200ms ease-in'))
+    ])
+  ],
   templateUrl: './product-list.html',
   styleUrls: ['./product-list.scss']
 })
 export class ProductList implements OnInit {
-
+  animationState = 'default';
   // -------------------------------------------
   // ❤️ REUSABLE COMPONENT INPUTS / OUTPUTS
   // -------------------------------------------

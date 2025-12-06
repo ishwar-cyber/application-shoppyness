@@ -137,10 +137,10 @@
 
       <!-- GRID MODE -->
       @if (viewMode() === 'grid') {
-        <div class="grid-view">
+        <div class="grid-view" >
           @for (productGrid of (products ?? filteredProducts()); track productGrid.id) {
 
-            <div class="product-card-modern" [routerLink]="['/product', productGrid.slug]">
+            <div class="product-card-modern" [routerLink]="['/product', productGrid.slug]" [@cardClick]="animationState" (click)=" animationState = 'clicked'">
 
               @if (productGrid.images?.length > 0) {
                 <div class="img-box">

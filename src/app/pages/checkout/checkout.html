@@ -14,18 +14,18 @@
 
         @if (addressList().length) {
           <div class="address-list">
-            @for (a of addressList(); track a._id) {
+            @for (a of addressList(); track a?._id) {
+            
               <label class="address-card" 
-                     [class.active]="selectedAddressId() === a._id">
+                     [class.active]="selectedAddressId() === a?._id">
                 <input type="radio"
                        name="address"
-                       [checked]="selectedAddressId() === a._id"
-                       (change)="selectAddress(a._id)" />
-
+                       [checked]="selectedAddressId() === a?._id"
+                       (change)="selectAddress(a?._id)" />
                 <div class="info">
-                  <h4>{{ a.fullName }}</h4>
-                  <p>{{ a.line1 }}, {{ a.city }}, {{ a.state }} - {{ a.pincode }}</p>
-                  <p class="phone">📞 {{ a.phone }}</p>
+                  <h4>{{ a?.fullName }}</h4> 
+                  <p>{{ a?.line1 }}, {{ a?.city }}, {{ a?.state }} - {{ a?.pincode }}</p>
+                  <p class="phone">📞 {{ a?.phone }}</p>
                 </div>
               </label>
             }
@@ -168,7 +168,7 @@
               <label for="phone">Phone Number</label>
               <input
                 id="phone"
-                type="tel"
+                type="tel" maxlength="10" minlength="10"
                 placeholder="10-digit mobile"
                 formControlName="phone" />
             </div>
@@ -201,7 +201,7 @@
               <label for="pincode">Pincode</label>
               <input
                 id="pincode"
-                type="text"
+                type="text" maxlength="6" minlength="6"
                 placeholder="e.g. 400001"
                 formControlName="pincode" />
             </div>
