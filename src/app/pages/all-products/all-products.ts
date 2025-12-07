@@ -19,8 +19,13 @@ import { ProductList } from '../product-list/product-list';
   styleUrls: ['./all-products.scss'],
 })
 export class AllProducts {
-
+  isBrowser = signal<boolean>(false);
+  private readonly platformId = inject(PLATFORM_ID);
+  
   ngOnInit(): void {
-    sessionStorage.setItem('mode', 'external');
+    this.isBrowser.set(isPlatformBrowser(this.platformId));
+    if(this.isBrowser()){
+      sessionStorage.setItem('mode', 'external');
+    }
   }
 }

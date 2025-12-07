@@ -8,7 +8,6 @@ import { CartService } from '../../services/cart';
 import { Product } from '../../services/product';
 import { HomeService } from '../../services/home';
 import { ProductModel } from '../../commons/models/product.model';
-import { trigger, state, style, transition, animate } from '@angular/animations';
 import { forkJoin } from 'rxjs';
 
 @Component({
@@ -58,7 +57,7 @@ export class ProductList implements OnInit {
 
   isMobileView = signal<boolean>(false);
   isFilterDrawerOpen = signal<boolean>(false);
-
+  isBrowser = signal<boolean>(false);
   // -------------------------------------------
   // Inject Services (Unchanged)
   // -------------------------------------------
@@ -90,7 +89,10 @@ export class ProductList implements OnInit {
     //   this.prepareProductList(this.products);
     //   this.isLoading.set(false);
     // }
-    this.mode = sessionStorage.getItem('mode') as any || this.mode;
+    this.isBrowser.set(isPlatformBrowser(this.platformId));
+    if(this.isBrowser()){
+      this.mode = sessionStorage.getItem('mode') as any || this.mode;
+    }
     this.setupFromRoute();
   }
   // -------------------------------------------
