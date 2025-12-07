@@ -20,4 +20,8 @@ export class ProfileService {
   getOrderById(userId: string, orderId: string) {
     return this.http.get(`${this.apiBase}/order/${orderId}/tracking`);
   }
+
+  cancelOrder(orderId: string, reason: object){
+    return this.http.put(`${this.apiBase}/order/${orderId}/cancelled`, reason)
+  }
 }

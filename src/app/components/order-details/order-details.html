@@ -1,13 +1,14 @@
-<div class="order-details-wrapper" *ngIf="ORDER_STEPS()">
-  <!-- CONTINUE SHOPPING BUTTON -->
-<div class="continue-shopping-box">
-  <button class="btn-shop" routerLink="/products">
-    <i class="bi bi-bag"></i>
-    Continue Shopping
-  </button>
-</div>
+@if(ORDER_STEPS().length){
 
-  <!-- ORDER HEADER -->
+<div class="order-details-wrapper">
+  <!-- CONTINUE SHOPPING -->
+  <div class="continue-shopping-box">
+    <button class="btn-shop" routerLink="/products">
+      <i class="bi bi-bag"></i> Continue Shopping
+    </button>
+  </div>
+
+  <!-- HEADER -->
   <div class="header-box">
     <h2>Order Tracking</h2>
     <p>Order #{{ orderId() }}</p>
@@ -18,44 +19,51 @@
     </div>
   </div>
 
+  <!-- CANCEL BUTTON -->
+   @if(canCancelOrder() && isCancelledFlag()){
+    <div class="cancel-order-box">
+      <button class="btn btn-outline-danger" (click)="cancelOrder()">
+        <i class="bi bi-x-circle"></i> Cancel Order
+      </button>
+    </div>
+   }
+  
+  <!-- CANCELLED ALERT -->
+  @if(isCancelled()){
+    <div class="alert alert-danger">
+      This order has been cancelled.
+    </div>
+  }
+
   <!-- TIMELINE -->
   <div class="tracking-timeline">
+    @for (step of ORDER_STEPS(); track $index) {
+      <div class="timeline-step">
+        <!-- CIRCLE -->
+        <div class="circle"  [class.completed]="step.completed" 
+        [class.cancelled]="step.key === 'CANCELLED' && step.completed" >
+        @if(step.completed){
+           <span class="check">&#10003;</span>
+        } @else {
+            <div class="dot"></div>
 
-    <div
-      class="timeline-step"
-      *ngFor="let step of ORDER_STEPS(); let i = index"
-    >
-      
-      <!-- DOT + CHECK CIRCLE -->
-      <div class="circle" [class.completed]="step.completed">
-        <ng-container *ngIf="step.completed; else pending">
-          <span class="check">&#10003;</span>
-        </ng-container>
-
-        <ng-template #pending>
-          <div class="dot"></div>
-        </ng-template>
-      </div>
-
-      <!-- LABEL + DATE -->
-      <div class="content">
-        <div class="label">{{ step.label }}</div>
-        <div class="date" *ngIf="step.completed">
-          <!-- {{ step.createdAt | date:'mediumDate' }} -->
+        }
         </div>
+
+        <!-- TEXT -->
+        <div class="content">
+          <div class="label">{{ step.label }}</div>
+        </div>
+
+        <!-- LINE -->
+        @if($index + 1 < ORDER_STEPS().length) {
+          <div class="line" [class.completed]="ORDER_STEPS()[$index + 1].completed"></div>
+        }
       </div>
-
-      <!-- CONNECTING LINE -->
-      <div
-        class="line"
-        *ngIf="(i + 1) < ORDER_STEPS().length"
-        [class.completed]="ORDER_STEPS()[i + 1].completed"
-      ></div>
-
-    </div>
+    }
   </div>
 
-  <!-- BOTTOM SUMMARY CARD -->
+  <!-- SUMMARY -->
   <div class="summary-card">
     <h3>Order Summary</h3>
 
@@ -76,3 +84,4 @@
   </div>
 
 </div>
+}

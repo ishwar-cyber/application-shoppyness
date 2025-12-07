@@ -4,24 +4,17 @@
         DESKTOP HEADER
   =========================== -->
   @if (!isMobileView()) {
-
     <div class="header-desktop">
-
       <!-- TOP BAR -->
       <div class="header-top">
-
         <!-- Logo -->
-        <div class="brand"
-             routerLink="/"
-             (click)="selectBottomMenu('home')">
-          <span class="brand-mark">S</span>
-          <span class="brand-text">Shoppyness</span>
+        <div class="brand" routerLink="/" (click)="selectBottomMenu('home')">
+          <!-- DESKTOP LOGO -->
+          <img src="assets/logo/logo.png" alt="Shoppyness" class="logo-desktop" />
         </div>
-
         <!-- Search -->
        <!-- Search -->
 <div class="search-wrapper" (click)="onFocusSearch()">
-
   <i class="bi bi-search search-icon"></i>
 
   <input
@@ -31,36 +24,35 @@
     [(ngModel)]="searchQuery"
     (keyup)="onSearchChange()"
     (keyup.enter)="performSearch()"
-    (focus)="isSearchFocused.set(true)"
   />
 
-  <!-- 🔍 SEARCH DROPDOWN -->
-  @if (isSearchFocused() && searchResults().length > 0) {
+  @if (isSearchFocused()) {
     <div class="search-dropdown">
 
-      @for (item of searchResults(); track item._id) {
-        <div class="search-item" (click)="openProduct(item.slug)">
-          <img [src]="item.images?.[0]?.url" class="search-thumb" />
+      @for (search of searchResults(); track search.id) {
+        <div
+          class="search-item"
+          (click)="openProduct(search.slug); closeSearch()"
+        >
+          <img [src]="search.images?.[0]?.url" class="search-thumb" />
 
           <div class="search-info">
-            <div class="title">{{ item.name }}</div>
-            <div class="sub">{{ item.category }} • {{ item.subcategory }}</div>
+            <div class="title">{{ search.name }}</div>
+            <div class="sub">
+              {{ search.category }} • {{ search.subcategory }}
+            </div>
           </div>
         </div>
       }
 
+      @if (searchResults().length === 0 && searchQuery().length > 1) {
+        <div class="search-empty">
+          No matching products found
+        </div>
+      }
     </div>
   }
-
-  <!-- 🔍 No results -->
-  @if (isSearchFocused() && searchQuery().length > 1 && searchResults().length == 0) {
-    <div class="search-dropdown empty">
-      <p>No matching products found</p>
-    </div>
-  }
-
 </div>
-
 
         <!-- Right Actions -->
         <div class="actions">
@@ -116,7 +108,7 @@
                 } @else {
 
                   <button class="dropdown-item" routerLink="/login">Login</button>
-                  <button class="dropdown-item" routerLink="/register">Create Account</button>
+                  <button class="dropdown-item" routerLink="/login">Create Account</button>
 
                 }
 
@@ -197,9 +189,13 @@
   @if (isMobileView()) {
     <div class="header-mobile">
       <div class="mobile-top">
-        <div class="brand" routerLink="/" (click)="selectBottomMenu('home')">
-          <span class="brand-mark">S</span>
-          <span class="brand-text">Shoppyness</span>
+       <div class="brand" routerLink="/" (click)="selectBottomMenu('home')">
+          <!-- MOBILE LOGO -->
+          <img
+            src="assets/logo/logo.png"
+            alt="Shoppyness"
+            class="logo-mobile"
+          />
         </div>
 
         <div class="mobile-actions">
@@ -216,37 +212,45 @@
           </button>
         </div>
       </div>
-      <div class="mobile-search">
-        <i class="bi bi-search search-icon"></i>
-       <input
-            type="text"
-            class="search-input"
-            placeholder="Search for products, brands and more"
-            [(ngModel)]="searchQuery"
-            (keyup)="onSearchChange()"
-            (keyup.enter)="performSearch()"
-            (focus)="isSearchFocused.set(true)"
-          />
-      </div>
-      @if (isSearchFocused() && searchResults().length > 0) {
-        <div class="mobile-search-dropdown">
+    <div class="mobile-search">
+      <i class="bi bi-search search-icon"></i>
 
-          @for (item of searchResults(); track item._id) {
-            <div class="search-item" (click)="openProduct(item.slug); isSearchFocused.set(false); searchQuery.set('')">
-              <img [src]="item.images?.[0]?.url" class="search-thumb" />
-
-              <div class="search-info">
-                <div class="title">{{ item.name }}</div>
-                <div class="sub">{{ item.category }} • {{ item.subcategory }}</div>
-              </div>
-            </div>
-          }
-
-        </div>
-      }
-
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Search for products, brands and more"
+        [(ngModel)]="searchQuery"
+        (input)="onSearchChange()"
+      />
     </div>
 
+    @if (isSearchFocused()) {
+      <div class="mobile-search-dropdown">
+
+        @for (search of searchResults(); track search.id) {
+          <div
+            class="search-item"
+            (click)="openProduct(search.slug); closeSearch()"
+          >
+            <img [src]="search.images?.[0]?.url" class="search-thumb" />
+
+            <div class="search-info">
+              <div class="title">{{ search.name }}</div>
+              <div class="sub">
+                {{ search.category }} • {{ search.subcategory }}
+              </div>
+            </div>
+          </div>
+        }
+
+        @if (searchResults().length === 0 && searchQuery().length > 1) {
+          <div class="search-empty">
+            No product found
+          </div>
+        }
+      </div>
+    }
+    </div>
   }
 
 

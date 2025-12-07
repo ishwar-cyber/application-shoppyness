@@ -179,7 +179,6 @@
 }
 
 .btn-shop {
-  // padding: 12px 22px;
   background: var(--primary);
   color: #fff;
   font-size: 14px;
@@ -208,3 +207,7 @@
   }
 }
 
+.cancel-order-box {
+  margin: 1rem 0;
+  text-align: right;
+}

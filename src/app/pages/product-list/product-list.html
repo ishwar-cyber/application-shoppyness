@@ -144,7 +144,7 @@
 
               @if (productGrid.images?.length > 0) {
                 <div class="img-box">
-                  <img [src]="productGrid?.images[0]?.url" [alt]="productGrid.name || 'Product Image'" />
+                  <img class="product-image" [src]="productGrid?.images[0]?.url" [alt]="productGrid.name || 'Product Image'" />
                 </div>
               } @else {
                 <div class="img-box">

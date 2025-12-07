@@ -394,7 +394,9 @@
     }
   }
 }
-
+.search-empty {
+  text-align: center;
+}
 /* =======================
    MOBILE BOTTOM NAV
 ======================= */
@@ -514,7 +516,39 @@
 /* MOBILE */
 .mobile-search-dropdown {
   position: fixed;
-  top: 110px;
+  top: 48px;
   left: 10px;
   right: 10px;
 }
+
+/* =========================
+   LOGO STYLES
+========================= */
+
+.brand {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+/* Desktop logo */
+.logo-desktop {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* Mobile logo */
+.logo-mobile {
+  height: 28px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* Optional: sharp on retina screens */
+.logo-desktop,
+.logo-mobile {
+  image-rendering: -webkit-optimize-contrast;
+}
+
+

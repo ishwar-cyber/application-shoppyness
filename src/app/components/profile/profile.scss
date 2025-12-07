@@ -265,7 +265,7 @@
       &.status-delivered { background: #dcfce7; color: #15803d; }
       &.status-shipped { background: #dbeafe; color: #1d4ed8; }
       &.status-processing { background: #fef9c3; color: #a16207; }
-      &.status-pending { background: #fef3c7; color: #b45309; }
+      &.status-placed { background: #fef3c7; color: #b45309; }
       &.status-cancelled { background: #fee2e2; color: #b91c1c; }
     }
   }
@@ -429,20 +429,20 @@
 
 .btn-primary {
   width: 100%;
-  margin-top: 1.5rem;
-  padding: 0.9rem;
+//   margin-top: 1.5rem;
+  padding: 0.8rem;
   font-size: 15px;
   font-weight: 600;
-  text-align: center;
-  color: white;
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: 0.25s ease;
-
+//   text-align: center;
+//   color: white;
+//   background: linear-gradient(135deg, #2563eb, #1d4ed8);
+//   border: none;
+//   border-radius: 12px;
+//   cursor: pointer;
+//   transition: 0.25s ease;
+  background: var(--primary);
   &:hover {
-    background: linear-gradient(135deg, #1d4ed8, #1e3a8a);
+    background: linear-gradient(135deg, var(--primary));
     box-shadow: 0 6px 14px rgba(37, 99, 235, 0.25);
     transform: translateY(-1px);
   }
@@ -517,6 +517,7 @@
     button {
       flex: 1;
       text-align: center;
+      color: var(--primary);
       background: none;
       border: none;
       font-size: 12px;
@@ -527,7 +528,7 @@
       padding: 0;
 
       &.active {
-        color: #007bff;
+        color: var(--primary);
         font-weight: 600;
       }
     }
@@ -644,7 +645,7 @@
 }
 
 /* STATUS COLORS */
-.status-pending { background: #fff2cd; color: #b8860b; }
+.status-placed { background: #fff2cd; color: #b8860b; }
 .status-success { background: #d4f8d4; color: #0d8d3f; }
 .status-failed  { background: #ffd5d5; color: #b40000; }
 .status-shipped { background: #d0ebff; color: #1c7ed6; }

@@ -146,26 +146,24 @@ export class Header {
   selectBottomMenu(menu: string) {
     this.selectedBottomMenu.set(menu);
   }
-
   // ----------------------------------
-  // SEARCH LOGIC
-  // ----------------------------------
-  onSearchEnter() {
-    const q = this.searchQuery().trim();
-    if (!q) return;
+// SEARCH LOGIC (UPDATED)
+// ----------------------------------
 
-    this.router.navigate(['/products'], {
-      queryParams: { search: q }
-    });
-
-    this.searchQuery.set('');
-  }
-  onSearchChange() {
+onSearchChange() {
   const query = this.searchQuery().trim();
+
+  // ❌ If input cleared → close search
+  if (!query) {
+    this.closeSearch();
+    return;
+  }
+
+  // ✅ Open dropdown while typing
 
   if (this.searchTimeout) clearTimeout(this.searchTimeout);
 
-  // Debounce for smooth UX
+  // ✅ Debounce
   this.searchTimeout = setTimeout(() => {
     if (query.length < 2) {
       this.searchResults.set([]);
@@ -173,10 +171,15 @@ export class Header {
     }
 
     this.productService.searchProducts(query).subscribe({
-      next: (res: any) => this.searchResults.set(res),
-      error: (err) => console.error(err)
-    });
+      next: (res: any) => {
+        this.searchResults.set(res || []);
+        this.isSearchFocused.set(true);
 
+      },
+      error: () => {
+        this.searchResults.set([]);
+      }
+    });
   }, 300);
 }
 
@@ -188,21 +191,25 @@ performSearch() {
     queryParams: { search: q }
   });
 
-  this.searchQuery.set('');
-  this.isSearchFocused.set(false);
+  this.closeSearch();
 }
 
 openProduct(slug: string) {
-  this.isSearchFocused.set(false);
-  this.searchQuery.set('');
   this.router.navigate(['/product', slug]);
-
+  this.closeSearch();
 }
 
 onFocusSearch() {
-  this.isSearchFocused.set(true);
+  if (this.searchQuery().trim()) {
+    this.isSearchFocused.set(true);
+  }
 }
 
-
+// ✅ Centralized close logic (IMPORTANT)
+closeSearch() {
+  this.isSearchFocused.set(false);
+  this.searchQuery.set('');
+  this.searchResults.set([]);
+}
 
 }

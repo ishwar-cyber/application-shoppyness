@@ -102,6 +102,10 @@ export const serverRoutes: ServerRoute[] = [
     path: 'login',
     renderMode: RenderMode.Client
   },
+  {
+    path: 'my-account',
+    renderMode: RenderMode.Client
+  },
 
   // Fallback — serve remaining routes on the server
   {

@@ -1,5 +1,5 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, effect, Inject, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { Component, computed, effect, Inject, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ProfileService } from '../../services/profile-service';
 interface OrderStatus {
@@ -20,19 +20,23 @@ export class OrderDetails implements OnInit {
 
   order = signal<any>(null);
   orderId = signal<string>('');
-  orderDate = signal<string>('2025-11-09');
+  orderDate = signal<string>('');
   estimatedDelivery = signal<string>('2025-11-15');
   private readonly router = inject(ActivatedRoute);
   private readonly profileService = inject(ProfileService);
-  
- ORDER_STEPS = signal<OrderStatus[]>([
-  // { key: 'placed', label: 'Order Placed', completed: true },
-  // { key: 'confirmed', label: 'Order Confirmed', completed: false },
-  // { key: 'packed', label: 'Packed', completed: false },
-  // { key: 'shipped', label: 'Shipped', completed: false },
-  // { key: 'out_for_delivery', label: 'Out for Delivery', completed: false },
-  // { key: 'delivered', label: 'Delivered', completed: false }
-]);
+  isCancelledFlag = signal<boolean>(false);
+    // ---- DERIVED STATES ----
+  isCancelled = computed(() =>
+    this.ORDER_STEPS().find(s => s.key === 'CANCELLED')?.completed
+  );
+
+  canCancelOrder = computed(() => {
+    const steps = this.ORDER_STEPS();
+    const shipped = steps.find(s => s.key === 'SHIPPED')?.completed;
+    const delivered = steps.find(s => s.key === 'DELIVERED')?.completed;
+    return !shipped && !delivered && !this.isCancelled();
+  });
+  ORDER_STEPS = signal<OrderStatus[]>([]);
   // Signal for progress
   progress = signal(0);
   ngOnInit(): void {
@@ -50,6 +54,7 @@ export class OrderDetails implements OnInit {
     this.profileService.getOrderById(userId, orderId).subscribe((order: any) => {
       if (order) {
         console.log('order ', order);
+        this.isCancelledFlag.set(order.payload?.orderStatus.toLowerCase() === 'cancelled' ?  false : true)
         this.ORDER_STEPS.set(order?.payload?.tracking);
         this.orderId.set(order?.payload?.orderNumber || '');
         this.orderDate.set(new Date(order.date).toLocaleDateString('en-IN', { month: 'short', day: '2-digit', year: 'numeric' }));
@@ -58,11 +63,35 @@ export class OrderDetails implements OnInit {
     });
   }
 
+ // ---- CANCEL LOGIC ----
+  cancelOrder() {
+    if (!this.canCancelOrder()) return;
 
+    this.ORDER_STEPS.update(steps =>
+      steps.map(step => {
+        if (step.key === 'CANCELLED') {
+          return { ...step, completed: true };
+        }
+
+        if (
+          step.key === 'SHIPPED' ||
+          step.key === 'DELIVERED'
+        ) {
+          return { ...step, completed: false };
+        }
+        return step;
+      })
+    );
+
+    // ✅ Future backend call
+    const reason = {
+      reason: 'i dont want this model'
+    }
+    this.profileService.cancelOrder(this.orderId(), reason).subscribe();
+  }
 
   setOrderData(response: any) {
     this.order.set(response);
-
     this.ORDER_STEPS.set(this.ORDER_STEPS().map(step => ({
       ...step,
       completed: this.isStepCompleted(step.key, response.status)

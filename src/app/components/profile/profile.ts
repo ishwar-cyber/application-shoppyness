@@ -211,7 +211,7 @@ settingKeys = signal<(keyof UserSettings)[]>([
       case 'delivered': return 'status-delivered';
       case 'shipped': return 'status-shipped';
       case 'processing': return 'status-processing';
-      case 'pending': return 'status-pending';
+      case 'placed': return 'status-placed';
       case 'cancelled': return 'status-cancelled';
       default: return '';
     }
