@@ -80,17 +80,17 @@
         <div class="cart-item-modern">
 
           <div class="details">
-            <h3 class="name">{{ item.name }}</h3>
-            <p class="price">₹{{ item.price }}</p>
-
-            <div class="qty-row">
+            <div class="product">
+                <h3 class="name">{{ item.name }}</h3>
+                <p class="price">₹{{ item.price }}</p>
+            </div>
+            <div class="qty_remove">
+                <div class="qty-row">
               <button class="qty-btn"
                 (click)="cartService.updateQuantity(item._id, item.quantity - 1)">
                 -
               </button>
-
               <span class="qty">{{ item.quantity }}</span>
-
               <button class="qty-btn"
                 (click)="cartService.updateQuantity(item._id, item.quantity + 1)">
                 +
@@ -100,6 +100,8 @@
             <button class="remove-btn" (click)="removeItem(item._id)">
               <i class="bi bi-trash"></i> Remove
             </button>
+            </div>
+          
           </div>
 
         </div>
@@ -113,19 +115,19 @@
 
         <h3 class="summary-title">Price Summary</h3>
 
-        <div class="row">
+        <div class="cart_summary">
           <span>Subtotal</span>
-          <strong>₹{{ cartService.subTotal() }}</strong>
+          <strong>₹ {{ cartService.subTotal() }}</strong>
         </div>
 
-        <div class="row">
+        <div class="cart_summary">
           <span>Shipping</span>
-          <strong>₹{{ cartService.getShippingCharge() }}</strong>
+          <strong>₹ {{ cartService.getShippingCharge() }}</strong>
         </div>
 
-        <div class="row total">
+        <div class="cart_summary total">
           <span>Total</span>
-          <strong>₹{{ cartService.totalPrice() }}</strong>
+          <strong>₹ {{ cartService.totalPrice() }}</strong>
         </div>
 
         <button class="btn-primary checkout-btn" (click)="checkout()">

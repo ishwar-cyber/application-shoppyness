@@ -100,7 +100,9 @@ export class ProductList implements OnInit {
   // -------------------------------------------
   ngOnInit() {
     this.isLoading.set(true);
-    this.mode = sessionStorage.getItem('mode') as any || 'default';  
+     if(this.isBrowser()){
+      this.mode = sessionStorage.getItem('mode') as any || this.mode;
+    } 
     this.isMobileView.set(isPlatformBrowser(this.platformId) ? window.innerWidth <= 768 : false);
     this.checkScreenSize();
     this.scroller.scrollToPosition([0, 0]);

@@ -90,7 +90,7 @@ export class PaymentStatus implements OnInit {
   }
 
   goToOrders() {
-    this.router.navigate(['/orders']);
+    this.router.navigate(['/my-account']);
   }
 
   refresh(){

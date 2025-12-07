@@ -90,6 +90,18 @@ export const serverRoutes: ServerRoute[] = [
     path: 'category/:catSlug/:subSlug',
     renderMode: RenderMode.Server
   },
+  {
+    path: 'checkout',
+    renderMode: RenderMode.Client
+  },
+  {
+    path: 'order-tracking',
+    renderMode: RenderMode.Client
+  },
+  {
+    path: 'login',
+    renderMode: RenderMode.Client
+  },
 
   // Fallback — serve remaining routes on the server
   {

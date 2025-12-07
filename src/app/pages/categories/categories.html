@@ -10,26 +10,13 @@
 
     @for (cat of categories(); track cat._id) {
 
-      <a 
-        class="category-card"
-        [routerLink]="['/products']"
-        [queryParams]="{ category: cat.slug }">
-
+      <a class="category-card" [routerLink]="['/category/', cat.slug]">
         <div class="icon-box">
-          <img 
-            [src]="cat.image || 'assets/default-category.svg'" 
-            [alt]="cat.name"
-            loading="lazy"
-          />
+          <img [src]="cat.image || 'assets/default-category.svg'"  [alt]="cat.name" loading="lazy" />
         </div>
-
         <h3>{{ cat.name }}</h3>
-
       </a>
-
-    }
-
-    @empty {
+    } @empty {
       <p class="no-data">No categories found.</p>
     }
 

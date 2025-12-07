@@ -70,8 +70,7 @@
       <div class="cat-scroll">
         @for (cat of categories(); track cat.id ?? $index) {
           <div class="cat-item"
-               [routerLink]="['/category/', cat.slug]"
-               [attr.aria-label]="'Browse category ' + cat.name">
+               [routerLink]="['/category/', cat.slug]" [attr.aria-label]="'Browse category ' + cat.name">
             <div class="cat-icon">
               <i class="bi bi-grid-3x3-gap-fill"></i>
             </div>
