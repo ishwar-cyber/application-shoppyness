@@ -39,9 +39,9 @@ export class Home implements OnInit{
   ]);
 
   bannerImages = signal([
-    { id: 1, url: 'assets/banners/banner1.jpg', alt: 'Latest Deals Electronics' },
-    { id: 2, url: 'assets/banners/banner2.jpg', alt: 'New Launches Gadgets' },
-    { id: 3, url: 'assets/banners/banner3.jpg', alt: 'Best Discounts on Accessories' }
+    { id: 1, url: 'assets/banners/banner_1.png', alt: 'Latest Deals Electronics' },
+    { id: 2, url: 'assets/banners/banner_2.png', alt: 'New Launches Gadgets' },
+    { id: 3, url: 'assets/banners/banner_3.png', alt: 'Best Discounts on Accessories' }
   ]);
 
   currentSlide = signal(0);

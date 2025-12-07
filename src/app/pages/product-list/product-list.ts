@@ -15,13 +15,6 @@ import { forkJoin } from 'rxjs';
   selector: 'app-product-list',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
-    animations: [
-    trigger('cardClick', [
-      state('default', style({ transform: 'scale(1)', opacity: 1 })),
-      state('clicked', style({ transform: 'scale(0.95)', opacity: 0.6 })),
-      transition('default → clicked', animate('200ms ease-in'))
-    ])
-  ],
   templateUrl: './product-list.html',
   styleUrls: ['./product-list.scss']
 })

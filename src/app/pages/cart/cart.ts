@@ -66,7 +66,6 @@ export class Cart implements OnInit{
   }
   
   loadCartItems(): void {
-    this.isLoading.set(true);
     this.error.set(null);
     this.cartService.loadCart().subscribe({
         next: (response: any) => {

@@ -7,6 +7,9 @@ import { CheckoutService } from '../../services/checkout';
 import { ProfileService } from '../../services/profile-service';
 import { PopUp } from '../../components/pop-up/pop-up';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
+import { load } from '@cashfreepayments/cashfree-js';
+import { PaymentService } from '../../services/payment';
 
 @Component({
   selector: 'app-checkout',
@@ -36,6 +39,7 @@ export class Checkout implements OnInit{
   private readonly profileService = inject(ProfileService);
   private readonly formBuilder = inject(FormBuilder);
   private readonly checkoutService = inject(CheckoutService);
+  private readonly paymentService = inject(PaymentService)
   private readonly router = inject(Router);
   private readonly http = inject(HttpClient);
   addressForm!: FormGroup;
@@ -89,15 +93,7 @@ export class Checkout implements OnInit{
       alert('Please select an address');
       return;
     }
-
-    const orderPayload = {
-      shippingAddress:  this.selectedAddress(),
-      paymentMethod: this.paymentMethod(),
-      items: this.cartService.cartItems() || this.cartItems(),
-      totalAmount: this.totalAmount(),
-      couponDiscount: this.couponDiscount() || null
-    };
-
+    const orderPayload = this.createOrderPayload()
     this.checkoutService.createOrder(orderPayload).subscribe({
       next: (res: any) => {
         console.log('payments response', res);
@@ -108,7 +104,68 @@ export class Checkout implements OnInit{
       },
       error: (err) => console.error(err)
     });
-  }  
+  } 
+  
+  createOrderPayload() {
+    const orderPayload = {
+      shippingAddress:  this.selectedAddress(),
+      paymentMethod: this.paymentMethod(),
+      items: this.cartService.cartItems() || this.cartItems(),
+      totalAmount: this.totalAmount(),
+      couponDiscount: this.couponDiscount() || null
+    };
+    return orderPayload;
+  }
+
+    async pay() {
+    // if (this.checkoutForm.invalid) {
+    //   this.checkoutForm.markAllAsTouched();
+    //   return;
+    // }
+
+    // this.isProcessing = true;
+
+    try {
+      /** ✅ Step 1: Create order */
+      const order = await this.paymentService.createOrder(
+        this.createOrderPayload()
+      ).toPromise();
+
+      if (!order?.payment_session_id) {
+        throw new Error('Payment session not created');
+      }
+
+      /** ✅ Step 2: Open Cashfree Checkout */
+      const cf = await load({ mode: 'sandbox' });
+
+      await cf.checkout({
+        paymentSessionId: order.payment_session_id,
+
+        /** ✅ Payment success */
+        onSuccess: async (data: any) => {
+          await this.paymentService
+            .verifyPayment(data.order.order_id)
+            .toPromise();
+
+          this.router.navigate(['/payment-success'], {
+            queryParams: { orderId: data.order.order_id }
+          });
+        },
+
+        /** ✅ Payment failure */
+        onFailure: (err: any) => {
+          this.router.navigate(['/payment-failed'], {
+            queryParams: { reason: err.reason }
+          });
+        }
+      });
+
+    } catch (error) {
+      console.error('Payment Error:', error);
+    } finally {
+      // this.isProcessing = false;
+    }
+  }
   applyCoupon() {
     if (!this.couponCode.trim()) {
       this.couponError.set('Please enter a coupon code.');

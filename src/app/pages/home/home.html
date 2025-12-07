@@ -6,7 +6,6 @@
 
   <div class="slider-wrapper"
        [style.transform]="'translateX(-' + currentSlide() * 100 + '%)'">
-
     @for (banner of bannerImages(); track banner.id ?? $index) {
       <div class="slide">
         <img 
@@ -54,7 +53,7 @@
     </div>
 
     <div class="hero-image">
-      <img src="assets/hero-banner.png"
+      <img src="assets/banners/hero-banner.png"
            alt="Best Electronics and Accessories Online"
            loading="lazy" />
     </div>
@@ -91,7 +90,7 @@
     <section class="brand-section">
       <div class="section-header">
         <h2 class="section-title">Top Brands</h2>
-        <button routerLink="/brands" class="view-all-link">View All</button>
+        <!-- <button routerLink="/brands" class="view-all-link">View All</button> -->
       </div>
 
       <div class="brand-scroll">
@@ -131,7 +130,6 @@
   <section class="trending-products">
     <div class="section-header">
       <h2 class="section-title">Trending Now</h2>
-
       <button routerLink="/products"
               class="view-all-link">
         View All

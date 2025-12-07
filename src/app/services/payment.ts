@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
+import { CreateOrder } from '../commons/models/payments.model';
 interface CreateOrderResponse {
   payment_session_id: string;
   order_id: string;
@@ -10,27 +11,22 @@ interface CreateOrderResponse {
 @Injectable({
   providedIn: 'root'
 })
-export class CheckoutService {
+export class PaymentService {
   
-  private http = inject(HttpClient);
+  private baseUrl = `${environment.apiUrl}/order`;
 
+  constructor(private http: HttpClient) {}
 
-  createOrder(amount: number) {
-    return this.http.post<any>(
-      `${environment.apiUrl}/payment/create-order`,
-      {
-        orderId: 'order_' + Date.now(),
-        amount,
-        returnUrl: `${environment.apiUrl}/order-success`,
-        notifyUrl: `${environment.apiUrl}/payment/webhook`
-      }
+  /** STEP 1: Create Cashfree order (Backend) */
+  createOrder(payload: CreateOrder): Observable<CreateOrderResponse> {
+    return this.http.post<CreateOrderResponse>(
+      `${this.baseUrl}/create-order`,
+      payload
     );
   }
 
-  verifyOrder(orderId: string) {
-    return this.http.post(
-      `${environment.apiUrl}/payment/verify`,
-      { orderId }
-    );
+  /** STEP 2: Verify payment (Backend) */
+  verifyPayment(orderId: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/verify`, { orderId });
   }
 }
