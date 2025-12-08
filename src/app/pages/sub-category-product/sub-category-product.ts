@@ -23,8 +23,11 @@ export class SubCategoryProduct {
     sessionStorage.setItem('mode', 'subcategory');
   }
     this.route.paramMap.subscribe(params => {
+      console.log('paramssss', params);
+      
       const subSlug = params.get('subSlug') || '';
-      this.apiParams = { subSlug };
+      const catSlug = params.get('slug') || '';
+      this.apiParams = { subSlug, catSlug };
       this.isLoading.set(false);
     });
   }

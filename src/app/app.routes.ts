@@ -34,7 +34,7 @@ export const routes: Routes = [
 
   // SUBCATEGORY PAGE
   {
-    path: 'category/:catSlug/:subSlug',
+    path: 'category/:slug/:subSlug',
     loadComponent: () =>
       import('./pages/sub-category-product/sub-category-product').then(m => m.SubCategoryProduct)
   },

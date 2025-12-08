@@ -6,8 +6,6 @@ import { CartService } from '../../services/cart';
 import { CheckoutService } from '../../services/checkout';
 import { ProfileService } from '../../services/profile-service';
 import { PopUp } from '../../components/pop-up/pop-up';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
 import { load } from '@cashfreepayments/cashfree-js';
 import { PaymentService } from '../../services/payment';
 
@@ -30,6 +28,7 @@ export class Checkout implements OnInit{
   isAddressModalOpen = signal<boolean>(false);
   couponCode = '';
   couponDiscount = signal<number>(0);
+
   selectedAddress = computed(() => {
     return this.addressList().find(addr => addr._id === this.selectedAddressId());
   })
@@ -41,8 +40,9 @@ export class Checkout implements OnInit{
   private readonly checkoutService = inject(CheckoutService);
   private readonly paymentService = inject(PaymentService)
   private readonly router = inject(Router);
-  private readonly http = inject(HttpClient);
   addressForm!: FormGroup;
+  // loader state
+  isPlacingOrder = signal<boolean>(false);
 
   ngOnInit(): void {
     this.loadCart();
@@ -51,7 +51,12 @@ export class Checkout implements OnInit{
 
   loadCart() {
     this.cartService.loadCart().subscribe((res: any) => {
+      if(res.data.items.length === 0){
+        this.router.navigate(['/cart']);
+        // return false;
+      }
       this.cartItems.set(res.data.items);
+
       this.totalAmount.set(res.data.subTotal);
       this.subTotal.set(res.data.subTotal);
     });
@@ -118,13 +123,7 @@ export class Checkout implements OnInit{
   }
 
     async pay() {
-    // if (this.checkoutForm.invalid) {
-    //   this.checkoutForm.markAllAsTouched();
-    //   return;
-    // }
-
-    // this.isProcessing = true;
-
+    this.isPlacingOrder.set(true);
     try {
       /** ✅ Step 1: Create order */
       const order = await this.paymentService.createOrder(
@@ -146,7 +145,6 @@ export class Checkout implements OnInit{
           await this.paymentService
             .verifyPayment(data.order.order_id)
             .toPromise();
-
           this.router.navigate(['/payment-success'], {
             queryParams: { orderId: data.order.order_id }
           });
@@ -161,6 +159,7 @@ export class Checkout implements OnInit{
       });
 
     } catch (error) {
+      this.isPlacingOrder.set(false);
       console.error('Payment Error:', error);
     } finally {
       // this.isProcessing = false;

@@ -141,7 +141,7 @@
           </div>
         </div>
 
-        <button class="place-btn btn-primary" (click)="pay()">
+        <button class="place-btn btn-primary" (click)="pay()" [disabled]="isPlacingOrder()">
           Place Order
         </button>
       </div>
@@ -241,3 +241,14 @@
     </app-pop-up>
   }
 </div>
+<!-- PAYMENT LOADER OVERLAY -->
+@if (isPlacingOrder()) {
+  <div class="payment-loader-overlay">
+    <div class="payment-loader-card">
+      <div class="spinner"></div>
+
+      <h3>Redirecting to payment</h3>
+      <p>Please don’t refresh or go back</p>
+    </div>
+  </div>
+}

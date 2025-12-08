@@ -34,16 +34,15 @@
       <div class="filter-group">
         <h4>Category</h4>
 
-        @for (cat of categories(); track cat._id) {
-          <label class="filter-item">
-            <input 
-              type="checkbox"
-              [checked]="selectedCategories().includes(cat.slug)"
-              (change)="toggleCategory(cat.slug)"
-            />
-            <span>{{ cat.name }}</span>
-          </label>
-        }
+      @for (cat of categories(); track cat._id) {
+        <button
+          type="button"
+          class="filter-item filter-btn"
+          (click)="toggleCategory(cat.slug)">
+          {{ cat.name }}
+        </button>
+      }
+
       </div>
 
       <!-- BRAND FILTER -->

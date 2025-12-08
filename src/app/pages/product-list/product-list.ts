@@ -36,7 +36,7 @@ export class ProductList implements OnInit {
   filteredProducts = signal<ProductModel[]>([]);
   isLoading = signal<boolean>(true);
 
-  selectedCategories = signal<string[]>([]);
+  selectedCategories = signal<string>('');
   selectedBrands = signal<string[]>([]);
   selectedStorage = signal<string>('');
   selectedProcessor = signal<string>('');
@@ -146,7 +146,7 @@ export class ProductList implements OnInit {
       console.log('sub category', this.apiParams);
       
       this.subCategorySlug.set(this.apiParams.slug || '');
-      this.loadCategoryProducts(this.subCategorySlug());
+      this.loadSubCategoryProducts(this.apiParams);
       return;
     }
 
@@ -175,7 +175,6 @@ export class ProductList implements OnInit {
 
   loadQueryParams() {
     this.route.queryParams.subscribe(params => {
-      if (params['cat']) this.selectedCategories.set(params['cat'].split(','));
       if (params['brand']) this.selectedBrands.set(params['brand'].split(','));
 
       if (params['min'] && params['max']) {
@@ -206,7 +205,6 @@ export class ProductList implements OnInit {
   // -------------------------------------------
   loadDataBasedOnRoute() {
     this.isLoading.set(true);
-
     if (this.searchQuery()) return this.loadSearchProducts();
     if (this.subCategorySlug()) return this.loadCategoryProducts(this.subCategorySlug());
     if (this.categorySlug()) return this.loadCategoryProducts(this.categorySlug());
@@ -215,18 +213,29 @@ export class ProductList implements OnInit {
   }
 
   loadAllProducts() {
+    this.isLoading.set(true);
     this.productService.getProduct().subscribe(res => {
+       this.isLoading.set(false);
       this.prepareProductList(res.data);
     });
   }
 
   loadCategoryProducts(slug: string) {
+     this.isLoading.set(true);
     this.productService.getProductByCategoryId(slug).subscribe((res: any) => {
-      console.log('response', res);
+       this.isLoading.set(false);
       this.prepareProductList(res.data);
     });
   }
-
+  loadSubCategoryProducts(payload:object){
+    this.isLoading.set(true);
+    this.productService.getProductBySubCategorySlug(payload).subscribe({
+      next: (res:any) =>{
+        console.log(res);
+         this.prepareProductList(res.data);
+      }
+    })
+  }
   loadSearchProducts() {
     this.productService.searchProducts(this.searchQuery()).subscribe((res: any) => {
       this.prepareProductList(res.data);
@@ -251,16 +260,6 @@ export class ProductList implements OnInit {
   // ----------------------------------------------------
   // FILTER / SORT (Unchanged)
   // ----------------------------------------------------
-  filterProducts1() {
-    this.productService
-      .filterProduct(
-        this.selectedCategories(),
-        this.selectedBrands(),
-        this.priceRange()
-      )
-      .subscribe((res: any) => this.filteredProducts.set(res.data));
-  }
-
   sortProducts() {
     let sorted = [...this.filteredProducts()];
 
@@ -301,29 +300,18 @@ export class ProductList implements OnInit {
     this.updateParams();
   }
    toggleCategory(slug: string) {
-    const list = [...this.selectedCategories()];
-
-    if (list.includes(slug)) {
-      this.selectedCategories.set(list.filter(c => c !== slug));
-    } else {
-      this.selectedCategories.set([...list, slug]);
-    }
-
-    this.updateParams();
+    this.router.navigate(['/category/',slug])
+    this.selectedCategories.set(slug);
   }
   updateParams() {
     const params: any = {};
-    const cat = this.selectedCategories();
     const brand = this.selectedBrands();
     const price = this.priceRange()[1];
-
-    if (cat.length) params['category'] = cat.join(',');
     if (brand.length) params['brand'] = brand.join(',');
     if (price > 0) params['price'] = price;
 
-    // If all empty → remove params → show all products
     const noFilters =
-      !cat.length && !brand.length && price === this.priceRange()[0];
+     !brand.length && price === this.priceRange()[0];
 
     if (noFilters) {
       this.router.navigate([], {
@@ -341,7 +329,7 @@ export class ProductList implements OnInit {
 
   resetFilters() {
     this.selectedBrands.set([]);
-    this.selectedCategories.set([]);
+    this.selectedCategories.set('');
     this.selectedProcessor.set('');
     this.selectedStorage.set('');
     this.searchQuery.set('');

@@ -224,6 +224,10 @@
     img {
       max-height: 170px;
       object-fit: contain;
+      width: 100%;
+      max-width: 480px;
+      margin-inline: auto;
+      aspect-ratio: 1 / 1;
     }
   }
 
@@ -332,4 +336,17 @@
   margin-top: 20px;
   color: var(--text-muted);
   text-align: center;
+}
+.filter-btn {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 6px 0;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.filter-btn:hover {
+  color: #0d6efd;
 }
