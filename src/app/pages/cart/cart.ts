@@ -6,6 +6,7 @@ import { Auth } from '../../services/auth';
 import { CartService } from '../../services/cart';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { Loader } from '../../components/loader/loader';
 
 interface CartItemResponse {
   productId: string,
@@ -16,7 +17,7 @@ interface CartItemResponse {
 }
 @Component({
   selector: 'app-cart',
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, Loader, FormsModule],
   templateUrl: './cart.html',
   styleUrl: './cart.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -35,8 +36,7 @@ export class Cart implements OnInit{
   tax = signal<number>(0);
   shipping = signal<number>(0);
   total = signal<number>(0);
-
-  // Loading state for quantity updates
+  isLoader =signal<boolean>(false);
   updatingItemId: string | null = '';
   // Services
   private scroller = inject(ViewportScroller);
@@ -130,14 +130,15 @@ export class Cart implements OnInit{
   }
 
   checkout(): void {
-    // Check if user is logged in
+    this.isLoader.set(true);
     if (!this.authService.isLoggedIn()) {
-      // Redirect to login page
+      
       this.router.navigate(['/login']);
+      this.isLoader.set(false);
       return;
     }
-    
-    // User is logged in, proceed to checkout
     this.router.navigate(['/checkout']);
+    this.isLoader.set(false);
+
   }
 }

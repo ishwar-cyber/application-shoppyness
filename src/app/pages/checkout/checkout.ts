@@ -8,10 +8,11 @@ import { ProfileService } from '../../services/profile-service';
 import { PopUp } from '../../components/pop-up/pop-up';
 import { load } from '@cashfreepayments/cashfree-js';
 import { PaymentService } from '../../services/payment';
+import { Loader } from '../../components/loader/loader';
 
 @Component({
   selector: 'app-checkout',
-  imports: [CommonModule, RouterModule, FormsModule, ReactiveFormsModule, PopUp],
+  imports: [CommonModule, RouterModule, FormsModule, ReactiveFormsModule, PopUp, Loader],
   templateUrl: './checkout.html',
   styleUrls: ['./checkout.scss']
 })
@@ -28,7 +29,7 @@ export class Checkout implements OnInit{
   isAddressModalOpen = signal<boolean>(false);
   couponCode = '';
   couponDiscount = signal<number>(0);
-
+  isLoader = signal<boolean>(true);
   selectedAddress = computed(() => {
     return this.addressList().find(addr => addr._id === this.selectedAddressId());
   })
@@ -59,6 +60,7 @@ export class Checkout implements OnInit{
 
       this.totalAmount.set(res.data.subTotal);
       this.subTotal.set(res.data.subTotal);
+      this.isLoader.set(false);
     });
     this.buildAddressForm();
   }
@@ -101,8 +103,7 @@ export class Checkout implements OnInit{
     const orderPayload = this.createOrderPayload()
     this.checkoutService.createOrder(orderPayload).subscribe({
       next: (res: any) => {
-        console.log('payments response', res);
-           this.router.navigate([`/payment-success?orderId=${res.orderNumber}`]);
+        this.router.navigate([`/payment-success?orderId=${res.orderNumber}`]);
         // this.router.navigate(['/order-success'], {
         //   queryParams: { orderId: res?.orderId }
         // });
@@ -122,7 +123,7 @@ export class Checkout implements OnInit{
     return orderPayload;
   }
 
-    async pay() {
+  async pay() {
     this.isPlacingOrder.set(true);
     try {
       /** ✅ Step 1: Create order */
@@ -161,8 +162,6 @@ export class Checkout implements OnInit{
     } catch (error) {
       this.isPlacingOrder.set(false);
       console.error('Payment Error:', error);
-    } finally {
-      // this.isProcessing = false;
     }
   }
   applyCoupon() {
@@ -172,10 +171,7 @@ export class Checkout implements OnInit{
       return;
     }
 
-    // Example coupon logic
     if (this.couponCode) {
-      
-      // Apply discount logic...
      this.cartService.applyCoupon(this.couponCode)
       .subscribe({
         next: (response: any) => {

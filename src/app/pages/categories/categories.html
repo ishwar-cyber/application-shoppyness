@@ -1,24 +1,35 @@
 <div class="categories-page">
 
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb">
+    <a routerLink="/" class="crumb">
+      <i class="bi bi-house"></i> Home
+    </a>
+    <span class="separator">›</span>
+    <span class="current">Categories</span>
+  </nav>
+
   <h2 class="title">Shop by Category</h2>
 
   @if (categories().length === 0) {
-    <p class="loading-text">Loading categories...</p>
+    <app-loader />
   }
 
   <div class="categories-grid">
-
     @for (cat of categories(); track cat._id) {
-
-      <a class="category-card" [routerLink]="['/category/', cat.slug]">
+      <a class="category-card" [routerLink]="['/category', cat.slug]">
         <div class="icon-box">
-          <img [src]="cat.image || 'assets/default-category.svg'"  [alt]="cat.name" loading="lazy" />
+          <img
+            [src]="cat.image || 'assets/default-category.svg'"
+            [alt]="cat.name"
+            loading="lazy"
+          />
         </div>
         <h3>{{ cat.name }}</h3>
       </a>
     } @empty {
       <p class="no-data">No categories found.</p>
     }
-
   </div>
+
 </div>

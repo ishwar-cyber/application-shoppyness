@@ -41,15 +41,15 @@
 
         <label class="delivery-option" 
                [class.active]="deliveryType() === 'standard'">
-          <input type="radio" name="delivery" value="standard"
+          <input type="radio" name="delivery" value="standard" [checked]="deliveryType() === 'standard'"
                  (change)="deliveryType.set('standard')" />
           <div>
             <h4>Standard Delivery</h4>
-            <p>Delivery in 3-5 days (Free)</p>
+            <p>Delivery in 3-5 days</p>
           </div>
         </label>
 
-        <label class="delivery-option"
+        <!-- <label class="delivery-option"
                [class.active]="deliveryType() === 'express'">
           <input type="radio" name="delivery" value="express"
                  (change)="deliveryType.set('express')" />
@@ -57,7 +57,7 @@
             <h4>Express Delivery</h4>
             <p>Delivery in 24-48 hours (₹99)</p>
           </div>
-        </label>
+        </label> -->
       </section>
 
       <!-- PAYMENT -->
@@ -132,7 +132,7 @@
           }
           <div class="price-sub-row">
             <span>Shipping</span>
-            <span>₹{{ deliveryType() === 'express' ? 99 : 0 }}</span>
+            <span>₹{{ cartItems().length * 100 }}</span>
           </div>
 
           <div class="total-row">
@@ -251,4 +251,8 @@
       <p>Please don’t refresh or go back</p>
     </div>
   </div>
+}
+
+@if(isLoader()){
+  <app-loader/>
 }

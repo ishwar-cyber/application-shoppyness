@@ -21,10 +21,9 @@
    FILTER TOGGLE (MOBILE)
 ================================ */
 .filter-toggle-btn {
-  width: 120px;
+  // width: 120px;
   padding: 8px 12px;
   font-size: 14px;
-  margin-bottom: 15px;
   border-radius: var(--radius);
 }
 
@@ -100,7 +99,10 @@
       cursor: pointer;
       font-size: 14px;
       color: var(--text-muted);
-
+      &.active{
+        color: var(--primary);
+        font-weight: 700;
+      }
       input {
         cursor: pointer;
       }
@@ -239,6 +241,9 @@
       font-weight: 600;
       margin-bottom: 5px;
       color: #1f2937;
+      @media (max-width: 768px) {
+          font-size: 14px;
+      }
     }
 
     .brand {
@@ -304,6 +309,9 @@
         font-size: 18px;
         font-weight: 600;
         margin-bottom: 6px;
+         @media (max-width: 768px) {
+          font-size: 14px;
+        }
       }
 
       .brand {
@@ -323,6 +331,9 @@
         font-size: 20px;
         font-weight: 700;
         color: var(--primary);
+        @media (max-width: 768px) {
+          font-size: 16px;
+        }
       }
     }
   }
@@ -349,4 +360,111 @@
 
 .filter-btn:hover {
   color: #0d6efd;
+}
+
+
+/* Skeleton base */
+.skeleton-card,
+.skeleton-list-item {
+  background: #fff;
+  padding: 12px;
+  border-radius: 10px;
+}
+
+/* Image blocks */
+.skeleton-img {
+  height: 180px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  background: #e5e7eb;
+}
+
+.skeleton-list-img {
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;
+  background: #e5e7eb;
+}
+
+/* Lines */
+.skeleton-line {
+  height: 12px;
+  border-radius: 6px;
+  background: #e5e7eb;
+  margin-bottom: 10px;
+}
+
+/* Width utils */
+.w-80 { width: 80%; }
+.w-70 { width: 70%; }
+.w-60 { width: 60%; }
+.w-50 { width: 50%; }
+.w-40 { width: 40%; }
+
+/* Shimmer */
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.6),
+    transparent
+  );
+  animation: shimmer 1.4s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  font-size: 14px;
+  margin-bottom: 12px;
+
+  .crumb {
+    color: #6f42c1;
+    text-decoration: none;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .separator {
+    color: #9ca3af;
+  }
+
+  .current {
+    color: #374151;
+    font-weight: 600;
+  }
+
+  i {
+    font-size: 14px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+  .breadcrumb {
+    font-size: 13px;
+    flex-wrap: wrap;
+  }
 }

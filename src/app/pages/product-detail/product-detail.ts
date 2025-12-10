@@ -14,11 +14,12 @@ import { CheckPincode } from '../../components/check-pincode/check-pincode';
 import { ProductReview } from '../../components/product-review/product-review';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
+import { Loader } from "../../components/loader/loader";
 
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, ProductCard, CheckPincode, ProductReview],
+  imports: [CommonModule, RouterLink, FormsModule, ProductCard, CheckPincode, ProductReview, Loader],
   templateUrl: './product-detail.html',
   styleUrls: ['./product-detail.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

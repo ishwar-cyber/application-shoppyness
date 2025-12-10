@@ -15,17 +15,18 @@ export class CartService {
   isBrowser = isPlatformBrowser(this.platformId);
 
   // 🔔 Signals for cart state
-cartItems = signal<Item[] | null>(null);
-cartCount = signal<number>(0);
-totalPrice = signal<number>(0);
-subTotal = signal<number>(0);
-
+  cartItems = signal<Item[] | null>(null);
+  cartCount = signal<number>(0);
+  totalPrice = signal<number>(0);
+  subTotal = signal<number>(0);
+  shipping = signal<number>(100);
+  isLoader = signal<boolean>(false);
   cart = computed(()=> this.cartItems());
   getSubtotal() {
     return this.subTotal();
   }
   getShippingCharge() {
-    return this.totalPrice() - this.subTotal();
+    return this.shipping();
   }
   /** 🔄 Load cart (SSR-safe) */
   loadCart() {
@@ -65,6 +66,7 @@ subTotal = signal<number>(0);
 
   /** ✏️ Update quantity (optimistic) */
   updateQuantity(itemId: string, quantity: number) {
+  this.isLoader.set(true);
   if (!this.isBrowser) return;
 
   const oldItems = [...(this.cartItems() || [])]; // safe backup
@@ -80,12 +82,15 @@ subTotal = signal<number>(0);
     .subscribe({
       next: res => {
         if (res.success) {
+            this.isLoader.set(false);
           this.updateSignals(res);
         } else {
+            this.isLoader.set(false);
           this.cartItems.set(oldItems);
         }
       },
       error: () => {
+         this.isLoader.set(false);
         this.cartItems.set(oldItems); // rollback
         alert('Failed to update quantity. Please try again.');
       }
@@ -94,10 +99,15 @@ subTotal = signal<number>(0);
 
   /** ❌ Remove item */
   removeFromCart(itemId: string) {
+     this.isLoader.set(true);
     if (!this.isBrowser) return of(null);
     return this.http.delete<CartResponse>(`${this.apiUrl}/${itemId}/remove`, { withCredentials: true }).pipe(
-      tap(res => res.success && this.updateSignals(res)),
+      tap(res => {
+        this.isLoader.set(false);
+        res.success && this.updateSignals(res)
+      }),
       catchError(err => {
+        this.isLoader.set(false);
         console.error('Error removing item:', err);
         return of(null);
       })
@@ -106,10 +116,14 @@ subTotal = signal<number>(0);
 
   /** 🎟 Apply coupon */
   applyCoupon(code: string) {
+     this.isLoader.set(true);
     if (!this.isBrowser) return of(null);
     return this.http.post<CartResponse>(`${environment.apiUrl}/coupons/apply-coupon`, { code }, { withCredentials: true }).pipe(
-      tap(res => res.success),
+      tap(res => {
+         this.isLoader.set(false);
+      }),
       catchError(err => {
+         this.isLoader.set(false);
         console.error('Error applying coupon:', err);
         return of(null);
       })
@@ -130,10 +144,12 @@ subTotal = signal<number>(0);
 
   /** 🔄 Clear cart */
   clearCart() {
+     this.isLoader.set(true);
     if (!this.isBrowser) return of(null);
     return this.http.delete<CartResponse>(`${this.apiUrl}/clear`, { withCredentials: true }).pipe(
       tap(res => {
         if (res.success) {
+           this.isLoader.set(false);
           this.cartItems.set([]);
           this.cartCount.set(0);
           this.subTotal.set(0);
@@ -148,15 +164,18 @@ subTotal = signal<number>(0);
   }
 
   /** 📌 Helper: update signals */
-private updateSignals(res: CartResponse) {
-  const data = res.data;
-
-  this.cartItems.set(data?.items || []);
-  this.cartCount.set(data?.itemCount ?? 0);
-  this.subTotal.set(data?.subTotal ?? 0);
-  this.totalPrice.set(
-    (data?.subTotal ?? 0) + (data?.shippingCharge ?? 0)
-  );
+  private updateSignals(res: CartResponse) {
+    const data = res.data;
+    console.log('data for cst');
+    
+    // data.items.reduce((total, item) => {
+    //   return total +  100 * item;
+    // }, 0);
+    this.cartItems.set(data?.items || []);
+    this.cartCount.set(data?.itemCount ?? 0);
+    this.subTotal.set(data?.subTotal ?? 0);
+    this.totalPrice.set(
+      (data?.subTotal ?? 0) + this.shipping()
+    );
+  }
 }
-
-                                                                                                 }

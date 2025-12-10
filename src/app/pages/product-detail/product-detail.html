@@ -7,16 +7,9 @@
     <div class="skeleton skeleton-main"></div>
   </div>
 
-} @else if (error()) {
-  <div class="product-page error-state">
-    <p>{{ error() }}</p>
-  </div>
-
-} @else {
+}  @else {
   @if (product(); as p) {
-
     <div class="product-page glass-card" itemscope itemtype="https://schema.org/Product">
-
       <!-- Breadcrumb -->
       <nav class="breadcrumb">
         <a routerLink="/">Home</a>
@@ -156,18 +149,16 @@
               <button class="btn-primary"
                       (click)="addToCart(p)"
                       [disabled]="currentStock() !== 'in' || isAddingToCart()">
-
                 <i class="bi bi-cart-plus"></i>
-
                 @if (!isAddingToCart()) { <span>Add to Cart</span> }
                 @else { <span>Adding...</span> }
-
               </button>
             </div>
           </div>
 
-          @if (addedToCartMessage()) {
-            <div class="status-message">{{ addedToCartMessage() }}</div>
+          @if (isAddingToCart()) {
+            <!-- <div class="status-message">{{ addedToCartMessage() }}</div> -->
+             <app-loader/>
           }
 
           @if (p.highlights?.length) {
@@ -183,11 +174,8 @@
             <h2>Delivery</h2>
             <app-check-pincode></app-check-pincode>
           </div>
-
         </section>
-
       </div>
-
 
       <!-- ==========================
            TABS SECTION
@@ -255,7 +243,6 @@
         </div>
       </div>
 
-
       <!-- Related Products -->
       @if (relatedProducts().length) {
         <section class="related">
@@ -278,7 +265,6 @@
           </div>
         </section>
       }
-
     </div>
   }
 }

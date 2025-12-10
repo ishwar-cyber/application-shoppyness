@@ -37,7 +37,7 @@ export class ProductList implements OnInit {
   isLoading = signal<boolean>(true);
 
   selectedCategories = signal<string>('');
-  selectedBrands = signal<string[]>([]);
+  selectedBrands = signal<string>('');
   selectedStorage = signal<string>('');
   selectedProcessor = signal<string>('');
   priceRange = signal<[number, number]>([0, 0]);
@@ -64,7 +64,7 @@ export class ProductList implements OnInit {
   private readonly seo = inject(Seo);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  public readonly cartService = inject(CartService);
+  public  readonly cartService = inject(CartService);
   private readonly productService = inject(Product);
   private readonly homeService = inject(HomeService);
   private readonly platformId = inject(PLATFORM_ID);
@@ -138,6 +138,7 @@ export class ProductList implements OnInit {
     if (this.mode === 'category') {
       this.categorySlug.set(this.apiParams.slug || '');
       this.loadCategoryProducts(this.categorySlug());
+      this.selectedCategories.set(this.categorySlug());
       return;
     }
 
@@ -277,13 +278,7 @@ export class ProductList implements OnInit {
   // BRAND / CATEGORY FILTERS (Unchanged)
   // ----------------------------------------------------
    toggleBrand(brand: string) {
-    const list = [...this.selectedBrands()];
-
-    if (list.includes(brand)) {
-      this.selectedBrands.set(list.filter(b => b !== brand));
-    } else {
-      this.selectedBrands.set([...list, brand]);
-    }
+    this.selectedBrands.set(brand);
 
     this.updateParams();
   }
@@ -293,23 +288,21 @@ export class ProductList implements OnInit {
   ---------------------------------------------------------- */
   filterProducts() {
     this.isFilterDrawerOpen.set(!this.isFilterDrawerOpen());
-
     if (isPlatformBrowser(this.platformId)) {
       document.body.classList.toggle('filter-drawer-open', this.isFilterDrawerOpen());
     }
     this.updateParams();
   }
-   toggleCategory(slug: string) {
+  toggleCategory(slug: string) {
     this.router.navigate(['/category/',slug])
+    this.isFilterDrawerOpen.set(!this.isFilterDrawerOpen());
     this.selectedCategories.set(slug);
   }
   updateParams() {
     const params: any = {};
     const brand = this.selectedBrands();
     const price = this.priceRange()[1];
-    if (brand.length) params['brand'] = brand.join(',');
-    if (price > 0) params['price'] = price;
-
+    if (brand.length) params['brand'] = brand;
     const noFilters =
      !brand.length && price === this.priceRange()[0];
 
@@ -328,7 +321,7 @@ export class ProductList implements OnInit {
   }
 
   resetFilters() {
-    this.selectedBrands.set([]);
+    this.selectedBrands.set('');
     this.selectedCategories.set('');
     this.selectedProcessor.set('');
     this.selectedStorage.set('');

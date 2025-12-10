@@ -93,3 +93,46 @@
     }
   }
 }
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  font-size: 14px;
+  margin-bottom: 12px;
+
+  .crumb {
+    color: #6f42c1;
+    text-decoration: none;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .separator {
+    color: #9ca3af;
+  }
+
+  .current {
+    color: #374151;
+    font-weight: 600;
+  }
+
+  i {
+    font-size: 14px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+  .breadcrumb {
+    font-size: 13px;
+    flex-wrap: wrap;
+  }
+}

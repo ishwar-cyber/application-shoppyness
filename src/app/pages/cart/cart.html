@@ -144,3 +144,7 @@
   }
 
 </div>
+
+@if(cartService.isLoader() || isLoader()){
+  <app-loader/>
+}

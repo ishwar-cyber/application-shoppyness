@@ -121,6 +121,9 @@
     font-weight: 700;
     color: var(--text-dark);
     margin-bottom: 0.4rem;
+      @media (max-width: 768px) {
+        font-size: 16px;
+      }
   }
 
   .meta-row {

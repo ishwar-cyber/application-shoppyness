@@ -3,10 +3,11 @@ import { Category } from '../../commons/models/product.model';
 import { HomeService } from '../../services/home';
 import { CommonModule, ViewportScroller } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { Loader } from '../../components/loader/loader';
 
 @Component({
   selector: 'app-categories',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, Loader],
   templateUrl: './categories.html',
   styleUrl: './categories.scss'
 })

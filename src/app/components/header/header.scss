@@ -551,4 +551,58 @@
   image-rendering: -webkit-optimize-contrast;
 }
 
+/* ===== Header Root ===== */
+.main-header {
+  width: 100%;
+}
 
+/* Desktop visible by default */
+.header-desktop {
+  display: block;
+}
+
+.header-mobile,
+.mobile-bottom-nav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+
+  /* Hide desktop */
+  .header-desktop {
+    display: none !important;
+  }
+
+  /* Show mobile */
+  .header-mobile {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .mobile-bottom-nav {
+    display: flex;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+
+  .header-desktop {
+    display: block;
+  }
+
+  .header-mobile,
+  .mobile-bottom-nav {
+    display: none;
+  }
+}
+
+body {
+  padding-top: 92px; // desktop header height
+}
+
+@media (max-width: 768px) {
+  body {
+    padding-top: 56px; // mobile header height
+    padding-bottom: 60px; // bottom nav
+  }
+}
