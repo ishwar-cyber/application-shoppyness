@@ -1,5 +1,13 @@
 import { CommonModule, ViewportScroller } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  OnInit,
+  OnDestroy,
+  signal,
+  computed
+} from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 import { Seo } from '../../services/seo';
 import { Auth } from '../../services/auth';
@@ -8,13 +16,6 @@ import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Loader } from '../../components/loader/loader';
 
-interface CartItemResponse {
-  productId: string,
-  image: string,
-  name: string,
-  quantity: number,
-  price: number
-}
 @Component({
   selector: 'app-cart',
   imports: [CommonModule, RouterModule, Loader, FormsModule],
@@ -22,123 +23,106 @@ interface CartItemResponse {
   styleUrl: './cart.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Cart implements OnInit{
+export class Cart implements OnInit, OnDestroy {
 
   private readonly destroy$ = new Subject<void>();
-  
-  // Cart items and loading state
-  cartItems = signal<any[]>([]);
-  isLoading = signal<boolean>(true);
-  error = signal<string | null>(null);
-  
-  // Computed values - now these will be direct values from the CartResponse
-  subtotal = signal<number>(0);
-  tax = signal<number>(0);
-  shipping = signal<number>(0);
-  total = signal<number>(0);
-  isLoader =signal<boolean>(false);
-  updatingItemId: string | null = '';
+
+  // ✅ SINGLE loading source for page actions
+  isPageLoading = signal(true);
+
+  // ✅ Derived UI states (USED IN TEMPLATE)
+  loading = computed(() =>
+    this.isPageLoading() || this.cartService.isLoader()
+  );
+
+  cartItems = computed(() =>
+    this.cartService.cartItems() ?? []
+  );
+
+  isEmpty = computed(() =>
+    !this.loading() && this.cartItems().length === 0
+  );
+
+  hasItems = computed(() =>
+    !this.loading() && this.cartItems().length > 0
+  );
+
   // Services
-  private scroller = inject(ViewportScroller);
-  public cartService = inject(CartService);
+  private readonly scroller = inject(ViewportScroller);
+  public readonly cartService = inject(CartService);
   private readonly seoService = inject(Seo);
   private readonly router = inject(Router);
   private readonly authService = inject(Auth);
-  
+
   ngOnInit(): void {
-    this.scroller.scrollToPosition([0, 0]); // safe scroll
-    this.loadCartItems();
-    // Set SEO tags
+    this.scroller.scrollToPosition([0, 0]);
+
     this.seoService.updateMetaTags({
       title: 'Your Cart | Computer Shop',
-      description: 'Review and checkout your selected computer products. Secure payment and fast delivery options available.',
-      keywords: 'shopping cart, checkout, computer purchase, ecommerce',
+      description: 'Review and checkout your selected computer products.',
+      keywords: 'shopping cart, checkout, ecommerce',
       url: 'https://shoppyness.com/cart'
     });
-    
-    // Load cart items from service
 
+    this.loadCartItems();
   }
-  
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
-  
+
+  // ✅ Load cart once → update SERVICE → UI reacts
   loadCartItems(): void {
-    this.error.set(null);
-    this.cartService.loadCart().subscribe({
-        next: (response: any) => {
-          this.updateRes(response);
-          this.isLoading.set(false);
-        },
-        error: (err) => {
-          this.error.set('Failed to load cart items. Please try again.');
-          this.isLoading.set(false);
-        }
-      });
-  }
-  removeItem(id: string): void {
-    // Set updating state    
-    this.cartService.removeFromCart(id)
+    this.isPageLoading.set(true);
+
+    this.cartService.loadCart()
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (response: any) => {    
-          this.loadCartItems();
+        next: (res: any) => {
+          this.cartService.cartItems.set(res?.data?.items ?? []);
+          this.cartService.cartCount.set(res?.data?.itemCount ?? 0);
+          this.isPageLoading.set(false);
         },
-        error: (err) => {
-          console.error('Error removing cart item:', err);
-          this.updatingItemId = null;
-          // Reload cart to ensure consistency
-          this.loadCartItems();
+        error: () => {
+          this.cartService.cartItems.set([]);
+          this.isPageLoading.set(false);
         }
       });
   }
 
-  updateRes(item:any) {
-    // Update cart items and totals
-      this.cartService.cartItems.set(item?.data?.items);
-      this.cartService.cartCount.set(item?.data?.itemCount)
-  }
-  
-  clearCart(): void {
-    this.cartService.clearCart()
+  removeItem(id: string): void {
+    this.cartService.isLoader.set(true);
+
+    this.cartService.removeFromCart(id)
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (response: any) => {
-          // Update cart items and totals
-          this.loadCartItems();
-        },
-        error: (err) => {
-          console.error('Error clearing cart:', err);
-          this.updatingItemId = null;
-          // Reload cart to ensure consistency
-          this.loadCartItems();
-        }
+        next: () => this.loadCartItems(),
+        error: () => this.loadCartItems()
       });
   }
-  
- 
-  
-  
-  // Format currency for display
-  formatCurrency(value: number): string {
-    return Math.round(value).toLocaleString('en-IN');
-  }
-  
-  // Round to nearest integer
-  roundNumber(value: number): number {
-    return Math.round(value);
+
+  clearCart(): void {
+    this.cartService.isLoader.set(true);
+
+    this.cartService.clearCart()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {this.loadCartItems(); this.cartService.isLoader.set(false);},
+        error: () => this.loadCartItems()
+      });
   }
 
   checkout(): void {
-    this.isLoader.set(true);
+    this.cartService.isLoader.set(true);
+
     if (!this.authService.isLoggedIn()) {
-      
       this.router.navigate(['/login']);
-      this.isLoader.set(false);
+      this.cartService.isLoader.set(false);
       return;
     }
-    this.router.navigate(['/checkout']);
-    this.isLoader.set(false);
 
+    this.router.navigate(['/checkout']);
+    this.cartService.isLoader.set(false);
   }
 }

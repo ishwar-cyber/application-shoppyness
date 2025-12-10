@@ -1,61 +1,63 @@
 <div class="cart-desktop">
 
-  <!-- LOADING -->
-  @if (isLoading()) {
+  <!-- ✅ LOADING / SKELETON -->
+  @if (loading()) {
+
     <div class="cart-skeleton">
 
-  <!-- LEFT SIDE -->
-  <div class="cart-left">
-    <h2 class="page-title skeleton skeleton-text"></h2>
+      <!-- LEFT: ITEMS -->
+      <section class="cart-skeleton-items">
 
-    @for (i of [1,2,3]; track i) {
-      <div class="cart-item-skeleton">
-        <div class="details">
-          <div class="skeleton skeleton-title"></div>
-          <div class="skeleton skeleton-price"></div>
+        <div class="sk sk-title"></div>
 
-          <div class="qty-row">
-            <div class="skeleton skeleton-btn"></div>
-            <div class="skeleton skeleton-qty"></div>
-            <div class="skeleton skeleton-btn"></div>
+        @for (i of [1,2,3]; track i) {
+          <article class="cart-skeleton-item">
+
+            <div class="sk sk-img"></div>
+
+            <div class="item-info">
+              <div class="sk sk-name"></div>
+              <div class="sk sk-meta"></div>
+              <div class="sk sk-price"></div>
+
+              <div class="qty-skeleton">
+                <div class="sk sk-btn"></div>
+                <div class="sk sk-qty"></div>
+                <div class="sk sk-btn"></div>
+              </div>
+
+              <div class="sk sk-remove"></div>
+            </div>
+
+          </article>
+        }
+
+      </section>
+
+      <!-- RIGHT: SUMMARY -->
+      <aside class="cart-skeleton-summary">
+        <div class="sk sk-summary-title"></div>
+
+        @for (i of [1,2,3]; track i) {
+          <div class="summary-row">
+            <div class="sk sk-line"></div>
+            <div class="sk sk-value"></div>
           </div>
+        }
 
-          <div class="skeleton skeleton-remove"></div>
+        <div class="summary-row total">
+          <div class="sk sk-line"></div>
+          <div class="sk sk-value"></div>
         </div>
-      </div>
-    }
-  </div>
 
-  <!-- RIGHT SIDE -->
-  <div class="cart-right">
-    <div class="summary-box">
-      <div class="skeleton skeleton-heading"></div>
+        <div class="sk sk-checkout"></div>
+      </aside>
 
-      <div class="row">
-        <div class="skeleton skeleton-line"></div>
-        <div class="skeleton skeleton-line small"></div>
-      </div>
-
-      <div class="row">
-        <div class="skeleton skeleton-line"></div>
-        <div class="skeleton skeleton-line small"></div>
-      </div>
-
-      <div class="row total">
-        <div class="skeleton skeleton-line"></div>
-        <div class="skeleton skeleton-line small"></div>
-      </div>
-
-      <div class="skeleton skeleton-button"></div>
     </div>
-  </div>
-
-</div>
-
   }
 
-  <!-- EMPTY -->
-  @if (!isLoading() && (!cartService.cartItems() || cartService.cartItems()?.length === 0)) {
+  <!-- ✅ EMPTY CART -->
+  @if (isEmpty()) {
     <div class="empty-cart-modern">
       <div class="empty-box">
         <img src="assets/empty-cart.svg" class="empty-img" />
@@ -70,43 +72,47 @@
     </div>
   }
 
-  <!-- CART -->
-  @if (!isLoading() && cartService.cartItems() && cartService.cartItems()!.length > 0) {
+  <!-- ✅ CART DATA -->
+  @if (hasItems()) {
 
     <div class="cart-left">
       <h2 class="page-title">Shopping Cart</h2>
 
-      @for (item of cartService.cartItems()!; track item._id) {
+      @for (item of cartItems(); track item._id) {
         <div class="cart-item-modern">
 
           <div class="details">
             <div class="product">
-                <h3 class="name">{{ item.name }}</h3>
-                <p class="price">₹{{ item.price }}</p>
-            </div>
-            <div class="qty_remove">
-                <div class="qty-row">
-              <button class="qty-btn"
-                (click)="cartService.updateQuantity(item._id, item.quantity - 1)">
-                -
-              </button>
-              <span class="qty">{{ item.quantity }}</span>
-              <button class="qty-btn"
-                (click)="cartService.updateQuantity(item._id, item.quantity + 1)">
-                +
-              </button>
+              <h3 class="name">{{ item.name }}</h3>
+              <p class="price">₹{{ item.price }}</p>
             </div>
 
-            <button class="remove-btn" (click)="removeItem(item._id)">
-              <i class="bi bi-trash"></i> Remove
-            </button>
+            <div class="qty_remove">
+              <div class="qty-row">
+                <button
+                  class="qty-btn"
+                  (click)="cartService.updateQuantity(item._id, item.quantity - 1)"
+                  [disabled]="item.quantity === 1">
+                  -
+                </button>
+
+                <span class="qty">{{ item.quantity }}</span>
+
+                <button
+                  class="qty-btn"
+                  (click)="cartService.updateQuantity(item._id, item.quantity + 1)">
+                  +
+                </button>
+              </div>
+
+              <button class="remove-btn" (click)="removeItem(item._id)">
+                <i class="bi bi-trash"></i> Remove
+              </button>
             </div>
-          
           </div>
 
         </div>
       }
-
     </div>
 
     <!-- SUMMARY -->
@@ -140,11 +146,11 @@
 
       </div>
     </div>
-
   }
 
 </div>
 
-@if(cartService.isLoader() || isLoader()){
-  <app-loader/>
+<!-- ✅ GLOBAL LOADER (API / ACTIONS) -->
+@if (cartService.isLoader()) {
+  <app-loader />
 }
