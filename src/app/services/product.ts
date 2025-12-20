@@ -9,7 +9,7 @@ import { of } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class Product {
+export class ProductService {
   URL = environment.apiUrl;
   private readonly http = inject(HttpClient);
   private readonly state = inject(TransferState);

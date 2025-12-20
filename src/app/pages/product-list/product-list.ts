@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 
 import { Seo } from '../../services/seo';
 import { CartService } from '../../services/cart';
-import { Product } from '../../services/product';
+import { ProductService } from '../../services/product';
 import { HomeService } from '../../services/home';
 import { ProductModel } from '../../commons/models/product.model';
 import { forkJoin } from 'rxjs';
@@ -65,7 +65,7 @@ export class ProductList implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   public  readonly cartService = inject(CartService);
-  private readonly productService = inject(Product);
+  private readonly productService = inject(ProductService);
   private readonly homeService = inject(HomeService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly scroller = inject(ViewportScroller);

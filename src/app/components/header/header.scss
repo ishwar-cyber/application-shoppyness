@@ -606,3 +606,78 @@ body {
     padding-bottom: 60px; // bottom nav
   }
 }
+/* ===============================
+   LOCATION – DESKTOP
+================================ */
+.header-location {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 16px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: #f7f7f7;
+  cursor: pointer;
+  white-space: nowrap;
+
+  i {
+    font-size: 16px;
+    color: #ff4d4f;
+  }
+
+  .location-text {
+    font-size: 13px;
+    color: #333;
+
+    strong {
+      font-weight: 600;
+      margin-left: 2px;
+    }
+  }
+
+  &:hover {
+    background: #eee;
+  }
+}
+
+/* ===============================
+   LOCATION – MOBILE
+================================ */
+.mobile-location {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: #f7f7f7;
+  font-size: 12px;
+  max-width: 120px;
+  overflow: hidden;
+
+  i {
+    font-size: 14px;
+    color: #ff4d4f;
+  }
+
+  span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
+  }
+}
+
+/* ===============================
+   RESPONSIVE SAFETY
+================================ */
+@media (max-width: 768px) {
+  .header-location {
+    display: none;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-location {
+    display: none;
+  }
+}

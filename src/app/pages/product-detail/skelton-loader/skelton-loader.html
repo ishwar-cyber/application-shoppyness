@@ -1,0 +1,101 @@
+
+<div class="product-page skeleton-page">
+    <!-- Breadcrumb Skeleton -->
+    <div class="skeleton skeleton-breadcrumb shimmer"></div>
+
+    <div class="product-layout">
+
+      <!-- LEFT: GALLERY -->
+      <section class="gallery">
+
+        <div class="skeleton-thumb-row">
+          @for (i of [1,2,3,4]; track $index) {
+            <div class="skeleton skeleton-thumb shimmer"></div>
+          }
+        </div>
+
+        <div class="skeleton skeleton-main-image shimmer"></div>
+
+      </section>
+
+      <!-- RIGHT: INFO -->
+      <section class="info">
+
+        <div class="skeleton skeleton-title shimmer"></div>
+
+        <div class="meta-row">
+          <div class="skeleton skeleton-rating shimmer"></div>
+          <div class="skeleton skeleton-sku shimmer"></div>
+        </div>
+
+        <!-- Variant chips -->
+        <div class="skeleton-variants">
+          @for (i of [1,2,3]; track $index) {
+            <div class="skeleton skeleton-chip shimmer"></div>
+          }
+        </div>
+
+        <!-- Price -->
+        <div class="price-box">
+          <div class="skeleton skeleton-price shimmer"></div>
+          <div class="skeleton skeleton-stock shimmer"></div>
+        </div>
+
+        <!-- Qty + Button -->
+        <div class="qty-actions">
+          <div class="skeleton skeleton-qty shimmer"></div>
+          <div class="skeleton skeleton-btn shimmer"></div>
+        </div>
+
+        <!-- Highlights -->
+        <div class="card highlights">
+          <div class="skeleton skeleton-subtitle shimmer"></div>
+          @for (i of [1,2,3]; track $index) {
+            <div class="skeleton skeleton-line shimmer"></div>
+          }
+        </div>
+
+        <!-- Delivery -->
+        <div class="card delivery">
+          <div class="skeleton skeleton-subtitle shimmer"></div>
+          <div class="skeleton skeleton-line shimmer"></div>
+        </div>
+
+      </section>
+
+    </div>
+
+    <!-- TABS -->
+    <div class="product-tabs-container">
+
+      <div class="tabs-header">
+        @for (i of [1,2,3]; track $index) {
+          <div class="skeleton skeleton-tab shimmer"></div>
+        }
+      </div>
+
+      <div class="tabs-content">
+        @for (i of [1,2,3,4]; track $index) {
+          <div class="skeleton skeleton-line shimmer"></div>
+        }
+      </div>
+
+    </div>
+
+    <!-- RELATED PRODUCTS -->
+    <section class="related">
+
+      <div class="related-header">
+        <div class="skeleton skeleton-section-title shimmer"></div>
+      </div>
+
+      <div class="related-row">
+        @for (i of [1,2,3,4]; track $index) {
+          <div class="skeleton skeleton-related-card shimmer"></div>
+        }
+      </div>
+
+    </section>
+
+</div>
+

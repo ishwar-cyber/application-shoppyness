@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { Product } from '../../services/product';
+import { ProductService } from '../../services/product';
 @Component({
   selector: 'app-search',
   imports: [CommonModule, FormsModule,RouterModule],
@@ -14,7 +14,7 @@ export class Search {
   isSearchFocused =signal<boolean>(false);
   filteredProducts = signal<any>([]);
   private readonly router = inject(Router);
-  private readonly product = inject(Product);
+  private readonly product = inject(ProductService);
 
     // Search functionality
   onSearchInput(): void {

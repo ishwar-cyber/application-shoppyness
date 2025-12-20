@@ -4,7 +4,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
-import { Product } from '../../services/product';
+import { ProductService } from '../../services/product';
 import { Seo } from '../../services/seo';
 import { CommonModule, isPlatformBrowser, ViewportScroller } from '@angular/common';
 import { CartService } from '../../services/cart';
@@ -29,7 +29,7 @@ export class ProductDetail implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly seoService = inject(Seo);
-  private readonly productService = inject(Product);
+  private readonly productService = inject(ProductService);
   public cartService = inject(CartService);
   private scroller = inject(ViewportScroller);
   private readonly platformId = inject(PLATFORM_ID);

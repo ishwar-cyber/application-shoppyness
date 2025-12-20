@@ -66,16 +66,16 @@ export class CartService {
 
   /** ✏️ Update quantity (optimistic) */
   updateQuantity(itemId: string, quantity: number) {
-  this.isLoader.set(true);
-  if (!this.isBrowser) return;
+    this.isLoader.set(true);
+    if (!this.isBrowser) return;
 
-  const oldItems = [...(this.cartItems() || [])]; // safe backup
+    const oldItems = [...(this.cartItems() || [])]; // safe backup
 
-  this.cartItems.update(items =>
-    (items || []).map(i =>
-      i._id === itemId ? { ...i, quantity } : i
-    )
-  );
+    this.cartItems.update(items =>
+      (items || []).map(i =>
+        i._id === itemId ? { ...i, quantity } : i
+      )
+    );
 
   this.http
     .put<CartResponse>(`${this.apiUrl}/update/${itemId}/quantity`, { quantity }, { withCredentials: true })

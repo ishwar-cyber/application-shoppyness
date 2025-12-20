@@ -3,7 +3,7 @@ import { Seo } from '../../services/seo';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ProductCard } from '../../components/product-card/product-card';
-import { Product } from '../../services/product';
+import { ProductService } from '../../services/product';
 import { HomeService } from '../../services/home';
 import { forkJoin } from 'rxjs';
 interface Category {
@@ -47,7 +47,7 @@ export class Home implements OnInit{
   currentSlide = signal(0);
 
   autoSlideInterval: any;
-  private readonly product = inject(Product);
+  private readonly product = inject(ProductService);
   private readonly home = inject(HomeService)
   @ViewChild('scrollContainer') scrollContainer!: ElementRef;
   constructor() {}

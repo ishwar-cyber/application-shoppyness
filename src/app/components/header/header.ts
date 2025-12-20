@@ -20,9 +20,10 @@ import {
 } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Auth } from '../../services/auth';
-import { Product } from '../../services/product';
+import { ProductService } from '../../services/product';
 import { CartService } from '../../services/cart';
 import { HomeService } from '../../services/home';
+import { Locatins } from '../../services/locatins';
 
 @Component({
   selector: 'app-header',
@@ -54,22 +55,19 @@ export class Header {
   // Inject services
   private readonly router = inject(Router);
   public readonly authService = inject(Auth);
-  private readonly productService = inject(Product);
+  private readonly productService = inject(ProductService);
   private readonly cartService = inject(CartService);
   private readonly homeService = inject(HomeService);
   private readonly platformId = inject(PLATFORM_ID);
 
+  public readonly location = inject(Locatins);
   constructor() {
-
-    // ----------------------------------
-    //  FIX: effect() inside constructor 
-    // ----------------------------------
-    // runInInjectionContext(this, () => {
-      effect(() => {
-        this.cartCount.set(this.cartService.cartCount());
-      });
-    // });
-
+    effect(() => {
+      this.cartCount.set(this.cartService.cartCount());
+    });
+    effect(()=>{
+      console.log('pincode',this.location.locationData());
+    })
     // router menu update
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
@@ -83,6 +81,7 @@ export class Header {
 
   ngOnInit(): void {
     // Enable browser mode
+     console.log('pincode',this.location.getCurrentLocation());
     this.isBrowser.set(isPlatformBrowser(this.platformId));
     if (this.isBrowser()) {
     //   document.addEventListener('click', (e: any) => {

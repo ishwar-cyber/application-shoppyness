@@ -1,16 +1,9 @@
-import { CommonModule, ViewportScroller, isPlatformBrowser } from '@angular/common';
-import { Component, HostListener, inject, PLATFORM_ID, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router, RouterLink, RouterModule } from '@angular/router';
-import { map, forkJoin } from 'rxjs';
-import { ProductModel } from '../../commons/models/product.model';
-import { CartService } from '../../services/cart';
-import { HomeService } from '../../services/home';
-import { Product } from '../../services/product';
-import { Seo } from '../../services/seo';
-import { FormsModule } from '@angular/forms';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, Inject, inject, PLATFORM_ID, signal } from '@angular/core';
 import { ProductList } from '../product-list/product-list';
-
+import { Store } from '@ngrx/store';
+import { selectAllProducts, selectProductLoading } from '../../store/products/products.selectors';
+import { loadProducts } from '../../store/products/products.actions';
 @Component({
   selector: 'app-all-products',
   standalone: true,
@@ -22,7 +15,12 @@ export class AllProducts {
   isBrowser = signal<boolean>(false);
   private readonly platformId = inject(PLATFORM_ID);
   
+  private readonly store = inject(Store);
+  product = this.store.select(selectAllProducts);
+  loading = this.store.select(selectProductLoading);
+
   ngOnInit(): void {
+    this.store.dispatch(loadProducts())
     this.isBrowser.set(isPlatformBrowser(this.platformId));
     if(this.isBrowser()){
       sessionStorage.setItem('mode', 'external');
