@@ -31,10 +31,6 @@ const angularApp = new AngularNodeAppEngine();
 /**
  * Serve static files from /browser
  */
-app.use((req, res, next)=>{
-  res.setHeader('Cache-Control','no-store'),
-  next();
-})
 app.use(
   express.static(browserDistFolder, {
     maxAge: 0,
