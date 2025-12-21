@@ -3,7 +3,8 @@
     <!-- =============================
          SIDEBAR (Desktop + Drawer)
     ============================== -->
-    <aside 
+    @if(isLoading()){
+        <aside 
       class="sidebar" 
       [class.open]="isFilterDrawerOpen()"
       [class.mobile]="isMobileView()">
@@ -68,6 +69,8 @@
 
       <button class="reset-btn" (click)="resetFilters()">Reset</button>
     </aside>
+    }
+  
     <!-- =============================
          PRODUCT LIST AREA
     ============================== -->
@@ -173,6 +176,8 @@
                   <button class="btn-primary btn-sm">View</button>
                 </div>
               </div>
+            } @empty {
+              <p class="no-data">No products found.</p>
             }
           </div>
         }
