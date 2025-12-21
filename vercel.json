@@ -1,5 +1,13 @@
 {
+  "version": 2,
+  "public":true,
+  "name": "application-shoppyness",
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ]
+    { "source": "/(.*)", "destination": "/api" }
+  ],
+  "function": {
+    "api/index.js":{
+      "includeFiles": "dist/application-shoppyness/**"
+    }
+  }
 }

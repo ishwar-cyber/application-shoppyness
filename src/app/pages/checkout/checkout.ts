@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, computed, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CartService } from '../../services/cart';
@@ -41,6 +41,7 @@ export class Checkout implements OnInit{
   private readonly checkoutService = inject(CheckoutService);
   private readonly paymentService = inject(PaymentService)
   private readonly router = inject(Router);
+  public platformId = inject(PLATFORM_ID);
   addressForm!: FormGroup;
   // loader state
   isPlacingOrder = signal<boolean>(false);
@@ -124,6 +125,7 @@ export class Checkout implements OnInit{
   }
 
   async pay() {
+    if (!isPlatformBrowser(this.platformId)) return;
     this.isPlacingOrder.set(true);
     try {
       /** ✅ Step 1: Create order */
