@@ -53,7 +53,6 @@ export class OrderDetails implements OnInit {
   getOrderForTracking(userId: string, orderId: string) {
     this.profileService.getOrderById(userId, orderId).subscribe((order: any) => {
       if (order) {
-        console.log('order ', order);
         this.isCancelledFlag.set(order.payload?.orderStatus.toLowerCase() === 'cancelled' ?  false : true)
         this.ORDER_STEPS.set(order?.payload?.tracking);
         this.orderId.set(order?.payload?.orderNumber || '');

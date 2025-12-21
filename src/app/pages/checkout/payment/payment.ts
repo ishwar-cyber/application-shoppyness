@@ -43,8 +43,6 @@ export class Payment {
       await cf.checkout({
         paymentSessionId: order.payment_session_id,
         onSuccess: async (data: any) => {
-          console.log("Payment Success:", data);
-
           await this.http
             .post(`${environment.apiUrl}/payment/verify`, { orderId: data.order.order_id })
             .toPromise();
@@ -55,8 +53,6 @@ export class Payment {
         },
 
         onFailure: (err: any) => {
-          console.log("Payment Failed:", err);
-
           this.router.navigate(['/payment-failed'], {
             queryParams: { reason: err.reason }
           });

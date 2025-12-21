@@ -21,7 +21,6 @@ export class CategoryProduct {
       sessionStorage.setItem('mode', 'category');
     }
     this.route.paramMap.subscribe(params => {
-      console.log('params', params);
       const slug = params.get('catSlug') || '';
       this.apiParams = { slug };
     });

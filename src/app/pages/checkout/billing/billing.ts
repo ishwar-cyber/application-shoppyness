@@ -54,8 +54,6 @@ export class Billing implements OnInit {
 
   getUserData() {
     const userId = sessionStorage.getItem('userId');
-    console.log('user idf', userId);
-    
     if (userId) {
       this.checkoutService.getUserData(userId).subscribe({
         next: (response: any) => {
@@ -99,7 +97,6 @@ export class Billing implements OnInit {
     } else {
       this.checkoutService.updateAddress(userId, { address: newAddr }).subscribe({
         next: () => {
-          console.log('Address updated successfully');
           this.getUserData();
         },
         error: (err) => {

@@ -65,9 +65,6 @@ export class Header {
     effect(() => {
       this.cartCount.set(this.cartService.cartCount());
     });
-    effect(()=>{
-      console.log('pincode',this.location.locationData());
-    })
     // router menu update
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
@@ -81,7 +78,6 @@ export class Header {
 
   ngOnInit(): void {
     // Enable browser mode
-     console.log('pincode',this.location.getCurrentLocation());
     this.isBrowser.set(isPlatformBrowser(this.platformId));
     if (this.isBrowser()) {
     //   document.addEventListener('click', (e: any) => {
@@ -93,8 +89,6 @@ export class Header {
       this.userName.set(sessionStorage.getItem('userName') || '');
     }
     this.loadCategories();
-
-    
   }
 
   // ----------------------------------
@@ -143,6 +137,7 @@ export class Header {
   // Bottom Menu Switcher
   // ----------------------------------
   selectBottomMenu(menu: string) {
+    this.router.navigate([`/${menu}`]);
     this.selectedBottomMenu.set(menu);
   }
   // ----------------------------------

@@ -84,11 +84,6 @@ export class ProductList implements OnInit {
   ngOnChanges(changes: SimpleChanges) {
     // If mode is 'external' and products are provided
     this.apiParams = changes?.['apiParams'] ? changes?.['apiParams']['currentValue'] : this.mode;
-    // console.log('changes' , changes?.['apiParams']['currentValue']);
-    //     if (this.mode === 'external' && this.products) {  
-    //   this.prepareProductList(this.products);
-    //   this.isLoading.set(false);
-    // }
     this.isBrowser.set(isPlatformBrowser(this.platformId));
     if(this.isBrowser()){
       this.mode = sessionStorage.getItem('mode') as any || this.mode;
@@ -143,9 +138,7 @@ export class ProductList implements OnInit {
     }
 
     // SUBCATEGORY
-    if (this.mode === 'subcategory') {
-      console.log('sub category', this.apiParams);
-      
+    if (this.mode === 'subcategory') {   
       this.subCategorySlug.set(this.apiParams.slug || '');
       this.loadSubCategoryProducts(this.apiParams);
       return;

@@ -23,14 +23,8 @@ export class Locatins {
     effect(async () => {
       const lat = this.lat();
       const lng = this.lng();
-
       if (lat && lng) {
-        console.log('this.reverseGeocode(lat, lng)', await this.reverseGeocode(lat, lng));
-        
        this.locationData.set(await this.reverseGeocode(lat, lng));
-
-       console.log('this.location', this.locationData());
-       
       }
     });
   }
@@ -73,8 +67,6 @@ export class Locatins {
   );
 
   const data = await res.json();
-  console.log('datrrrrrr', data);
-  
   return {
     area: data.locality || data.subLocality || '',
     city: data.city || data.principalSubdivision || '',

@@ -43,7 +43,7 @@ app.use(
  * Handle all other requests by rendering the Angular application.
  */
 app.use((req, res, next) => {
-  console.log(`[ssr] ${req.method} ${req.originalUrl}`);
+  // console.log(`[ssr] ${req.method} ${req.originalUrl}`);
 
   return angularApp
     .handle(req)

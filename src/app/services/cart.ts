@@ -166,11 +166,6 @@ export class CartService {
   /** 📌 Helper: update signals */
   private updateSignals(res: CartResponse) {
     const data = res.data;
-    console.log('data for cst');
-    
-    // data.items.reduce((total, item) => {
-    //   return total +  100 * item;
-    // }, 0);
     this.cartItems.set(data?.items || []);
     this.cartCount.set(data?.itemCount ?? 0);
     this.subTotal.set(data?.subTotal ?? 0);

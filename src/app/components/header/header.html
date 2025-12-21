@@ -15,8 +15,8 @@
       <div class="header-location">
         <i class="bi bi-geo-alt-fill"></i>
         <span class="location-text">
-          Deliver to
-          <strong>{{ location.locationData().area || 'Select' }}</strong>
+          Current to
+          <strong>{{ location.locationData().city || 'Select' }}</strong>
         </span>
       </div>
 
@@ -111,7 +111,6 @@
 
         <!-- CART -->
         <div class="action-item cart"
-             routerLink="/cart"
              (click)="selectBottomMenu('cart')">
           <button class="btn-ghost">
             <i class="bi bi-cart3"></i>
@@ -174,7 +173,7 @@
       <!-- 📍 LOCATION (MOBILE) -->
       <div class="mobile-location">
         <i class="bi bi-geo-alt-fill"></i>
-        <span>{{ location.city() || 'select' }}</span>
+        <span>{{ location.locationData().city || 'select' }}</span>
       </div>
 
       <div class="mobile-actions">
@@ -229,7 +228,7 @@
   <nav class="mobile-bottom-nav">
     <button class="bottom-item"
             [class.active]="selectedBottomMenu() === 'home'"
-            routerLink="/"
+            
             (click)="selectBottomMenu('home')">
       <i class="bi bi-house-door"></i>
       <span>Home</span>
@@ -237,7 +236,7 @@
 
     <button class="bottom-item"
             [class.active]="selectedBottomMenu() === 'categories'"
-            routerLink="/categories"
+            
             (click)="selectBottomMenu('categories')">
       <i class="bi bi-grid"></i>
       <span>Categories</span>
@@ -245,7 +244,7 @@
 
     <button class="bottom-item"
             [class.active]="selectedBottomMenu() === 'products'"
-            routerLink="/products"
+            
             (click)="selectBottomMenu('products')">
       <i class="bi bi-grid"></i>
       <span>Products</span>
@@ -253,7 +252,7 @@
 
     <button class="bottom-item"
             [class.active]="selectedBottomMenu() === 'my-account'"
-            routerLink="/my-account"
+            
             (click)="selectBottomMenu('my-account')">
       <i class="bi bi-person"></i>
       <span>Account</span>

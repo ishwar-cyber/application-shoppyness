@@ -23,8 +23,6 @@ export class SubCategoryProduct {
     sessionStorage.setItem('mode', 'subcategory');
   }
     this.route.paramMap.subscribe(params => {
-      console.log('paramssss', params);
-      
       const subSlug = params.get('subSlug') || '';
       const catSlug = params.get('slug') || '';
       this.apiParams = { subSlug, catSlug };
