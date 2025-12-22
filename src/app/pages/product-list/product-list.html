@@ -3,7 +3,7 @@
     <!-- =============================
          SIDEBAR (Desktop + Drawer)
     ============================== -->
-    @if(isLoading()){
+    @if(!isLoading()){
         <aside 
       class="sidebar" 
       [class.open]="isFilterDrawerOpen()"
@@ -214,3 +214,4 @@
     </section>
   </div>
 </div>
+
