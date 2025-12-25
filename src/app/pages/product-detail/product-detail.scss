@@ -676,10 +676,120 @@
     gap: 0.5rem;
   }
   .tab-btn {
-    padding: 0.6rem 1rem;
+    padding: 0.6rem 0.5rem;
     font-size: 14px;
   }
   .spec-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ===============================
+   RELATED SECTION
+================================ */
+.related {
+  margin-top: 2rem;
+  padding: 0 0.5rem;
+}
+
+/* HEADER */
+.related-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+
+  .section-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+  }
+
+  .scroll-btns {
+    display: flex;
+    gap: 0.4rem;
+
+    button {
+      border: none;
+      background: #f2f2f2;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: 0.2s;
+
+      &:hover {
+        background: #e5e5e5;
+      }
+
+      i {
+        font-size: 1.1rem;
+      }
+    }
+  }
+}
+
+/* ===============================
+   PRODUCTS ROW
+================================ */
+.related-row {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 0.5rem;
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ===============================
+   PRODUCT CARD SIZE
+================================ */
+.product-card {
+  flex: 0 0 auto;
+  width: 160px;
+  scroll-snap-align: start;
+  transition: transform 0.25s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+  }
+}
+
+/* ===============================
+   TABLET VIEW
+================================ */
+@media (min-width: 768px) {
+  .related-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.2rem;
+    overflow: hidden;
+  }
+.product-card {
+    width: 380px;
+  }
+  .scroll-btns {
+    display: none;
+  }
+}
+
+/* ===============================
+   DESKTOP VIEW
+================================ */
+@media (min-width: 1024px) {
+  .related-row {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .section-title {
+    font-size: 1.5rem;
   }
 }
