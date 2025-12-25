@@ -45,7 +45,11 @@
           }
 
           <div class="main-image">
-            <img [src]="selectedImage" [alt]="p.name" itemprop="image" />
+            @if (selectedVariant() !== null && selectedVariant()?.image?.[0]?.url) {
+              <img [src]="selectedVariant()?.image?.[0]?.url" [alt]="p.name" itemprop="image" />
+            } @else {
+              <img [src]="selectedImage" [alt]="p.name" itemprop="image" />
+            }
 
             @if (p.images?.length > 1) {
               <button class="nav-btn prev" type="button" (click)="prevImage()">
@@ -98,7 +102,7 @@
                   <button type="button"
                           class="variant-chip" [class.active]="selectedVariant()?.['_id'] === v._id"
                           (click)="selectVariant(v)">
-                    {{ getVariantName(p, v) }}
+                    {{ v.name }}
                   </button>
                 }
               </div>

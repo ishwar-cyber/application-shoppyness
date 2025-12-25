@@ -1,5 +1,6 @@
 import {
   ChangeDetectionStrategy,Component,
+  effect,
   ElementRef, inject, OnDestroy, OnInit, PLATFORM_ID, signal,ViewChild
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -46,13 +47,18 @@ export class ProductDetail implements OnInit, OnDestroy {
   quantity = signal<number>(1);
   addedToCartMessage = signal<string>('');
   selectedImageIndex = signal<number>(0);
-
+  productName = signal<string>('')
   // New: description + tabs
   sanitizedDescription = signal<SafeHtml | null>(null);
   activeTab = signal<'description' | 'specs' | 'reviews'>('description');
 
   @ViewChild('relatedProductsScroll', { static: false }) relatedProductsScroll!: ElementRef<HTMLElement> | undefined;
-
+  
+  constructor(){
+    // effect(()=>{
+    //   this.productName.set(this.product)
+    // })
+  }
   ngOnInit(): void {
     this.loading.set(true);
     this.scroller.scrollToPosition([0, 0]); // safe scroll    
@@ -77,6 +83,10 @@ export class ProductDetail implements OnInit, OnDestroy {
       next: (res: ResponsePayload) => {
         this.loading.set(false);
         this.product.set(res.data);
+
+        // this.productName.set(res.data.)
+        // this.product.variants
+        // this.productName.set()
         this.selectedImageIndex.set(0);
 
         // description HTML
@@ -96,7 +106,7 @@ export class ProductDetail implements OnInit, OnDestroy {
   }
 
   // ✅ Helper computed signal to generate display names
-  getVariantName = (product: any, variant: any): string => {
+  getVariantName = (product?: any, variant?: any): string => {
     if (!product) return '';
     if (!variant || !variant.name) return product?.name || '';
     const variantName = Array.isArray(variant.name) ? variant.name.join(' ') : variant.name;
