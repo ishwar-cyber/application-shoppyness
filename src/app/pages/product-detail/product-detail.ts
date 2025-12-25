@@ -1,5 +1,6 @@
 import {
   ChangeDetectionStrategy,Component,
+  computed,
   effect,
   ElementRef, inject, OnDestroy, OnInit, PLATFORM_ID, signal,ViewChild
 } from '@angular/core';
@@ -53,7 +54,7 @@ export class ProductDetail implements OnInit, OnDestroy {
   activeTab = signal<'description' | 'specs' | 'reviews'>('description');
 
   @ViewChild('relatedProductsScroll', { static: false }) relatedProductsScroll!: ElementRef<HTMLElement> | undefined;
-  
+
   constructor(){
     // effect(()=>{
     //   this.productName.set(this.product)
@@ -83,7 +84,7 @@ export class ProductDetail implements OnInit, OnDestroy {
       next: (res: ResponsePayload) => {
         this.loading.set(false);
         this.product.set(res.data);
-
+        this.productName.set(this.product().variants[0].name)
         // this.productName.set(res.data.)
         // this.product.variants
         // this.productName.set()
@@ -216,6 +217,7 @@ export class ProductDetail implements OnInit, OnDestroy {
 
   // Variant selection
   selectVariant(variant: Variant) {
+    this.productName.set(variant.name);
     this.selectedVariant.set(variant);
     const images = this.product()?.images ?? [];
     if (variant?.image && Array.isArray(images) && images.length > 0) {

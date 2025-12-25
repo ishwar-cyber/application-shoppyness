@@ -45,11 +45,7 @@
           }
 
           <div class="main-image">
-            @if (selectedVariant() !== null && selectedVariant()?.image?.[0]?.url) {
-              <img [src]="selectedVariant()?.image?.[0]?.url" [alt]="p.name" itemprop="image" />
-            } @else {
               <img [src]="selectedImage" [alt]="p.name" itemprop="image" />
-            }
 
             @if (p.images?.length > 1) {
               <button class="nav-btn prev" type="button" (click)="prevImage()">
@@ -66,9 +62,7 @@
 
         <!-- RIGHT: INFO -->
         <section class="info" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
-
-          <h1 class="title">{{ p.name }}</h1>
-
+          <h1 class="title">{{ p.name +' '+ productName() }}</h1>
           <div class="meta-row">
             @if (p.rating) {
               <div class="rating">
