@@ -260,7 +260,7 @@
 
           <div class="related-row" #relatedProductsScroll>
             @for (rp of relatedProducts(); track rp._id) {
-              <app-product-card [product]="rp"></app-product-card>
+              <app-product-card [product]="rp" class="product-card"></app-product-card>
             }
           </div>
         </section>
