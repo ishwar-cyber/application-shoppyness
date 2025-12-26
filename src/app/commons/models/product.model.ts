@@ -42,7 +42,7 @@ export interface Variant {
   sku: string
   price: number
   stock: number
-  image?: string
+  image?: [Image]
   _id: string
 }
 

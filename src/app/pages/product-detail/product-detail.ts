@@ -56,9 +56,13 @@ export class ProductDetail implements OnInit, OnDestroy {
   @ViewChild('relatedProductsScroll', { static: false }) relatedProductsScroll!: ElementRef<HTMLElement> | undefined;
 
   constructor(){
-    // effect(()=>{
-    //   this.productName.set(this.product)
-    // })
+    effect(() => {
+        const prod = this.product();
+      if (!prod.variant) {
+        this.selectedVariant.set(null);
+    }
+  });
+
   }
   ngOnInit(): void {
     this.loading.set(true);
@@ -76,6 +80,7 @@ export class ProductDetail implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    this.selectedVariant.set(null)
   }
 
   private loadProduct(productId: string) {

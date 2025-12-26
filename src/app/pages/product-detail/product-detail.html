@@ -45,8 +45,11 @@
           }
 
           <div class="main-image">
+            @if (selectedVariant() !== null && selectedVariant()?.image?.[0]?.url) {
+              <img [src]="selectedVariant()?.image?.[0]?.url" [alt]="p.name" itemprop="image" />
+            } @else {
               <img [src]="selectedImage" [alt]="p.name" itemprop="image" />
-
+            }
             @if (p.images?.length > 1) {
               <button class="nav-btn prev" type="button" (click)="prevImage()">
                 <i class="bi bi-chevron-left"></i>
