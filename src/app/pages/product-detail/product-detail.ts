@@ -1,8 +1,8 @@
 import {
-  ChangeDetectionStrategy,Component,
+  ChangeDetectionStrategy, Component,
   computed,
   effect,
-  ElementRef, inject, OnDestroy, OnInit, PLATFORM_ID, signal,ViewChild
+  ElementRef, inject, OnDestroy, OnInit, PLATFORM_ID, signal, ViewChild
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
@@ -55,15 +55,17 @@ export class ProductDetail implements OnInit, OnDestroy {
 
   @ViewChild('relatedProductsScroll', { static: false }) relatedProductsScroll!: ElementRef<HTMLElement> | undefined;
 
-  constructor(){
+  constructor() {
     effect(() => {
+      if (this.product() !== null) {
         const prod = this.product();
-      if (!prod.variant) {
-        this.selectedVariant.set(null);
-    }
-  });
-
+        if (prod.variants.length === 0) {
+          this.selectedVariant.set(null);
+        }
+      }
+    });
   }
+
   ngOnInit(): void {
     this.loading.set(true);
     this.scroller.scrollToPosition([0, 0]); // safe scroll    
@@ -85,28 +87,29 @@ export class ProductDetail implements OnInit, OnDestroy {
 
   private loadProduct(productId: string) {
     this.loading.set(true);
+    console.log(this.loading())
     this.productService.getProductById(productId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ResponsePayload) => {
-        this.loading.set(false);
         this.product.set(res.data);
-        this.productName.set(this.product().variants[0].name)
+        this.productName.set(this.product().variants[0]?.name)
         // this.productName.set(res.data.)
         // this.product.variants
         // this.productName.set()
         this.selectedImageIndex.set(0);
 
         // description HTML
-        const desc =  res.data.description || '';
+        const desc = res.data.description || '';
         this.sanitizedDescription.set(this.sanitizer.bypassSecurityTrustHtml(desc));
 
         this.loadRelatedProducts(productId);
         this.updateSeoTags(res.data);
         this.applyVariantSelectionFromQueryOrDefault();
+        this.loading.set(false);
       },
       error: (err) => {
         console.error('Failed to fetch product:', err);
-        this.loading.set(false);
         this.error.set('Failed to load product');
+        this.loading.set(false);
       }
     });
   }
@@ -248,7 +251,7 @@ export class ProductDetail implements OnInit, OnDestroy {
       ? (this.selectedVariant()?.stock ?? 'in')
       : (product?.stock ?? 'in');
 
-    if (stock !== 'in' ) {
+    if (stock !== 'in') {
       this.addedToCartMessage.set('Selected item is out of stock.');
       setTimeout(() => this.addedToCartMessage.set(''), 3000);
       return;
@@ -304,5 +307,5 @@ export class ProductDetail implements OnInit, OnDestroy {
     return this.selectedVariant()?.stock ?? this.product()?.stock ?? 'in';
   }
 
-  
+
 }
