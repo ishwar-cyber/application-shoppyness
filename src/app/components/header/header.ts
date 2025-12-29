@@ -69,7 +69,7 @@ export class Header {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         const segment = event.urlAfterRedirects.split('/')[1];
-        this.selectedBottomMenu.set(segment || 'home');
+        this.selectedBottomMenu.set(segment ?? 'home');
 
         this.toggleUserDropdown.set(false);
       }
@@ -86,7 +86,7 @@ export class Header {
     //   }
     // });
       this.screenWidth.set(window.innerWidth);
-      this.userName.set(sessionStorage.getItem('userName') || '');
+      this.userName.set(sessionStorage.getItem('userName') ?? '');
     }
     this.loadCategories();
   }
@@ -166,7 +166,7 @@ onSearchChange() {
 
     this.productService.searchProducts(query).subscribe({
       next: (res: any) => {
-        this.searchResults.set(res || []);
+        this.searchResults.set(res ?? []);
         this.isSearchFocused.set(true);
 
       },

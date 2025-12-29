@@ -4,73 +4,111 @@
          SIDEBAR (Desktop + Drawer)
     ============================== -->
     @if(!isLoading()){
-        <aside 
-      class="sidebar" 
-      [class.open]="isFilterDrawerOpen()"
-      [class.mobile]="isMobileView()">
+      <aside class="sidebar" [class.open]="isFilterDrawerOpen()" [class.mobile]="isMobileView()">
 
-      <div class="sidebar-header">
-        <h3>Filters</h3>
+        <div class="sidebar-header">
+          <h3>Filters</h3>
 
-        @if (isMobileView()) {
-          <button class="close-btn" (click)="toggleFilterDrawer()">
-            <i class="bi bi-x-lg"></i>
-          </button>
-        }
-      </div>
+          @if (isMobileView()) {
+            <button class="close-btn" (click)="toggleFilterDrawer()">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          }
+        </div>
 
-      <!-- CATEGORY FILTER -->
-      <div class="filter-group">
-        <h4>Category</h4>
+        <!-- CATEGORY FILTER -->
+        <div class="filter-group">
+          <h4>Category</h4>
 
-      @for (cat of categories(); track cat._id) {
-        <button
-          type="button"
-          class="filter-item filter-btn" [class.active]="selectedCategories() === cat.slug"
-          (click)="toggleCategory(cat.slug)">
-          {{ cat.name }}
-        </button>
-      }
-
-      </div>
-
-      <!-- BRAND FILTER -->
-      <div class="filter-group">
-        <h4>Brand</h4>
-
-        @for (brand of brands(); track brand.id) {
+        @for (cat of categories(); track cat._id) {
           <button
             type="button"
-            class="filter-item filter-btn" [class.active]="selectedBrands() === brand.name"
-            (click)="toggleBrand(brand.name)">
-            {{ brand.name }}
+            class="filter-item filter-btn" [class.active]="selectedCategories() === cat.slug"
+            (click)="toggleCategory(cat.slug)">
+            {{ cat.name }}
           </button>
         }
-      </div>
 
-      <!-- PRICE FILTER -->
-      <div class="filter-group">
-        <h4>Price</h4>
-        <input 
-          type="range"
-          min="{{ minPrice() }}"
-          max="{{ maxPrice() }}"
-          [(ngModel)]="priceRange()[1]"
-          (change)="filterProducts()"
-        />
-        <p class="price-label">
-          ₹{{ minPrice() }} - ₹{{ priceRange()[1] }}
-        </p>
-      </div>
+        </div>
 
-      @if (isMobileView()) {
-        <button class="apply-btn" (click)="filterProducts()">Apply Filters</button>
-      }
+        <!-- BRAND FILTER -->
+        <div class="filter-group">
+          <h4>Brand</h4>
 
-      <button class="reset-btn" (click)="resetFilters()">Reset</button>
-    </aside>
+          @for (brand of brands(); track brand.id) {
+            <button
+              type="button"
+              class="filter-item filter-btn" [class.active]="selectedBrands() === brand.name"
+              (click)="toggleBrand(brand.name)">
+              {{ brand.name }}
+            </button>
+          }
+        </div>
+
+        <!-- PRICE FILTER -->
+        <div class="filter-group">
+          <h4>Price</h4>
+          <input 
+            type="range"
+            min="{{ minPrice() }}"
+            max="{{ maxPrice() }}"
+            [(ngModel)]="priceRange()[1]"
+            (change)="filterProducts()"
+          />
+          <p class="price-label">
+            ₹{{ minPrice() }} - ₹{{ priceRange()[1] }}
+          </p>
+        </div>
+
+        @if (isMobileView()) {
+          <button class="apply-btn" (click)="filterProducts()">Apply Filters</button>
+        }
+
+        <button class="reset-btn" (click)="resetFilters()">Reset</button>
+      </aside>
+    } @else {
+      <aside class="sidebar skeleton">
+
+        <!-- Header -->
+        <div class="sidebar-header">
+          <div class="skeleton-title shimmer"></div>
+          <div class="skeleton-icon shimmer"></div>
+        </div>
+
+        <!-- CATEGORY -->
+        <div class="filter-group">
+          <div class="skeleton-subtitle shimmer"></div>
+
+          <div class="skeleton-btn shimmer"></div>
+          <div class="skeleton-btn shimmer"></div>
+        </div>
+
+        <!-- BRAND -->
+        <div class="filter-group">
+          <div class="skeleton-subtitle shimmer"></div>
+
+          <div class="skeleton-btn shimmer"></div>
+          <div class="skeleton-btn shimmer"></div>
+        </div>
+
+        <!-- PRICE -->
+        <!-- <div class="filter-group">
+          <div class="skeleton-subtitle shimmer"></div>
+
+          <div class="skeleton-range shimmer"></div>
+          <div class="skeleton-price shimmer"></div>
+        </div> -->
+
+        <!-- ACTION BUTTONS -->
+        <!-- <div class="filter-actions">
+          <div class="skeleton-apply shimmer"></div>
+          <div class="skeleton-reset shimmer"></div>
+        </div> -->
+
+      </aside>
+
     }
-  
+    
     <!-- =============================
          PRODUCT LIST AREA
     ============================== -->
@@ -123,7 +161,7 @@
       @if (isLoading()) {
         @if (viewMode() === 'grid') {
           <div class="grid-view skeleton-grid">
-            @for (i of [1,2,3,4,5,6,7,8]; track $index) {
+            @for (i of [1,2,3]; track $index) {
               <div class="skeleton-card">
                 <div class="skeleton-img shimmer"></div>
                 <div class="skeleton-line shimmer w-80"></div>
@@ -135,7 +173,7 @@
         }
         @if (viewMode() === 'list') {
           <div class="list-view skeleton-list">
-            @for (i of [1,2,3,4,5]; track $index) {
+            @for (i of [1,2,3]; track $index) {
               <div class="skeleton-list-item">
                 <div class="skeleton-list-img shimmer"></div>
 

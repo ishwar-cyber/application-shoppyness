@@ -18,13 +18,13 @@
   </div>
 
   <!-- ARROWS -->
-  <button class="nav prev" (click)="prevSlide()">
+  <!-- <button class="nav prev" (click)="prevSlide()">
     <i class="bi bi-chevron-left"></i>
   </button>
 
   <button class="nav next" (click)="nextSlide()">
     <i class="bi bi-chevron-right"></i>
-  </button>
+  </button> -->
 
   <!-- DOT INDICATORS -->
   <div class="dots">
@@ -95,7 +95,9 @@
       <div class="brand-scroll">
         @for (b of brands(); track b.id ?? $index) {
           <div class="brand-item" [routerLink]="['/products', { brand: b.slug }]">
-            <img [src]="b.logo" [alt]="b.name" loading="lazy" />
+           <div class="cat-icon">
+              <i class="bi bi-grid-3x3-gap-fill"></i>
+            </div>
             <span>{{ b.name }}</span>
           </div>
         }
