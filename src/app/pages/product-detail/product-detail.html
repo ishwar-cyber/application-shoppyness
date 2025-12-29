@@ -2,11 +2,38 @@
      PRODUCT DETAIL PAGE
 ================================ -->
 @if (loading()) {
-  <div class="product-page loading-state">
-    <div class="skeleton skeleton-title"></div>
-    <div class="skeleton skeleton-main"></div>
+ <div class="product-skeleton">
+
+  <!-- LEFT: Image Section -->
+  <div class="image-section">
+    <div class="main-image shimmer"></div>
+
+    <div class="thumbnail-row">
+      <div class="thumbnail shimmer"></div>
+      <div class="thumbnail shimmer"></div>
+      <div class="thumbnail shimmer"></div>
+    </div>
   </div>
 
+  <!-- RIGHT: Product Info -->
+  <div class="info-section">
+    <div class="title shimmer"></div>
+    <div class="title short shimmer"></div>
+    <div class="meta-row">
+      <div class="meta shimmer"></div>
+      <div class="meta shimmer"></div>
+    </div>
+    <div class="price shimmer"></div>
+    <div class="stock shimmer"></div>
+    <div class="qty-row">
+      <div class="qty-btn shimmer"></div>
+      <div class="qty-input shimmer"></div>
+      <div class="qty-btn shimmer"></div>
+    </div>
+    <div class="cart-btn shimmer"></div>
+    <div class="delivery shimmer"></div>
+  </div>
+</div>
 }  @else {
   @if (product(); as p) {
     <div class="product-page glass-card" itemscope itemtype="https://schema.org/Product">
@@ -148,7 +175,7 @@
 
             <div class="actions">
               <button class="btn-primary"
-                      (click)="addToCart(p)"
+                      (click)="addToCart(p); openPopUp.set(true)"
                       [disabled]="currentStock() !== 'in' || isAddingToCart()">
                 <i class="bi bi-cart-plus"></i>
                 @if (!isAddingToCart()) { <span>Add to Cart</span> }
@@ -268,4 +295,14 @@
       }
     </div>
   }
+}
+
+@if(false) {
+<app-pop-up [isOpen]="true" (close)="openPopUp.set(false)">
+  <div class="popup-content">
+    <h2 class="popup-title">Cart Updated</h2>
+    <p class="popup-message">The item has been successfully updated in your cart.</p>
+    <!-- <button class="btn-primary" (click)="closePopUp()">Close</button> -->
+  </div>
+</app-pop-up>
 }

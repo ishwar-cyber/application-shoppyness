@@ -17,11 +17,12 @@ import { ProductReview } from '../../components/product-review/product-review';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { Loader } from "../../components/loader/loader";
+import { PopUp } from '../../components/pop-up/pop-up';
 
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, ProductCard, CheckPincode, ProductReview, Loader],
+  imports: [CommonModule, RouterLink, FormsModule, ProductCard, PopUp, CheckPincode, ProductReview, Loader],
   templateUrl: './product-detail.html',
   styleUrls: ['./product-detail.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -40,8 +41,9 @@ export class ProductDetail implements OnInit, OnDestroy {
   // signals
   product = signal<any | null>(null);
   relatedProducts = signal<any[]>([]);
-  loading = signal<boolean>(false);
+  loading = signal<boolean>(true);
   error = signal<string>('');
+  openPopUp = signal<boolean>(false);
 
   selectedVariant = signal<Variant | null>(null);
   isAddingToCart = signal<boolean>(false);
@@ -58,7 +60,7 @@ export class ProductDetail implements OnInit, OnDestroy {
   constructor(){
     effect(() => {
         const prod = this.product();
-      if (!prod.variant) {
+      if (!prod?.variants) {
         this.selectedVariant.set(null);
     }
   });
@@ -89,10 +91,7 @@ export class ProductDetail implements OnInit, OnDestroy {
       next: (res: ResponsePayload) => {
         this.loading.set(false);
         this.product.set(res.data);
-        this.productName.set(this.product().variants[0].name)
-        // this.productName.set(res.data.)
-        // this.product.variants
-        // this.productName.set()
+        this.productName.set(this.product()?.variants[0]?.name);
         this.selectedImageIndex.set(0);
 
         // description HTML

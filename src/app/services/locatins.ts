@@ -19,6 +19,7 @@ export class Locatins {
   locationData = signal<any | []>([])
 
   constructor() {
+    this.getCurrentLocation();
     // 🔁 Auto reverse-geocode when lat/lng change
     effect(async () => {
       const lat = this.lat();

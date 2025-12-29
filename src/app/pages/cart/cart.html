@@ -9,12 +9,8 @@
       <section class="cart-skeleton-items">
 
         <div class="sk sk-title"></div>
-
-        @for (i of [1,2,3]; track i) {
           <article class="cart-skeleton-item">
-
             <div class="sk sk-img"></div>
-
             <div class="item-info">
               <div class="sk sk-name"></div>
               <div class="sk sk-meta"></div>
@@ -28,22 +24,19 @@
 
               <div class="sk sk-remove"></div>
             </div>
-
           </article>
-        }
-
       </section>
 
       <!-- RIGHT: SUMMARY -->
       <aside class="cart-skeleton-summary">
         <div class="sk sk-summary-title"></div>
 
-        @for (i of [1,2,3]; track i) {
+
           <div class="summary-row">
             <div class="sk sk-line"></div>
             <div class="sk sk-value"></div>
           </div>
-        }
+        
 
         <div class="summary-row total">
           <div class="sk sk-line"></div>
@@ -57,7 +50,7 @@
   }
 
   <!-- ✅ EMPTY CART -->
-  @if (isEmpty()) {
+  @if (isEmpty() && !loading()) {
     <div class="empty-cart-modern">
       <div class="empty-box">
         <img src="assets/empty-cart.svg" class="empty-img" />

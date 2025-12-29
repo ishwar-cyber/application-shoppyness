@@ -29,10 +29,10 @@ export class Cart implements OnInit, OnDestroy {
 
   // ✅ SINGLE loading source for page actions
   isPageLoading = signal(true);
-
+ 
   // ✅ Derived UI states (USED IN TEMPLATE)
   loading = computed(() =>
-    this.isPageLoading() || this.cartService.isLoader()
+    this.isPageLoading() ?? this.cartService.isLoader()
   );
 
   cartItems = computed(() =>
