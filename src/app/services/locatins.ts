@@ -62,18 +62,21 @@ export class Locatins {
   }
 
   // ===== REVERSE GEOCODING =====
-  private async reverseGeocode(lat: number, lng: number) {
-  const res = await fetch(
-    `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`
-  );
+    private async reverseGeocode(lat: number, lng: number) {
+      if (isPlatformBrowser(this.platformId)) {
+        const res = await fetch(
+          `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`
+        );
 
-  const data = await res.json();
-  return {
-    area: data.locality || data.subLocality || '',
-    city: data.city || data.principalSubdivision || '',
-    state: data.principalSubdivision || '',
-    pincode: data.postcode || '',
-    country: data.countryName || ''
-  };
-}
+        const data = await res.json();
+        return {
+          area: data.locality || data.subLocality || '',
+          city: data.city || data.principalSubdivision || '',
+          state: data.principalSubdivision || '',
+          pincode: data.postcode || '',
+          country: data.countryName || ''
+        };
+      }
+      return null;
+    }
 }
