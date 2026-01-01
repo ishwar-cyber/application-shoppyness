@@ -63,4 +63,10 @@ export class ProductService {
   searchProducts(query: string) {
     return this.http.get(`${this.URL}/products/search?q=${query}`);
   }
+
+  checkPincode(payload: any) {
+    return this.http.post<{ serviceable: boolean }>(`${this.URL}/pincode/couriers`, payload).pipe(
+      catchError(() => of({ serviceable: false }))
+    );
+  }
 }

@@ -1,55 +1,93 @@
-<!-- Trigger Button -->
+<!-- ================= DELIVERY CHECK BUTTON ================= -->
 <div class="delivery-check">
-  <button class="btn btn-link delivery-check-btn p-0" (click)="toggleLocationPopup()">
-    <i class="bi bi-geo-alt me-1"></i> 
-    @if(!userLocation()){
-      <span>Check delivery availability</span>
+
+  <button
+    type="button"
+    class="btn btn-link delivery-check-btn p-0"
+    (click)="toggleLocationPopup()"
+  >
+    <i class="bi bi-geo-alt me-1"></i>
+
+    @if (deliveryState() === 'available') {
+      <span>Delivery to: {{ pincode() }}</span>
     } @else {
-      <span>Delivery to: {{ userLocation() }}</span>
+      <span>Check delivery availability</span>
     }
   </button>
 
-  @if(deliveryChecking()){
+  <!-- ================= STATUS BELOW BUTTON ================= -->
+
+  @if (deliveryState() === 'checking') {
     <div class="delivery-info mt-2 text-muted">
       <div class="spinner-border spinner-border-sm me-1"></div>
       Checking delivery availability...
     </div>
   }
 
-  @if(userLocation() && deliveryAvailable() && !deliveryChecking()){
+  @if (deliveryState() === 'available') {
     <div class="delivery-info mt-2 text-success">
-      <i class="bi bi-check-circle me-1"></i> Delivery available by {{ deliveryDate() }}
+      <i class="bi bi-check-circle me-1"></i>
+      Delivery available by {{ deliveryDate() }}
     </div>
   }
 
-  @if(userLocation() && !deliveryAvailable() && !deliveryChecking()){
+  @if (deliveryState() === 'unavailable') {
     <div class="delivery-info mt-2 text-danger">
-      <i class="bi bi-x-circle me-1"></i> Sorry, delivery not available
+      <i class="bi bi-x-circle me-1"></i>
+      Sorry, delivery not available
     </div>
   }
 </div>
 
-<!-- Popup Modal -->
-<div class="location-popup" [class.active]="showLocationPopup()" 
-     (click)="toggleLocationPopup()" (keydown.escape)="toggleLocationPopup()">
-  <div class="location-popup-content" (click)="$event.stopPropagation()">
+<!-- ================= LOCATION POPUP MODAL ================= -->
+<div
+  class="location-popup"
+  [class.active]="showLocationPopup()"
+  (click)="toggleLocationPopup()"
+  (keydown.escape)="toggleLocationPopup()"
+  tabindex="-1"
+>
+
+  <div
+    class="location-popup-content"
+    (click)="$event.stopPropagation()"
+  >
+
+    <!-- ========== HEADER ========== -->
     <div class="location-popup-header">
-      <h3>Check Delivery Availability</h3>
-      <button class="location-popup-close" (click)="toggleLocationPopup()">
+      <h3 class="mb-0">Check Delivery Availability</h3>
+      <button
+        type="button"
+        class="location-popup-close"
+        (click)="toggleLocationPopup()"
+      >
         <i class="bi bi-x-lg"></i>
       </button>
     </div>
 
+    <!-- ========== BODY ========== -->
     <div class="location-popup-body">
-      <p>Enter your PIN code to check delivery availability and estimated delivery time.</p>
+
+      <p class="text-muted mb-3">
+        Enter your 6-digit PIN code to check delivery availability and estimated delivery time.
+      </p>
+
+      <!-- PINCODE INPUT -->
       <div class="input-group mb-3">
-        <input type="text" class="form-control" placeholder="Enter PIN code"
-               [ngModel]="userLocation()" maxlength="6" pattern="[0-9]*"
-               (ngModelChange)="onDeliveryPincodeChange($event)">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Enter PIN code"
+          maxlength="6"
+          inputmode="numeric"
+          [ngModel]="pincode()"
+          (ngModelChange)="onDeliveryPincodeChange($event)"
+        />
       </div>
 
-      @if(deliveryChecking()){
-        <div class="delivery-result">
+      <!-- CHECKING STATE -->
+      @if (deliveryState() === 'checking') {
+        <div class="delivery-result text-muted">
           <div class="d-flex align-items-center">
             <div class="spinner-border spinner-border-sm me-2"></div>
             <span>Checking delivery availability...</span>
@@ -57,22 +95,26 @@
         </div>
       }
 
-      @if(userLocation().trim() && deliveryAvailable() && !deliveryChecking()){
-        <div class="delivery-result success">
-          <i class="bi bi-check-circle-fill me-2"></i>
+      <!-- ERROR STATE -->
+      @if (deliveryState() === 'error') {
+        <div class="delivery-result error mt-2">
+          <i class="bi bi-x-circle-fill me-2 text-danger"></i>
           <div>
-            <p class="mb-1">Delivery available to {{ userLocation() }}</p>
-            <p class="delivery-date mb-0">Estimated delivery: {{ deliveryDate() }}</p>
+            <p class="mb-1 fw-semibold">We’re sorry</p>
+            <p class="mb-0 text-muted">{{ errorMessage() }}</p>
           </div>
         </div>
       }
 
-      @if(userLocation().trim() && !deliveryAvailable() && !deliveryChecking()){
-        <div class="delivery-result error">
-          <i class="bi bi-x-circle-fill me-2"></i>
+      <!-- UNAVAILABLE STATE -->
+      @if (deliveryState() === 'unavailable') {
+        <div class="delivery-result error mt-2">
+          <i class="bi bi-x-circle-fill me-2 text-danger"></i>
           <div>
-            <p class="mb-1">We're sorry!</p>
-            <p class="mb-0">Delivery not available to {{ userLocation() }}</p>
+            <p class="mb-1 fw-semibold">Not deliverable</p>
+            <p class="mb-0 text-muted">
+              Delivery is currently unavailable for this PIN code.
+            </p>
           </div>
         </div>
       }
