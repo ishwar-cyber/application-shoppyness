@@ -116,12 +116,8 @@ export class Cart implements OnInit, OnDestroy {
   checkout(): void {
     this.cartService.isLoader.set(true);
 
-    if (!this.authService.isLoggedIn()) {
-      this.router.navigate(['/login']);
-      this.cartService.isLoader.set(false);
-      return;
-    }
-
+    // Navigate to checkout; `authGuard` will redirect to `/login` with
+    // `returnUrl` when the user is not authenticated.
     this.router.navigate(['/checkout']);
     this.cartService.isLoader.set(false);
   }

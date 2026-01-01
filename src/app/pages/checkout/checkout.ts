@@ -59,7 +59,7 @@ export class Checkout implements OnInit{
       }
       this.cartItems.set(res.data.items);
 
-      this.totalAmount.set(res.data.subTotal);
+      this.totalAmount.set(res.data.total);
       this.subTotal.set(res.data.subTotal);
       this.isLoader.set(false);
     });
