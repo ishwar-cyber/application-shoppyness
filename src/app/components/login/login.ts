@@ -6,6 +6,7 @@ import { Auth } from '../../services/auth';
 import { CookieService } from 'ngx-cookie-service';
 import { ToastrService } from 'ngx-toastr';
 import { isPlatformBrowser } from '@angular/common';
+import { catchError, EMPTY, finalize, map, of, switchMap, tap } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -22,7 +23,7 @@ export class Login implements OnInit {
 
   loginForm!: FormGroup;
   registerForm!: FormGroup;
-  returnUrl: string = '';
+  returnUrl = signal<string>('/');
 
   private formBuilder = inject(FormBuilder);
   private readonly router = inject(Router);
@@ -36,7 +37,7 @@ export class Login implements OnInit {
   ngOnInit(): void {
      this.scroller.scrollToPosition([0, 0]); // safe scroll
     this.initForms();
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+    this.returnUrl.set(this.route.snapshot.queryParams['returnUrl'] || '/');
     if (isPlatformBrowser(this.platformId)) {
       this.route.queryParams.subscribe(params => {
         if (params['mode'] === 'register') {
@@ -89,36 +90,45 @@ export class Login implements OnInit {
       password: this.loginForm.value.password
     };
 
-    this.authService.login(payload).subscribe({
-      next: (login: any) => {
+    this.authService.login(payload).pipe(
+      tap((login: any) => {
         this.authService.userName.set(login.user.username);
-        sessionStorage.setItem('userName', login.user.username)
         this.authService.isLoggedInSignal.set(true);
-           this.router.navigateByUrl(this.returnUrl);
-
-        if (isPlatformBrowser(this.platformId)) {
-          // Set auth token cookie
-          this.cookiesService.set('authToken', login.token, { path: '/', secure: true, sameSite: 'Lax' });
-          // Merge visitor cart if exists
-          const visitorId = this.cookiesService.get('visitorId');
-          if (login.success && visitorId) {
-            this.authService.mergeCartToUser({ visitorId }).subscribe(() => { });
-          }
-
-          // Navigate to return URL
-          this.router.navigateByUrl(this.returnUrl);
-        }
+        this.success.set(`${login.user.username} login successfully`);
+        sessionStorage.setItem('userName', login.user.username);
         this.authService.userId.set(login.user);
         sessionStorage.setItem('userId', login.user._id);
-        this.success.set(`${login.user.username} login successfully`);
-        this.isLoading.set(false);
-      },
-      error: (err) => {
-        console.log(err);
+       if(isPlatformBrowser(this.platformId)) {
+        this.cookiesService.set('authToken', login.token, { path: '/', secure: true, sameSite: 'Lax' });
+       }
+      }),
+      switchMap((login: any) => {
+        if (!isPlatformBrowser(this.platformId)) {
+          return of(login);
+        }
+         const visitorId = this.cookiesService.get('visitorId');
+          return (login.success && visitorId) ?  this.authService.mergeCartToUser({ visitorId }).pipe(
+              map(() => login)
+            ): of(login);
+      
+      }),
+        // 🔹 Navigation
+      tap(() => {
+        this.router.navigateByUrl(this.returnUrl());
+      }),
+      // 🔹 Error handling
+      catchError((err) => {
+        console.error(err);
         this.error.set(err.error?.message || 'Login failed');
+        return EMPTY;
+      }),
+
+      // 🔹 Loader cleanup
+      finalize(() => {
         this.isLoading.set(false);
-      }
-    });
+      })
+
+    ).subscribe();
   }
 
   register() {
