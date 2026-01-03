@@ -25,24 +25,28 @@
     <!-- Price -->
     <div class="price-box">
       <span class="price">₹{{ product?.price | number:'1.0-0' }}</span>
-
-      <span class="old-price" *ngIf="product?.oldPrice">
+      @if(product?.oldPrice) {
+      <span class="old-price">
         ₹{{ product?.oldPrice | number:'1.0-0' }}
       </span>
-
-      <span class="discount" *ngIf="product?.oldPrice">
-        {{
-          ((product?.oldPrice - product?.price) / product?.oldPrice * 100) 
-          | number:'1.0-0'
-        }}% OFF
-      </span>
+      }
+      @if(product?.oldPrice) {
+        <span class="discount" >
+          {{
+            ((product?.oldPrice - product?.price) / product?.oldPrice * 100) 
+            | number:'1.0-0'
+          }}% OFF
+        </span>
+      }
     </div>
 
     <!-- Rating -->
-    <div class="rating" *ngIf="product?.rating">
-      <i class="bi bi-star-fill"></i>
-      <span>{{ product?.rating }}</span>
-    </div>
+    @if(product?.rating) {
+      <div class="rating">
+        <i class="bi bi-star-fill"></i>
+        <span>{{ product?.rating }}</span>
+      </div>
+    }
 
   </div>
 </div>

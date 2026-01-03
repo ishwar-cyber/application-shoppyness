@@ -10,4 +10,8 @@ import { RouterLink } from '@angular/router';
 })
 export class HelpCenter {
 
+  ngOnInit(): void {
+    //add scroll to top on init
+    window.scrollTo(0, 0);
+  }
 }

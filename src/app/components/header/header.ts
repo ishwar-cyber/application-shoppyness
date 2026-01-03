@@ -10,7 +10,8 @@ import {
   signal,
   computed,
   effect,
-  runInInjectionContext
+  runInInjectionContext,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {
   Router,
@@ -30,7 +31,8 @@ import { Locatins } from '../../services/locatins';
   standalone: true,
   imports: [RouterModule, CommonModule, RouterLink, FormsModule],
   templateUrl: './header.html',
-  styleUrls: ['./header.scss']
+  styleUrls: ['./header.scss'],
+   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Header {
 

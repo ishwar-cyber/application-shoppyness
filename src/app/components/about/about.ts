@@ -8,4 +8,8 @@ import { Component } from '@angular/core';
 })
 export class About {
 
+  ngOnInit(): void {
+    //add scroll to top on init
+    window.scrollTo(0, 0);
+  }
 }

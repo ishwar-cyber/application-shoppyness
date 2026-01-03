@@ -1,27 +1,66 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, inject, Input, Output, signal } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  inject,
+  input,
+  Output,
+  signal,
+  OnInit,
+  OnDestroy
+} from '@angular/core';
 import { Router } from '@angular/router';
-import { PopUp } from "../pop-up/pop-up";
+import { PopUp } from '../pop-up/pop-up';
+import { Subscription, timer } from 'rxjs';
 
 @Component({
   selector: 'app-order-success',
+  standalone: true,
   imports: [CommonModule, PopUp],
   templateUrl: './order-success.html',
   styleUrl: './order-success.scss'
 })
-export class OrderSuccess {
+export class OrderSuccess implements OnInit, OnDestroy {
 
-  @Input() order: any = null;
-  @Input() show = false;
+  // 🔹 Inputs (READ ONLY)
+  orderId = input.required<string>();
+  order = input.required<any>();
+  show = input.required<boolean>();
+
+  // 🔹 Outputs
   @Output() close = new EventEmitter<void>();
 
-  readonly router = inject(Router);
+  // 🔹 Internal state
+  countdown = signal<number>(5);
+  private redirectSub?: Subscription;
+
+  private readonly router = inject(Router);
+
+  ngOnInit(): void {
+    this.redirectSub = timer(0, 1000).subscribe(sec => {
+      const remaining = 5 - sec;
+      this.countdown.set(remaining);
+
+      if (remaining === 0) {
+        this.goToOrder();
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.redirectSub?.unsubscribe();
+  }
+
+  // ✅ Child only EMITS
   onClose() {
-    this.show = false;
+    this.redirectSub?.unsubscribe();
     this.close.emit();
   }
 
-  navigateToProfile() {
-    // this.router.navigate(['/profile']);
+  goToOrder() {
+    this.redirectSub?.unsubscribe();
+    this.router.navigate(['/orders/details'], {
+      queryParams: { orderId: this.orderId() }
+    });
   }
 }

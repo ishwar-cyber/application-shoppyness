@@ -1,24 +1,51 @@
+<app-pop-up
+  [isOpen]="true"
+  (close)="false"
+  animation="bottom"
+>
+  <div class="order-success-wrapper">
 
-<app-pop-up [isOpen]="true" (close)="false" animation="bottom">
-  <div class="order-success-content">
-  <div class="success-icon">✅</div>
-  <h2>Order Placed Successfully!</h2>
-  <p>Your order has been confirmed. We’ve sent a confirmation email with order details.</p>
-    
-  <div class="order-summary">
-    <div class="item">
-      <span class="label">Order ID:</span>
-      <span class="value">#ORD123456</span>
+    <!-- Success Animation -->
+    <div class="success-icon">
+      <i class="bi bi-check-circle-fill"></i>
     </div>
-    <div class="item">
-      <span class="label">Payment:</span>
-      <span class="value">Paid via UPI</span>
+
+    <!-- Text -->
+    <h2 class="title">Payment Successful 🎉</h2>
+    <p class="subtitle">
+      Your payment has been received and your order is confirmed.
+    </p>
+
+    <!-- Order Info -->
+    <div class="order-info">
+      <div class="row">
+        <span>Order ID</span>
+        <strong>#{{ order }}</strong>
+      </div>
+      <div class="row">
+        <span>Payment Status</span>
+        <strong class="success-text">Paid</strong>
+      </div>
     </div>
-    <div class="item">
-      <span class="label">Estimated Delivery:</span>
-      <span class="value">15 Nov 2025</span>
+ <!-- routerLink="/orders/{{ order }}" -->
+    <!-- Actions -->
+    <div class="actions">
+      <button class="btn btn-primary w-100">
+        Track Order
+      </button>
+
+      <button
+        class="btn btn-outline-secondary w-100"
+        routerLink="/products"
+      >
+        Continue Shopping
+      </button>
     </div>
+
+    <!-- Info -->
+    <p class="footer-note">
+      A confirmation email has been sent to your registered email address.
+    </p>
+
   </div>
-  <!-- <button class="continue-btn" (click)="closePopup()">Continue Shopping</button> -->
-</div>
 </app-pop-up>

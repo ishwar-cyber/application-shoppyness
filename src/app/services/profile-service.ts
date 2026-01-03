@@ -17,7 +17,7 @@ export class ProfileService {
     return this.http.get(`${this.apiBase}/order/user/${sessionStorage.getItem('userId')}`);
   }
 
-  getOrderById(userId: string, orderId: string) {
+  getOrderById(userId: string, orderId: any) {
     return this.http.get(`${this.apiBase}/order/${orderId}/tracking`);
   }
 

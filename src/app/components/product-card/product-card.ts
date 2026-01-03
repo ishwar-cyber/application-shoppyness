@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, input, Input, Output, PLATFORM_ID, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, input, Input, Output, PLATFORM_ID, signal } from '@angular/core';
 import { Router, RouterLink, RouterModule } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { CartService } from '../../services/cart';
@@ -7,7 +7,8 @@ import { ToastrService } from 'ngx-toastr';
   selector: 'app-product-card',
   imports: [CommonModule, RouterModule],
   templateUrl: './product-card.html',
-  styleUrls: ['./product-card.scss']
+  styleUrls: ['./product-card.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductCard {
   private router = inject(Router);

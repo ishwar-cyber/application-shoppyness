@@ -7,5 +7,8 @@ import { Component } from '@angular/core';
   styleUrl: './return-policy.scss'
 })
 export class ReturnPolicy {
-
+  ngOnInit(): void {
+    //add scroll to top on init
+    window.scrollTo(0, 0);
+  }
 }

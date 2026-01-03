@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, DestroyRef, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, effect, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, interval, takeUntil, firstValueFrom, switchMap } from 'rxjs';
 import { environment } from '../../../environments/environment';
@@ -23,6 +23,14 @@ export interface OrderStatusResponse {
   payment_session_id: string
   products: Products
   terminal_data: any
+  bank_name: string
+  payment_method: string
+  payment_instrument: string
+  payment_id: string
+  account_last4: string
+  upi_txn_id: string
+  payee_vpa: string
+  payer_vpa: string
 }
 
 export interface CustomerDetails {
@@ -73,6 +81,7 @@ export class PaymentStatus implements OnInit {
   orderId = signal<string | null>(null);
   status: 'pending' | 'success' | 'failed' = 'pending';
   intervalId: any;
+  private redirectStarted = signal<boolean>(false);
   private stopPolling$ = new Subject<void>();
   // ✅ use env, works for local + production
   private apiBase = environment.apiUrl; // e.g. http://localhost:8000/api/v1
@@ -81,7 +90,19 @@ export class PaymentStatus implements OnInit {
     private http: HttpClient,
     private router: Router,
     private destroyRef: DestroyRef
-  ) {}
+  ) {
+    effect(() => {
+      const order = this.order();
+      if (order) {
+        if ((order.order_status === 'PAID' || order.order_status === 'SUCCESS') && !this.redirectStarted()) {
+          this.redirectStarted.set(true);
+          setTimeout(() => {
+            this.router.navigate(['/my-account']);
+          }, 3000);
+        }
+      }
+    });
+  }
 
   ngOnInit(): void {
     // Cashfree sends ?order_id=...
