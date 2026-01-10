@@ -1,14 +1,14 @@
 <h4 class="mb-3">Select Delivery Address</h4>
 
 <div class="list-group mb-3">
-  @for (addr of addressesList(); track addr._id) {
+  @for (addr of addressesList(); track addr.id) {
     <label class="list-group-item d-flex gap-2 align-items-start">
       <input
         type="radio"
         name="address"
         class="form-check-input mt-1"
-        [checked]="addr._id === selectedAddress()?._id"
-        (change)="onSelectAddress(addr._id)" />
+        [checked]="addr.id === selectedAddress()?.id"
+        (change)="onSelectAddress(addr.id)" />
       <div>
         <div class="fw-semibold">{{ addr.fullName }} — {{ addr.phone }}</div>
         <div class="text-muted small">

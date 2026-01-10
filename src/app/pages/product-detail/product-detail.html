@@ -122,9 +122,9 @@
               </div>
 
               <div class="variant-list">
-                @for (v of p.variants; track v._id) {
+                @for (v of p.variants; track v.id) {
                   <button type="button"
-                          class="variant-chip" [class.active]="selectedVariant()?.['_id'] === v._id"
+                          class="variant-chip" [class.active]="selectedVariant()?.['id'] === v.id"
                           (click)="selectVariant(v)">
                     {{ v.name }}
                   </button>
@@ -146,11 +146,12 @@
                 </span>
               }
             </div>
-            <div class="stock" [class.in-stock]="currentStock() === 'in' ">
+            <pre>{{currentStock()}}</pre>
+            <div class="stock" [class.in-stock]="currentStock() === 1" [class.out-of-stock]="currentStock() !== 1">
               <i class="bi"
-                 [class.bi-check-circle]="currentStock() === 'in' "
-                 [class.bi-x-circle]="currentStock() !== 'in' "></i>
-              <span>{{ currentStock() === 'in'  ? 'In Stock' : 'Out of Stock' }}</span>
+                 [class.bi-check-circle]="currentStock() === 1 "
+                 [class.bi-x-circle]="currentStock() !== 1 "></i>
+              <span>{{ currentStock() === 1  ? 'In Stock' : 'Out of Stock' }}</span>
             </div>
 
           </div>
@@ -176,7 +177,7 @@
             <div class="actions">
               <button class="btn-primary"
                       (click)="addToCart(p); openPopUp.set(true)"
-                      [disabled]="currentStock() !== 'in' || isAddingToCart()">
+                      [disabled]="currentStock() === 0 || isAddingToCart()">
                 <i class="bi bi-cart-plus"></i>
                 @if (!isAddingToCart()) { <span>Add to Cart</span> }
                 @else { <span>Adding...</span> }
@@ -287,7 +288,7 @@
           </div>
 
           <div class="related-row" #relatedProductsScroll>
-            @for (rp of relatedProducts(); track rp._id) {
+            @for (rp of relatedProducts(); track rp.id) {
               <app-product-card [product]="rp" class="product-card"></app-product-card>
             }
           </div>

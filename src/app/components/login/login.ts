@@ -97,7 +97,7 @@ export class Login implements OnInit {
         this.success.set(`${login.user.username} login successfully`);
         sessionStorage.setItem('userName', login.user.username);
         this.authService.userId.set(login.user);
-        sessionStorage.setItem('userId', login.user._id);
+        sessionStorage.setItem('userId', login.user.id);
        if(isPlatformBrowser(this.platformId)) {
         this.cookiesService.set('authToken', login.token, { path: '/', secure: true, sameSite: 'Lax' });
        }

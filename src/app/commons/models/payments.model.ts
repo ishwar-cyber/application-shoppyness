@@ -14,7 +14,7 @@ export interface ShippingAddress {
   city: string
   state: string
   pincode: string
-  _id: string
+  id: number
 }
 
 export interface Item {
@@ -24,22 +24,21 @@ export interface Item {
   discount: number
   quantity: number
   variantId: any
-  _id: string
+  id: number
   createdAt: string
   updatedAt: string
 }
 
 export interface Product {
-  _id: string
   images: Image[]
   slug: string
   stock: string
   availableAntivirusStock: number
-  id: string
+  id: number
 }
 
 export interface Image {
   url: string
   public_id: string
-  _id: string
+  id: number
 }

@@ -12,7 +12,7 @@ export interface ProductModel {
   variants: Variant[]
   category: Category[]
   pincode: string[]
-  stock: string
+  stock: number
   description: string
   sku: string
   featured: boolean
@@ -43,11 +43,11 @@ export interface Variant {
   price: number
   stock: number
   image?: [Image]
-  _id: string
+  id: number
 }
 
 export interface Category {
-  _id: string
+  id: number
   name: string
   image: Image
   slug?: string
@@ -59,7 +59,7 @@ export interface Image {
 }
 
 export interface SubCategory {
-  _id: string
+  id: number
   name: string
   slug: string
   image: Image2
@@ -72,7 +72,7 @@ export interface Image2 {
 }
 
 export interface Brand {
-  _id?: string
+  id?: number
   name: string
   slug?: string
 }
@@ -86,7 +86,7 @@ export interface Warranty {
   period: number
   type: string
   details: string
-  _id: string
+  id: number
 }
 
 export interface Inventory {

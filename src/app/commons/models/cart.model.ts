@@ -19,11 +19,11 @@ export interface CartData {
   discount: number;
   totalPrice: number;
   total: number;
-  id: string;
+  id: number;
 }
 
 export interface Item {
-  _id: string;
+  id: number;
   product: Product;
   slug: string;
   name: string;
@@ -34,7 +34,6 @@ export interface Item {
 }
 
 export interface Product {
-  _id: string;
   name: string;
   images: Image[];
   discount: number;
@@ -63,19 +62,18 @@ export interface Product {
   createdAt: string;
   updatedAt: string;
   __v: number;
-  id: string;
+  id: number;
 }
 
 export interface Image {
   url: string;
   public_id: string;
-  _id: string;
+  id: number;
 }
 
 export interface Warranty {
   period: number;
   type: string;
   details: string;
-  _id: string;
-  id: string;
+  id: number;
 }

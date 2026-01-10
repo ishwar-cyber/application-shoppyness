@@ -91,7 +91,7 @@ export class Cart implements OnInit, OnDestroy {
       });
   }
 
-  removeItem(id: string): void {
+  removeItem(id: number): void {
     this.cartService.isLoader.set(true);
 
     this.cartService.removeFromCart(id)

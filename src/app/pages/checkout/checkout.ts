@@ -31,7 +31,7 @@ export class Checkout implements OnInit{
   couponDiscount = signal<number>(0);
   isLoader = signal<boolean>(true);
   selectedAddress = computed(() => {
-    return this.addressList().find(addr => addr._id === this.selectedAddressId());
+    return this.addressList().find(addr => addr.id === this.selectedAddressId());
   })
   couponError = signal<string | null>(null);
   couponSuccess = signal<string | null>(null);
@@ -84,7 +84,7 @@ export class Checkout implements OnInit{
     id && this.profileService.getUserProfile(id).subscribe((res: any) => {
       this.addressList.set(res.data.addresses);
       if (res.data.addresses.length > 0) {
-        this.selectedAddressId.set(res.data.addresses[0]._id);
+        this.selectedAddressId.set(res.data.addresses[0].id);
       }
     });
     if (!id) {

@@ -24,7 +24,7 @@ async function fetchJson(url) {
     let products = [];
     try { const p = await fetchJson(`${API}/products`); products = p?.data || p || []; } catch(e) { console.warn('Could not fetch products for sitemap', e); }
     products.forEach(prod => {
-      const slug = prod.slug || prod._id || prod.id;
+      const slug = prod.slug || prod.id || prod.id;
       if (slug) urls.push({ loc: `/product/${slug}`, priority: '0.9' });
     });
 

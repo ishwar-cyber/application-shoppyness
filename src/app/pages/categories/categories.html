@@ -16,7 +16,7 @@
   }
 
   <div class="categories-grid">
-    @for (cat of categories(); track cat._id) {
+    @for (cat of categories(); track cat.id) {
       <a class="category-card" [routerLink]="['/category', cat.slug]">
         <div class="icon-box">
           <img

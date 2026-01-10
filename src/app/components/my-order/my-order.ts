@@ -52,7 +52,7 @@ export class MyOrder {
   /** Navigate to Order Tracking Page */
   viewDetails(order: any) {
     this.router.navigate(['/order-details'], {
-      queryParams: { orderId: order._id }
+      queryParams: { orderId: order.id }
     });
   }
 

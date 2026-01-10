@@ -65,7 +65,7 @@ export class CartService {
   }
 
   /** ✏️ Update quantity (optimistic) */
-  updateQuantity(itemId: string, quantity: number) {
+  updateQuantity(itemId: number, quantity: number) {
     this.isLoader.set(true);
     if (!this.isBrowser) return;
 
@@ -73,7 +73,7 @@ export class CartService {
 
     this.cartItems.update(items =>
       (items || []).map(i =>
-        i._id === itemId ? { ...i, quantity } : i
+        i.id === itemId ? { ...i, quantity } : i
       )
     );
 
@@ -98,7 +98,7 @@ export class CartService {
 }
 
   /** ❌ Remove item */
-  removeFromCart(itemId: string) {
+  removeFromCart(itemId: number) {
      this.isLoader.set(true);
     if (!this.isBrowser) return of(null);
     return this.http.delete<CartResponse>(`${this.apiUrl}/${itemId}/remove`, { withCredentials: true }).pipe(

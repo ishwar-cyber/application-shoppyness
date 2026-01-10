@@ -138,7 +138,7 @@
     </div>
 
     <div class="product-scroll">
-      @for (product of products().slice(0, 10); track product._id ?? $index) {
+      @for (product of products().slice(0, 10); track product.id ?? $index) {
         <app-product-card [product]="product"></app-product-card>
       }
     </div>

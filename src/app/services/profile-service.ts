@@ -21,6 +21,12 @@ export class ProfileService {
     return this.http.get(`${this.apiBase}/order/${orderId}/tracking`);
   }
 
+  getUserOrdersNew(page: number, limit = 10) {
+    return this.http.get<any>(
+      `${this.apiBase}/order/user/${sessionStorage.getItem('userId')}?page=${page}&limit=${limit}`
+    );
+  }
+
   cancelOrder(orderId: string, reason: object){
     return this.http.put(`${this.apiBase}/order/${orderId}/cancelled`, reason)
   }

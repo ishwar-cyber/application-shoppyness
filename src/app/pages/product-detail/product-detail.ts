@@ -125,12 +125,12 @@ export class ProductDetail implements OnInit, OnDestroy {
     const prod = this.product();
     if (!prod) return;
 
-    const queryVariantId = this.route.snapshot.queryParamMap.get('variantId');
-    const routeVariantId = this.route.snapshot.paramMap.get('variantId');
-    const preselectId = queryVariantId ?? routeVariantId ?? null;
+    const queryVariantId: number | null = Number(this.route.snapshot.queryParamMap.get('variantId')) || null;
+    const routeVariantId: number | null = Number(this.route.snapshot.paramMap.get('variantId')) || null;
+    const preselectId: number | null = queryVariantId ?? routeVariantId ?? null;
 
     if (prod.variants && prod.variants.length > 0) {
-      const matched = preselectId ? prod.variants.find((v: Variant) => v._id === preselectId || v.sku === preselectId) : null;
+      const matched = preselectId ? prod.variants.find((v: Variant) => v.id === preselectId) : null;
       this.selectedVariant.set(matched || prod.variants[0]);
     } else {
       this.selectedVariant.set(null);
@@ -164,15 +164,14 @@ export class ProductDetail implements OnInit, OnDestroy {
     try {
       const price = this.selectedVariant()?.price ?? product.price ?? null;
       const currency = product.currency || 'INR';
-      const availability = (this.selectedVariant()?.stock ?? product.stock) === 'in' ? 'http://schema.org/InStock' : 'http://schema.org/OutOfStock';
-
+      const availability = (this.selectedVariant()?.stock ?? product.stock) === 1 ? 'http://schema.org/InStock' : 'http://schema.org/OutOfStock';
       const jsonLd: any = {
         "@context": "https://schema.org/",
         "@type": "Product",
         name: product.name,
         image: Array.isArray(product.images) ? product.images.map((i: any) => i.url) : [product.images?.url].filter(Boolean),
         description: product.description || '',
-        sku: product.sku || product._id || product.id || '',
+        sku: product.sku || product.id || product.id || '',
         url: `https://yourdomain.com/product/${product.slug}`,
       };
 
@@ -245,12 +244,14 @@ export class ProductDetail implements OnInit, OnDestroy {
 
   // Add to Cart
   addToCart(product: any): void {
+    console.log('working', product);
+    
     const hasVariants = Array.isArray(product?.variants) && product.variants.length > 0;
     const stock = hasVariants
-      ? (this.selectedVariant()?.stock ?? 'in')
-      : (product?.stock ?? 'in');
+      ? (this.selectedVariant()?.stock ?? 1)
+      : (product?.stock ?? 1);
 
-    if (stock !== 'in') {
+    if (stock !== 1) {
       this.addedToCartMessage.set('Selected item is out of stock.');
       setTimeout(() => this.addedToCartMessage.set(''), 3000);
       return;
@@ -261,7 +262,7 @@ export class ProductDetail implements OnInit, OnDestroy {
     const payload: any = {
       productId: product.id,
       quantity: this.quantity(),
-      variantId: this.selectedVariant()?.['_id'] ?? null
+      variantId: this.selectedVariant()?.['id'] ?? null
     };
 
     this.cartService.addToCart(payload).pipe(takeUntil(this.destroy$)).subscribe({
@@ -302,8 +303,8 @@ export class ProductDetail implements OnInit, OnDestroy {
     return this.selectedVariant()?.price ?? this.product()?.price ?? 0;
   }
 
-  currentStock(): string {
-    return this.selectedVariant()?.stock ?? this.product()?.stock ?? 'in';
+  currentStock(): number {
+    return this.selectedVariant()?.stock ?? this.product()?.stock ?? 1;
   }
 
 

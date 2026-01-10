@@ -1,284 +1,73 @@
 <div class="account-page">
-
-  <!-- Sidebar + Content layout -->
   <div class="layout">
 
-    <!-- ======================
-         SIDEBAR
-    ====================== -->
+    <!-- SIDEBAR -->
     <aside class="sidebar">
-
-      <div class="user-box">
-        <div class="avatar">
-          {{ userProfile()?.username?.charAt(0) || 'U' }}
-        </div>
-
-        <div class="user-meta">
-          <h3>{{ userProfile()?.username }}</h3>
-          <p>{{ userProfile()?.email }}</p>
-        </div>
-      </div>
-
-      <nav>
-        <button 
-          class="nav-item"
-          [class.active]="activeSection() === 'profile'"
-          (click)="switchSection('profile')">
-          <i class="bi bi-person"></i> Profile Information
-        </button>
-
-        <button 
-          class="nav-item"
-          [class.active]="activeSection() === 'orders'"
-          (click)="switchSection('orders')">
-          <i class="bi bi-bag"></i> My Orders
-        </button>
-
-        <button 
-          class="nav-item"
-          [class.active]="activeSection() === 'password'"
-          (click)="switchSection('password')">
-          <i class="bi bi-lock"></i> Change Password
-        </button>
-
-        <button 
-          class="nav-item"
-          [class.active]="activeSection() === 'settings'"
-          (click)="switchSection('settings')">
-          <i class="bi bi-gear"></i> Account Settings
-        </button>
-
-        <div class="divider"></div>
-
-        <button class="nav-item logout" (click)="logout()">
-          <i class="bi bi-box-arrow-right"></i> Log Out
-        </button>
-      </nav>
-
+      <button (click)="switchSection('profile')">Profile</button>
+      <button (click)="switchSection('orders')">Orders</button>
+      <button (click)="switchSection('password')">Password</button>
+      <button (click)="switchSection('settings')">Settings</button>
+      <button (click)="logout()">Logout</button>
     </aside>
 
-    <!-- MOBILE TABS (visible only on mobile) -->
-    <nav class="mobile-tabs">
-      <button 
-        class="tab-item"
-        [class.active]="activeSection() === 'profile'"
-        (click)="switchSection('profile')">
-        <i class="bi bi-person"></i>
-        <span>Profile</span>
-      </button>
+    <!-- CONTENT -->
+    <main class="content" #contentRef>
 
-      <button 
-        class="tab-item"
-        [class.active]="activeSection() === 'orders'"
-        (click)="switchSection('orders')">
-        <i class="bi bi-bag"></i>
-        <span>Orders</span>
-      </button>
-
-      <button 
-        class="tab-item"
-        [class.active]="activeSection() === 'password'"
-        (click)="switchSection('password')">
-        <i class="bi bi-lock"></i>
-        <span>Password</span>
-      </button>
-
-      <button 
-        class="tab-item"
-        [class.active]="activeSection() === 'settings'"
-        (click)="switchSection('settings')">
-        <i class="bi bi-gear"></i>
-        <span>Settings</span>
-      </button>
-    </nav>
-
-    <!-- ======================
-         MAIN CONTENT
-    ====================== -->
-    <main class="content">
-
-      <!-- Loader -->
       @if (isLoading()) {
-        <div class="center">
-          <div class="spinner"></div>
-          <p>Loading...</p>
-        </div>
+        <p class="center">Loading...</p>
       }
 
-      <!-- ======================
-           PROFILE SECTION
-      ====================== -->
+      <!-- PROFILE -->
       @if (!isLoading() && activeSection() === 'profile') {
-        <section class="section-card">
-          <h2>Profile Information</h2>
-          <p class="subtitle">Manage your personal details</p>
-
-          <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="form">
-
-            <div class="form-group">
-              <label>Full Name</label>
-              <input formControlName="username" [readonly]="!isEditing()" />
-            </div>
-
-            <div class="form-group">
-              <label>Email Address</label>
-              <input formControlName="email" [readonly]="!isEditing()" />
-            </div>
-
-            <div class="form-group">
-              <label>Phone Number</label>
-              <input formControlName="phone" [readonly]="!isEditing()" />
-            </div>
-
-            <div class="form-group">
-              <label>Address</label>
-              <textarea rows="3" formControlName="address" [readonly]="!isEditing()"></textarea>
-            </div>
-
-            <div class="actions">
-              @if (!isEditing()) {
-                <button class="btn-outline" type="button" (click)="enableEditing()">Edit</button>
-              } @else {
-                <button class="btn-primary" type="submit">Save</button>
-                <button class="btn-outline" type="button" (click)="cancelEditing()">Cancel</button>
-              }
-            </div>
-
+        <section>
+          <form [formGroup]="profileForm">
+            <input formControlName="username" />
+            <input formControlName="email" />
+            <button type="button" (click)="saveProfile()">Save</button>
           </form>
         </section>
       }
 
-      <!-- ======================
-           ORDERS SECTION
-      ====================== -->
-      @if (!isLoading() && activeSection() === 'orders') {
-        <section class="section-card">
-          <h2>My Orders</h2>
-          <p class="subtitle">Track your order history</p>
+      <!-- ORDERS -->
+      @if (activeSection() === 'orders') {
+        <section>
+          <div *ngFor="let o of orders()">
+            <strong>#{{ o.id }}</strong> — ₹{{ o.totalAmount }}
+          </div>
 
-          @if (orders().length === 0) {
-            <div class="empty-box">
-              <img src="assets/empty-orders.svg" />
-              <h3>No Orders Found</h3>
-              <button routerLink="/products" class="btn-primary">Shop Now</button>
-            </div>
-          } @else {
-
-            <div class="orders-list">
-              @for (order of orders(); track order.id) {
-
-                <div class="order-card">
-                  
-                  <div class="order-header">
-                    <h3>#{{ order.id }}</h3>
-                    <span class="badge" [class]="getOrderStatusClass(order.orderStatus)">
-                      {{ order.orderStatus | titlecase }}
-                    </span>
-                  </div>
-
-                  <p class="date">Placed on {{ order.date | date:'mediumDate' }}</p>
-
-                  <div class="items">
-                    @for (item of order.items; track item.id) {
-                      <div class="item-row">
-                        <span>{{ item.name }}</span>
-                        <span>Qty: {{ item.quantity }}</span>
-                        <strong>₹{{ item.price }}</strong>
-                      </div>
-                    }
-                  </div>
-
-                  <div class="order-footer">
-                    <span class="price">Total: ₹{{ order.totalAmount  }}</span>
-                   <button 
-                      class="btn-view"
-                      (click)="viewOrder(order.id)">
-                      <i class="bi bi-eye"></i>
-                      View Details
-                    </button>
-                  </div>
-
-                </div>
-
-              }
-            </div>
-
+          @if (loading()) {
+            <p>Loading more…</p>
           }
         </section>
       }
 
-      <!-- ======================
-           CHANGE PASSWORD
-      ====================== -->
+      <!-- PASSWORD -->
       @if (activeSection() === 'password') {
-        <section class="section-card">
-          <h2>Change Password</h2>
-          <p class="subtitle">Update your login password</p>
-
-          <form [formGroup]="passwordForm" 
-                (ngSubmit)="changePassword()" 
-                class="form">
-
-            <div class="form-group">
-              <label>Current Password</label>
-              <input type="password" formControlName="currentPassword" />
-            </div>
-
-            <div class="form-group">
-              <label>New Password</label>
-              <input type="password" formControlName="newPassword" />
-            </div>
-
-            <div class="form-group">
-              <label>Confirm Password</label>
-              <input type="password" formControlName="confirmPassword" />
-              @if (getPasswordMatchError()) {
-                <span class="error">Passwords do not match</span>
-              }
-            </div>
-
-            <div class="actions">
-              <button class="btn-primary" type="submit" [disabled]="passwordForm.invalid">
-                Update Password
-              </button>
-            </div>
-
+        <section>
+          <form [formGroup]="passwordForm">
+            <input type="password" formControlName="currentPassword" />
+            <input type="password" formControlName="newPassword" />
+            <input type="password" formControlName="confirmPassword" />
+            <button (click)="changePassword()">Change</button>
           </form>
         </section>
       }
 
-      <!-- ======================
-           SETTINGS 
-      ====================== -->
-     @if (activeSection() === 'settings') {
-  <section class="section-card">
-    <h2>Account Settings</h2>
+      <!-- SETTINGS -->
+      @if (activeSection() === 'settings') {
+        <section>
+          @for (s of ['orderUpdates','promotions','newsletter','dataSharing','activityTracking']; track s) {
+            <label>
+              <input type="checkbox" [checked]="settings()[s]" />
+              {{ s }}
+            </label>
+          }
+        </section>
+      }
 
-    @for (s of settingKeys(); track s) {
-      <div class="toggle-row">
-
-        <label class="toggle-label">
-          {{ s | titlecase }}
-        </label>
-
-        <label class="switch">
-          <input 
-            type="checkbox" 
-            [checked]="settings()[s]"
-            (change)="toggleSetting(s)" 
-          />
-          <span class="slider"></span>
-        </label>
-
-      </div>
-    }
-
-    <button class="btn-primary mt-2" (click)="saveSettings()">Save</button>
-  </section>
-}
-
+      <!-- SCROLL TRIGGER -->
+      <div #loadMoreTrigger class="scroll-trigger"></div>
 
     </main>
-
   </div>
 </div>

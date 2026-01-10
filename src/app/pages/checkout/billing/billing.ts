@@ -5,7 +5,7 @@ import { CheckoutService } from '../../../services/checkout';
 import { Router } from '@angular/router';
 
 export interface Address {
-  _id: string;
+  id: number;
   fullName: string;
   phone: string;
   line1: string;
@@ -80,8 +80,8 @@ export class Billing implements OnInit {
       country: ['India', Validators.required],
     });
   }
-  onSelectAddress(id: string) {
-    this.selectedAddress.set(this.addressesList().find(a => a._id === id) || null);
+  onSelectAddress(id: Number) {
+    this.selectedAddress.set(this.addressesList().find(a => a.id === id) || null);
     this.addressChange.emit(this.selectedAddress());
   }
   selectState(state: string) {

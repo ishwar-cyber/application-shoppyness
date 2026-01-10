@@ -14,14 +14,14 @@
 
         @if (addressList().length) {
           <div class="address-list">
-            @for (a of addressList(); track a?._id) {
+            @for (a of addressList(); track a?.id) {
             
               <label class="address-card" 
-                     [class.active]="selectedAddressId() === a?._id">
+                     [class.active]="selectedAddressId() === a?.id">
                 <input type="radio"
                        name="address"
-                       [checked]="selectedAddressId() === a?._id"
-                       (change)="selectAddress(a?._id)" />
+                       [checked]="selectedAddressId() === a?.id"
+                       (change)="selectAddress(a?.id)" />
                 <div class="info">
                   <h4>{{ a?.fullName }}</h4> 
                   <p>{{ a?.line1 }}, {{ a?.city }}, {{ a?.state }} - {{ a?.pincode }}</p>
