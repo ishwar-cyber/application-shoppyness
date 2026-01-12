@@ -38,11 +38,7 @@ export class Cart implements OnInit, OnDestroy {
   cartItems = computed(() =>
     this.cartService.cartItems() ?? []
   );
-
-  isEmpty = computed(() =>
-    !this.loading() && this.cartItems().length === 0
-  );
-
+  
   hasItems = computed(() =>
     !this.loading() && this.cartItems().length > 0
   );
@@ -52,7 +48,6 @@ export class Cart implements OnInit, OnDestroy {
   public readonly cartService = inject(CartService);
   private readonly seoService = inject(Seo);
   private readonly router = inject(Router);
-  private readonly authService = inject(Auth);
 
   ngOnInit(): void {
     this.scroller.scrollToPosition([0, 0]);
@@ -80,6 +75,8 @@ export class Cart implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res: any) => {
+          // Scroll top
+         this.scroller.scrollToPosition([0, 0]);
           this.cartService.cartItems.set(res?.data?.items ?? []);
           this.cartService.cartCount.set(res?.data?.itemCount ?? 0);
           this.isPageLoading.set(false);

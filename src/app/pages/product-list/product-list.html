@@ -40,7 +40,7 @@
               type="button"
               class="filter-item filter-btn" [class.active]="selectedBrands() === brand.name"
               (click)="toggleBrand(brand.name)">
-              {{ brand.name }}
+              {{ brand.name | uppercase}}
             </button>
           }
         </div>

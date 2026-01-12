@@ -78,7 +78,7 @@ export class CartService {
     );
 
   this.http
-    .put<CartResponse>(`${this.apiUrl}/update/${itemId}/quantity`, { quantity }, { withCredentials: true })
+    .put<CartResponse>(`${this.apiUrl}/items/${itemId}`, { quantity }, { withCredentials: true })
     .subscribe({
       next: res => {
         if (res.success) {
@@ -98,16 +98,13 @@ export class CartService {
 }
 
   /** ❌ Remove item */
-  removeFromCart(itemId: number) {
-     this.isLoader.set(true);
+  removeFromCart(id: number) {
     if (!this.isBrowser) return of(null);
-    return this.http.delete<CartResponse>(`${this.apiUrl}/${itemId}/remove`, { withCredentials: true }).pipe(
+    return this.http.delete<CartResponse>(`${this.apiUrl}/items/${id}`, { withCredentials: true }).pipe(
       tap(res => {
-        this.isLoader.set(false);
         res.success && this.updateSignals(res)
       }),
       catchError(err => {
-        this.isLoader.set(false);
         console.error('Error removing item:', err);
         return of(null);
       })
@@ -123,7 +120,6 @@ export class CartService {
          this.isLoader.set(false);
       }),
       catchError(err => {
-         this.isLoader.set(false);
         console.error('Error applying coupon:', err);
         return of(null);
       })
@@ -167,10 +163,11 @@ export class CartService {
   private updateSignals(res: CartResponse) {
     const data = res.data;
     this.cartItems.set(data?.items || []);
-    this.cartCount.set(data?.itemCount ?? 0);
+    this.cartCount.set(data?.items.length ?? 0);
     this.subTotal.set(data?.subTotal ?? 0);
     this.totalPrice.set(
       (data?.subTotal ?? 0) + this.shipping()
     );
+    this.isLoader.set(false);
   }
 }

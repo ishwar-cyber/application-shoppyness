@@ -1,34 +1,24 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  ElementRef,
-  ViewChild,
-  signal,
-  inject,
-  OnInit,
-  OnDestroy
-} from '@angular/core';
-import {
-  FormGroup,
-  FormBuilder,
-  Validators,
-  ReactiveFormsModule
-} from '@angular/forms';
-import { Router } from '@angular/router';
-import { Subject, exhaustMap, filter, takeUntil, tap } from 'rxjs';
-
+import { Component, inject, signal } from '@angular/core';
+import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Auth } from '../../services/auth';
+import { Router } from '@angular/router';
 import { ProfileService } from '../../services/profile-service';
-
-/* ---------- TYPES ---------- */
-
 interface UserProfile {
+  id?: string;
   username: string;
   email: string;
   phone?: string;
   address?: string;
 }
-
+interface Order {
+  id?: string;
+  date?: string;
+  orderStatus: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  totalAmount?: number;
+  items?: Array<{ id: string; name: string; quantity: number; price: number; }>;
+  trackingNumber?: string;
+}
 interface UserSettings {
   orderUpdates: boolean;
   promotions: boolean;
@@ -36,85 +26,54 @@ interface UserSettings {
   dataSharing: boolean;
   activityTracking: boolean;
 }
-
 @Component({
   selector: 'app-profile',
-  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './profile.html',
   styleUrls: ['./profile.scss']
 })
-export class Profile implements OnInit, OnDestroy {
+export class Profile {
 
-  /* ---------- SERVICES ---------- */
-
-  private authService = inject(Auth);
-  private fb = inject(FormBuilder);
-  private router = inject(Router);
-  private profileService = inject(ProfileService);
-
-  /* ---------- VIEW CHILDREN ---------- */
-
-  @ViewChild('contentRef', { static: true })
-  contentRef!: ElementRef;
-
-  @ViewChild('loadMoreTrigger', { static: true })
-  loadMoreTrigger!: ElementRef;
-
-  /* ---------- UI STATE (SIGNALS) ---------- */
-
+  // ✅ Signals for UI state
   activeSection = signal<'profile' | 'orders' | 'password' | 'settings'>('profile');
-  isLoading = signal(true);
-
+  isLoading = signal<boolean>(true);
+  updateSuccess = signal<string | null>(null);
   userProfile = signal<UserProfile | null>(null);
-  isEditing = signal(false);
-
-  orders = signal<any[]>([]);
-  page = signal(1);
-  loading = signal(false);
-  hasMore = signal(true);
-
-  settings = signal<any>({
+  orders = signal<Order[]>([]);
+  isEditing = signal<boolean>(false)
+  // ✅ Reactive Forms
+  profileForm!: FormGroup;
+  passwordForm!: FormGroup;
+  settings = signal<UserSettings>({
     orderUpdates: true,
     promotions: false,
     newsletter: true,
     dataSharing: false,
     activityTracking: true
   });
-
-  /* ---------- FORMS ---------- */
-
-  profileForm!: FormGroup;
-  passwordForm!: FormGroup;
-
-  /* ---------- RXJS ---------- */
-
-  private loadMore$ = new Subject<void>();
-  private destroy$ = new Subject<void>();
-  private observer!: IntersectionObserver;
-
-  /* ---------- INIT ---------- */
-
+  // User settings 
+settingKeys = signal<(keyof UserSettings)[]>([
+  'orderUpdates',
+  'promotions',
+  'newsletter',
+  'dataSharing',
+  'activityTracking'
+])
+  private authService = inject(Auth);
+  private readonly fb = inject(FormBuilder);
+  private readonly router = inject(Router);
+  private readonly profileService = inject(ProfileService);
   ngOnInit(): void {
     this.initForms();
     this.loadUserProfile();
-    this.initOrdersStream();
-    this.initIntersectionObserver();
+    this.loadOrders();
   }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-    this.observer?.disconnect();
-  }
-
-  /* ---------- FORMS ---------- */
 
   private initForms(): void {
     this.profileForm = this.fb.group({
       username: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      phone: [''],
+      phone: ['', [Validators.pattern(/^\d{10}$/)]],
       address: ['']
     });
 
@@ -125,126 +84,144 @@ export class Profile implements OnInit, OnDestroy {
     }, { validators: this.passwordMatchValidator });
   }
 
-  /* ---------- PROFILE ---------- */
-
   private loadUserProfile(): void {
     const userId = sessionStorage.getItem('userId');
     if (!userId) {
       this.isLoading.set(false);
       return;
     }
+    this.profileService.getUserProfile(userId).subscribe({
+      next: (profile: any) => {
+         this.userProfile.set(profile.data);
+          const userProfile: UserProfile = {
+            username: profile.data.username,
+            email: profile.data.email,
+            phone: profile.data.phone
+          };
+          this.profileForm.patchValue(userProfile);
+          this.isLoading.set(false);
+      }
+    });
+    
+  }
 
-    this.profileService.getUserProfile(userId).subscribe((res: any) => {
-      this.userProfile.set(res.data);
-      this.profileForm.patchValue(res.data);
-      this.isLoading.set(false);
+  private loadOrders(): void {
+     this.profileService.getUserOrders().subscribe({
+      next: (orders: any) => {
+        this.orders.set(orders.data.orders || []);
+      }
     });
   }
 
-  saveProfile(): void {
+  // ✅ Update profile
+  updateProfile(): void {
     if (this.profileForm.invalid) return;
-    this.userProfile.set(this.profileForm.value);
-    this.isEditing.set(false);
+
+    setTimeout(() => {
+      this.userProfile.set(this.profileForm.value);
+      this.updateSuccess.set('Profile updated successfully!');
+      setTimeout(() => this.updateSuccess.set(null), 3000);
+    }, 1000);
   }
 
-  enableEditing(): void {
-    this.isEditing.set(true);
+  // ✅ Change password
+  changePassword(): void {
+    if (this.passwordForm.invalid) return;
+
+    setTimeout(() => {
+      this.updateSuccess.set('Password changed successfully!');
+      this.passwordForm.reset();
+      setTimeout(() => this.updateSuccess.set(null), 3000);
+    }, 1000);
   }
 
-  cancelEditing(): void {
+  // ✅ Password match validator
+  private passwordMatchValidator(group: FormGroup) {
+    const newPassword = group.get('newPassword')?.value;
+    const confirmPassword = group.get('confirmPassword')?.value;
+    return newPassword === confirmPassword ? null : { mismatch: true };
+  }
+
+  // ✅ Cancel profile edit
+  cancelEdit(): void {
     if (this.userProfile()) {
       this.profileForm.patchValue(this.userProfile()!);
     }
-    this.isEditing.set(false);
   }
 
-  /* ---------- ORDERS (INFINITE SCROLL) ---------- */
-
-  private initOrdersStream(): void {
-    this.loadMore$
-      .pipe(
-        filter(() =>
-          this.activeSection() === 'orders' &&
-          this.hasMore() &&
-          !this.loading()
-        ),
-        exhaustMap(() => {
-          this.loading.set(true);
-          return this.profileService.getUserOrdersNew(this.page()).pipe(
-            tap(res => {
-              const newOrders = res?.data?.orders ?? [];
-              this.orders.update(list => [...list, ...newOrders]);
-              this.hasMore.set(newOrders.length > 0);
-              this.page.update(p => p + 1);
-              this.loading.set(false);
-            })
-          );
-        }),
-        takeUntil(this.destroy$)
-      )
-      .subscribe();
-  }
-
-  private initIntersectionObserver(): void {
-    this.observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          this.loadMore$.next();
-        }
-      },
-      {
-        root: this.contentRef.nativeElement,
-        threshold: 0.2
-      }
-    );
-
-    this.observer.observe(this.loadMoreTrigger.nativeElement);
-  }
-
-  /* ---------- NAV ---------- */
-
-  switchSection(section: 'profile' | 'orders' | 'password' | 'settings'): void {
-    this.activeSection.set(section);
-
-    if (section === 'orders' && this.orders().length === 0) {
-      this.page.set(1);
-      this.hasMore.set(true);
-      this.loadMore$.next();
-    }
-  }
-
-  /* ---------- PASSWORD ---------- */
-
-  changePassword(): void {
-    if (this.passwordForm.invalid) return;
-    alert('Password changed');
+  // ✅ Cancel password change
+  cancelPasswordChange(): void {
     this.passwordForm.reset();
   }
 
-  private passwordMatchValidator(group: FormGroup) {
-    return group.value.newPassword === group.value.confirmPassword
-      ? null
-      : { mismatch: true };
+  // ✅ Helpers
+  // getUserInitials(): string {
+  //   const user = this.userProfile();
+  //   return user ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : '';
+  // }
+
+  // trackByOrderId(index: number, order: Order): string {
+  //   return order.id;
+  // }
+
+
+  switchSection(section: 'profile' | 'orders' | 'password' | 'settings'): void {
+    this.activeSection.set(section);
   }
-
-  /* ---------- SETTINGS ---------- */
-
-  toggleSetting(key: keyof UserSettings): void {
-    this.settings.update(s => ({ ...s, [key]: !s[key] }));
+  saveProfile(): void {
+    if (this.profileForm.valid) { // Normally this would be an API call to update the profile
+      const updatedProfile = { ...this.userProfile(), ...this.profileForm.value };
+      // Simulate API call 
+      setTimeout(() => {
+        this.userProfile.set(updatedProfile as UserProfile);
+        this.isEditing.set(false);
+      }, 1000);
+    }
   }
-
+  // changePassword(): void {
+  //   if (this.passwordForm.valid && !this.getPasswordMatchError()) {
+  //     this.passwordUpdateLoading.set(true);
+  //     // Normally this would be an API call to change the password 
+  //     // // Simulate API call with delay 
+  //     setTimeout(() => {
+  //       this.passwordUpdateLoading.set(false);
+  //       this.passwordUpdateSuccess.set(true);
+  //       this.passwordForm.reset();
+  //       // Hide success message after 3 seconds 
+  //       setTimeout(() => this.passwordUpdateSuccess.set(false), 3000);
+  //     }, 1500);
+  //   }
+  // }
+  getPasswordMatchError(): boolean {
+    const newPassword = this.passwordForm?.get('newPassword')?.value;
+    const confirmPassword = this.passwordForm?.get('confirmPassword')?.value;
+    return newPassword && confirmPassword && newPassword !== confirmPassword;
+  }
+  toggleSetting(settingName: keyof UserSettings): void {
+    const updated = { ...this.settings() };
+    updated[settingName] = !updated[settingName];
+    this.settings.set(updated);
+  }
   saveSettings(): void {
-    alert('Settings saved');
+    // Normally this would be an API call to save user settings 
+    // // For now we'll just simulate a successful save
+    alert('Settings saved successfully!');
+  } getOrderStatusClass(status: string): string {
+    switch (status) {
+      case 'delivered': return 'status-delivered';
+      case 'shipped': return 'status-shipped';
+      case 'processing': return 'status-processing';
+      case 'placed': return 'status-placed';
+      case 'cancelled': return 'status-cancelled';
+      default: return '';
+    }
   }
-
-  /* ---------- UTILS ---------- */
-
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/']);
   }
-
-  viewOrder(orderId: string): void {
+  viewOrder(orderId: any): String | void {
     this.router.navigate(['/order-tracking'], { queryParams: { orderId } });
   }
+  enableEditing(): void { this.isEditing.set(true); } cancelEditing(): void { if (this.userProfile()) { this.profileForm.patchValue(this.userProfile()!); } this.isEditing.set(false); }
 }

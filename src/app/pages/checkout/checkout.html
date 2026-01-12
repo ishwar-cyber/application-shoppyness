@@ -63,10 +63,11 @@
       <!-- PAYMENT -->
       <section class="section-box">
         <h3>Payment Method</h3>
-        <label class="payment-option"
-               [class.active]="paymentMethod() === 'online'">
-          <input type="radio" value="online" name="payment" [checked]="paymentMethod() === 'online'"
-                 (change)="paymentMethod.set('online')" />
+        <label class="payment-option" [class.active]="paymentMethod() === 'online'">
+          <input type="radio" value="online" name="payment" 
+            [checked]="paymentMethod() === 'online'"
+            (change)="paymentMethod.set('online')" 
+          />
           <span>Online Payment (UPI / Card)</span>
         </label>
       </section>
@@ -77,13 +78,10 @@
 
       <div class="summary-box">
         <h3>Order Summary</h3>
-
         <div class="items">
           @for (item of cartItems(); track item.productId) {
             <div class="item">
-              <!-- <pre>{{ item| json }}</pre> -->
-              <img [src]="item?.product?.images[0].url" alt="product" />
-
+              <img [src]="item?.product?.images[0].url" alt="product"/>
               <div class="details">
                 <h4>{{ item.name }}</h4>
                 <p>Qty: {{ item.quantity }}</p>

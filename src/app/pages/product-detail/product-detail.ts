@@ -156,7 +156,7 @@ export class ProductDetail implements OnInit, OnDestroy {
       title: product.name + " | Shoppyness",
       description: product.description?.slice(0, 150),
       keywords: product.name,
-      image: product.images[0].url,
+      image: product?.images[0]?.url,
       url: `https://yourdomain.com/product/${product.slug}`
     });
 

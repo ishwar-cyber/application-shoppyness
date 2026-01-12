@@ -75,7 +75,7 @@ export class Checkout implements OnInit{
       line2: ['', Validators.required],
       city: ['', Validators.required],
       state: ['', Validators.required],
-      country: ['India'],
+      // country: ['India'],
     });
   }
   
