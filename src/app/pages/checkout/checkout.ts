@@ -1,5 +1,5 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, computed, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CartService } from '../../services/cart';
@@ -14,7 +14,8 @@ import { Loader } from '../../components/loader/loader';
   selector: 'app-checkout',
   imports: [CommonModule, RouterModule, FormsModule, ReactiveFormsModule, PopUp, Loader],
   templateUrl: './checkout.html',
-  styleUrls: ['./checkout.scss']
+  styleUrls: ['./checkout.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Checkout implements OnInit{
   cartItems = signal<any[]>([]);

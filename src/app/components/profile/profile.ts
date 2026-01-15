@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Auth } from '../../services/auth';
 import { Router } from '@angular/router';
@@ -30,7 +30,8 @@ interface UserSettings {
   selector: 'app-profile',
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './profile.html',
-  styleUrls: ['./profile.scss']
+  styleUrls: ['./profile.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Profile {
 

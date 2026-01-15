@@ -106,7 +106,7 @@
   padding: 2rem;
   background: linear-gradient(135deg, #f6f0ff, #fff);
   border-radius: 20px;
-  margin-bottom: 2rem;
+  // margin-bottom: 2rem;
 
   .hero-content {
     max-width: 500px;
@@ -151,46 +151,88 @@
    CATEGORY SECTION
 --------------------------------*/
 .categories-strip {
-  margin: 2rem 1rem;
-  .cat-scroll {
-    display: flex;
-    gap: 1rem;
-    overflow-x: auto;
-    padding-bottom: 6px;
-
-    .cat-item {
-      min-width: 100px;
-      padding: 0.8rem;
-      background: #fff;
-      border: 1px solid #eee;
-      border-radius: 12px;
-      text-align: center;
-      cursor: pointer;
-      transition: .25s;
-      .cat-icon {
-        font-size: 1.6rem;
-        margin-bottom: 5px;
-        color: var(--primary);
-      }
-      .cat-name{
-        overflow-wrap: break-word;
-      }
-      &:hover {
-        background: #f4f0ff;
-        border-color: var(--primary);
-        transform: translateY(-3px);
-      }
-       @media (max-width: 768px) {
-        font-size: 14px;
-       }
-    }
+ padding: 1rem;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden; // 🔥 critical
+  .section-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
   }
 }
+
+/* 🔹 Scroll container */
+.cat-scroll {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+
+  width: 100%;
+  max-width: 100%;
+}
+
+/* 🔹 Category card */
+.cat-item {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+  padding: 0.75rem;
+
+  /* 🔥 MOST IMPORTANT FIX */
+  display: flex;
+  flex-direction: column;   // ⬅ image top, text bottom
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+  min-height: 100px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  &:active {
+    transform: scale(0.96);
+  }
+
+  &:hover {
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* 🔹 Icon / Image */
+.cat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.4rem;
+
+  img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+  }
+
+  i {
+    font-size: 1.6rem;
+    color: #7c3aed;
+  }
+}
+
+/* 🔹 Category Name */
+.cat-name {
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.2;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 
 .section-title {
   font-size: 1rem;
   font-weight: 700;
-  margin: 0px 15px;
+  margin: 0;
   margin-bottom: .8rem;
   @media (min-width: 768px) {
     font-size: 1.4rem;
@@ -317,5 +359,35 @@
     app-product-card {
       min-width: 220px;
     }
+  }
+}
+
+/* 📱 Small mobile */
+@media (min-width: 375px) {
+  .cat-scroll {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* 📱 Large mobile */
+@media (min-width: 600px) {
+  .cat-scroll {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* 💻 Tablet */
+@media (min-width: 768px) {
+  .cat-scroll {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .cat-name {
+    font-size: 0.8rem;
+  }
+
+  .cat-icon img {
+    width: 36px;
+    height: 36px;
   }
 }

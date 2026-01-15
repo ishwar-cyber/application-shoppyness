@@ -24,9 +24,7 @@ import { Loader } from '../../components/loader/loader';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Cart implements OnInit, OnDestroy {
-
   private readonly destroy$ = new Subject<void>();
-
   // ✅ SINGLE loading source for page actions
   isPageLoading = signal(true);
  
@@ -70,7 +68,6 @@ export class Cart implements OnInit, OnDestroy {
   // ✅ Load cart once → update SERVICE → UI reacts
   loadCartItems(): void {
     this.isPageLoading.set(true);
-
     this.cartService.loadCart()
       .pipe(takeUntil(this.destroy$))
       .subscribe({

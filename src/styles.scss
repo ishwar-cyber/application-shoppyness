@@ -25,6 +25,11 @@
   --space-lg: 24px;
   --space-xl: 32px;
 }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
 /* RESET */
 body {
@@ -33,6 +38,7 @@ body {
   color: var(--text-dark);
   margin: 0;
   padding: 0;
+  overflow-x: hidden; // 🔥 prevents right-side hole
 }
 
 /* Card Style */

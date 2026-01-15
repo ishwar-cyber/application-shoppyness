@@ -59,7 +59,6 @@
     </div>
   </section>
 
-
   <!-- ===========================
        CATEGORY STRIP
   ============================== -->
@@ -72,15 +71,18 @@
           <div class="cat-item"
                [routerLink]="['/category/', cat.slug]" [attr.aria-label]="'Browse category ' + cat.name">
             <div class="cat-icon">
-              <i class="bi bi-grid-3x3-gap-fill"></i>
+              @if(cat.image?.url){
+                <img [src]="cat.image?.url" [alt]="cat.name" width="100" height="100" [alt]="cat.name">
+              } @else {
+                <i class="bi bi-grid-3x3-gap-fill"></i>
+              } 
             </div>
-            <div class="cat-name">{{ cat.name }}</div>
+            <span class="cat-name">{{ cat.name }}</span>
           </div>
         }
       </div>
     </section>
   }
-
 
   <!-- ===========================
        BRANDS SECTION
@@ -96,7 +98,7 @@
         @for (b of brands(); track b.id ?? $index) {
           <div class="brand-item" [routerLink]="['/products', { brand: b.slug }]">
            <div class="cat-icon">
-              <i class="bi bi-grid-3x3-gap-fill"></i>
+             <img [src]="b.image.url" [alt]="b.name">
             </div>
             <span>{{ b.name }}</span>
           </div>
@@ -104,7 +106,6 @@
       </div>
     </section>
   }
-
 
   <!-- ===========================
        FEATURED DEAL BLOCK
@@ -123,7 +124,6 @@
            loading="lazy"/>
     </div>
   </section>
-
 
   <!-- ===========================
        TRENDING PRODUCTS SLIDER

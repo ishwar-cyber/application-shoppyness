@@ -74,6 +74,8 @@ export class Home implements OnInit{
         this.products.set(res.product?.data);
         this.brands.set(res.brand?.data);
         this.categories.set(res.category?.data);
+        console.log('this category', this.categories());
+        
       },
       error: (err) => {
         console.error('Error fetching data', err);

@@ -16,7 +16,7 @@
         <i class="bi bi-geo-alt-fill"></i>
         <span class="location-text">
           Current to
-          <strong>{{ location.locationData().city || 'Select' }}</strong>
+          <strong>{{ location.locationData().city || 'Location' }}</strong>
         </span>
       </div>
 
@@ -128,7 +128,12 @@
     <div class="header-nav">
       @if (categories().length) {
         <nav class="category-nav">
-          @for (cat of categories(); track cat.slug) {
+          <div class="category-item">
+              <button class="category-btn" routerLink="/products">
+               Show All 
+              </button>
+          </div>
+          @for (cat of categories().slice(0,6); track cat.slug) {
             <div class="category-item"
                  (mouseover)="openMegaMenu(cat)">
               <button class="category-btn"

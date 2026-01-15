@@ -32,7 +32,7 @@ import { Locatins } from '../../services/locatins';
   imports: [RouterModule, CommonModule, RouterLink, FormsModule],
   templateUrl: './header.html',
   styleUrls: ['./header.scss'],
-   changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Header {
 
