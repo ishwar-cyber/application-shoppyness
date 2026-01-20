@@ -66,7 +66,7 @@
 
         <button class="reset-btn" (click)="resetFilters()">Reset</button>
       </aside>
-    } @else {
+    } @else if (!isMobileView()){
       <aside class="sidebar skeleton">
 
         <!-- Header -->
@@ -252,4 +252,5 @@
     </section>
   </div>
 </div>
+
 
