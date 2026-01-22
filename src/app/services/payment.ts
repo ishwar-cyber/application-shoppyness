@@ -4,8 +4,8 @@ import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
 import { CreateOrder } from '../commons/models/payments.model';
 interface CreateOrderResponse {
-  payment_session_id: string;
-  order_id: string;
+  paymentSessionId: string;
+  orderNumber: string;
   // add other fields your backend sends
 }
 @Injectable({

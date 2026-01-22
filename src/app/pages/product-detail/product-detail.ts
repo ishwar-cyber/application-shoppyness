@@ -89,7 +89,6 @@ export class ProductDetail implements OnInit, OnDestroy {
 
   private loadProduct(productId: string) {
     this.loading.set(true);
-    console.log(this.loading())
     this.productService.getProductById(productId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res: ResponsePayload) => {
         this.product.set(res.data);
@@ -243,9 +242,7 @@ export class ProductDetail implements OnInit, OnDestroy {
   }
 
   // Add to Cart
-  addToCart(product: any): void {
-    console.log('working', product);
-    
+  addToCart(product: any): void {    
     const hasVariants = Array.isArray(product?.variants) && product.variants.length > 0;
     const stock = hasVariants
       ? (this.selectedVariant()?.stock ?? 1)

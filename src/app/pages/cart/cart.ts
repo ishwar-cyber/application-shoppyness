@@ -75,7 +75,7 @@ export class Cart implements OnInit, OnDestroy {
           // Scroll top
          this.scroller.scrollToPosition([0, 0]);
           this.cartService.cartItems.set(res?.data?.items ?? []);
-          this.cartService.cartCount.set(res?.data?.itemCount ?? 0);
+          // this.cartService.cartCount.set(res?.data?.itemCount ?? 0);
           this.isPageLoading.set(false);
         },
         error: () => {

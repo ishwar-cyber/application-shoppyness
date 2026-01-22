@@ -73,14 +73,14 @@
               <div class="cart-image">
                 <img
                   width="90"
-                  [src]="item?.images?.[0]?.url || 'assets/no-image.png'"
+                  [src]="item?.product?.images?.[0]?.url || 'assets/no-image.png'"
                   [alt]="item.name"
                   loading="lazy"
                 />
               </div>
 
-              <h3 class="name">{{ item.name }}</h3>
-              <p class="price">₹{{ item.price }}</p>
+              <h3 class="name">{{ item.product.name }}</h3>
+              <p class="price">₹{{ item.product.price }}</p>
             </div>
 
             <div class="qty_remove">

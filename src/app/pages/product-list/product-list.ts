@@ -225,7 +225,6 @@ export class ProductList implements OnInit {
     this.isLoading.set(true);
     this.productService.getProductBySubCategorySlug(payload).subscribe({
       next: (res:any) =>{
-        console.log(res);
          this.prepareProductList(res.data);
       }
     })

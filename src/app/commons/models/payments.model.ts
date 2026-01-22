@@ -1,10 +1,16 @@
 export interface CreateOrder {
-  shippingAddress: ShippingAddress
-  paymentMethod: string
-  items: Item[]
-  totalAmount: number
-  couponDiscount: any
+  shippingAddressId: number;
+  paymentMethod: 'online'; // keep strict if only one method for now
+  couponCode?: string | null;
+  items: CreateOrderItem[];
 }
+
+export interface CreateOrderItem {
+  productId: number;
+  variantId?: number | null;
+  quantity: number;
+}
+
 
 export interface ShippingAddress {
   fullName: string

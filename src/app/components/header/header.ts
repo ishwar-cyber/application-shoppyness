@@ -44,7 +44,7 @@ export class Header {
 
   // Data Signals
   categories = signal<any[]>([]);
-  cartCount = signal(0);
+  cartCount = signal<number>(0);
   userName = signal('');
   isBrowser = signal(false);
 
@@ -65,7 +65,7 @@ export class Header {
   public readonly location = inject(Locatins);
   constructor() {
     effect(() => {
-      this.cartCount.set(this.cartService.cartCount());
+      this.cartCount.set(this.cartService.cartCount() || 0);
     });
     // router menu update
     this.router.events.subscribe(event => {

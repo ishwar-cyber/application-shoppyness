@@ -48,9 +48,10 @@
                   </div>-->
                 </div>
               </div>
-            }
+            } 
+            @empty {
 
-            @if (searchResults().length === 0 && searchQuery().length > 1) {
+            <!-- @if (searchResults().length === 0 && searchQuery().length > 1) { -->
               <div class="search-empty">
                 No matching products found
               </div>

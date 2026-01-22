@@ -34,8 +34,11 @@ export class Auth {
   // 🔹 Method: check login status from cookies
   isLoggedIn(): boolean {
     if (isPlatformBrowser(this.platformId)) {
-      const token = this.cookiesService.get('authToken');
-      return !!token;
+      if(sessionStorage.getItem('userId')){
+        const token = this.cookiesService.get('authToken');
+        return !!token;
+      }
+      
     }
     return false;
   }

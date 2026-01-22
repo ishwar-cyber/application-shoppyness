@@ -46,7 +46,6 @@ async function fetchJson(url) {
     const outDir = path.join(__dirname, '..', 'public');
     if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
     fs.writeFileSync(path.join(outDir, 'sitemap.xml'), sitemap, 'utf8');
-    console.log('sitemap.xml generated at public/sitemap.xml');
   } catch (err) {
     console.error('Failed to generate sitemap', err);
     process.exit(1);

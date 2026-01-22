@@ -124,7 +124,7 @@
           <!-- apply coupon -->
           @if (couponDiscount()) {
             <div class="price-sub-row">
-              <span>Coupon ({{ couponCode }})</span>
+              <span>Coupon ({{ couponCode() }})</span>
               <span class="coupon-discounted">-₹{{ couponDiscount() }}</span>
             </div>
           }

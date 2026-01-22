@@ -9,6 +9,8 @@ import { PopUp } from '../../components/pop-up/pop-up';
 import { load } from '@cashfreepayments/cashfree-js';
 import { PaymentService } from '../../services/payment';
 import { Loader } from '../../components/loader/loader';
+import { firstValueFrom } from 'rxjs';
+import { CreateOrder } from '../../commons/models/payments.model';
 
 @Component({
   selector: 'app-checkout',
@@ -28,7 +30,7 @@ export class Checkout implements OnInit{
   deliveryType = signal<string>('standard');
 
   isAddressModalOpen = signal<boolean>(false);
-  couponCode = '';
+  couponCode = signal<string>('');
   couponDiscount = signal<number>(0);
   isLoader = signal<boolean>(true);
   selectedAddress = computed(() => {
@@ -96,89 +98,81 @@ export class Checkout implements OnInit{
   selectAddress(id: string) {
     this.selectedAddressId.set(id);
   }
+createOrderPayload(): CreateOrder {
+  return {
+    shippingAddressId: this.selectedAddress()?.id,
+    paymentMethod: 'online',
+    couponCode: this.couponCode() || null,
+    items: (this.cartService.cartItems() || this.cartItems()).map(item => ({
+      productId: item.productId,
+      variantId: item.variantId || null,
+      quantity: item.quantity || 1
+    }))
+  };
+}
 
-  placeOrder() {
-    if (!this.selectedAddressId()) {
-      alert('Please select an address');
-      return;
+ async pay() {
+  if (!isPlatformBrowser(this.platformId)) return;
+
+  this.isPlacingOrder.set(true);
+
+  try {
+    /** 🔹 STEP 1: Create order (backend creates Cashfree order) */
+    const order = await firstValueFrom(
+      this.paymentService.createOrder(this.createOrderPayload())
+    );
+
+    if (!order?.paymentSessionId || !order?.orderNumber) {
+      throw new Error('Invalid order response');
     }
-    const orderPayload = this.createOrderPayload()
-    this.checkoutService.createOrder(orderPayload).subscribe({
-      next: (res: any) => {
-        this.router.navigate([`/payment-success?orderId=${res.orderNumber}`]);
-        // this.router.navigate(['/order-success'], {
-        //   queryParams: { orderId: res?.orderId }
-        // });
+
+    /** 🔹 STEP 2: Load Cashfree */
+    const cf = await load({ mode: 'sandbox' });
+
+    /** 🔹 STEP 3: Open checkout */
+    await cf.checkout({
+      paymentSessionId: order.paymentSessionId,
+
+      onSuccess: () => {
+        // ❗ Do NOT verify here
+        // Webhook will confirm payment
+        this.isPlacingOrder.set(false);
+
+        this.router.navigate(['/payment-success'], {
+          queryParams: { orderNumber: order.orderNumber }
+        });
       },
-      error: (err) => console.error(err)
-    });
-  } 
-  
-  createOrderPayload() {
-    const orderPayload = {
-      shippingAddress:  this.selectedAddress(),
-      paymentMethod: this.paymentMethod(),
-      items: this.cartService.cartItems() || this.cartItems(),
-      totalAmount: this.totalAmount(),
-      couponDiscount: this.couponDiscount() || null
-    };
-    return orderPayload;
-  }
 
-  async pay() {
-    if (!isPlatformBrowser(this.platformId)) return;
-    this.isPlacingOrder.set(true);
-    try {
-      /** ✅ Step 1: Create order */
-      const order = await this.paymentService.createOrder(
-        this.createOrderPayload()
-      ).toPromise();
+      onFailure: (err: any) => {
+        console.error('Payment failed:', err);
+        this.isPlacingOrder.set(false);
 
-      if (!order?.payment_session_id) {
-        throw new Error('Payment session not created');
+        this.router.navigate(['/payment-failed'], {
+          queryParams: {
+            orderNumber: order.orderNumber,
+            reason: err?.reason || 'payment_failed'
+          }
+        });
       }
+    });
 
-      /** ✅ Step 2: Open Cashfree Checkout */
-      const cf = await load({ mode: 'sandbox' });
-
-      await cf.checkout({
-        paymentSessionId: order.payment_session_id,
-
-        /** ✅ Payment success */
-        onSuccess: async (data: any) => {
-          await this.paymentService
-            .verifyPayment(data.order.order_id)
-            .toPromise();
-          this.router.navigate(['/payment-success'], {
-            queryParams: { orderId: data.order.order_id }
-          });
-        },
-
-        /** ✅ Payment failure */
-        onFailure: (err: any) => {
-          this.router.navigate(['/payment-failed'], {
-            queryParams: { reason: err.reason }
-          });
-        }
-      });
-
-    } catch (error) {
-      this.isPlacingOrder.set(false);
-      console.error('Payment Error:', error);
-    }
+  } catch (error) {
+    console.error('Payment Error:', error);
+    this.isPlacingOrder.set(false);
   }
+}
   applyCoupon() {
-    if (!this.couponCode.trim()) {
+    if (!this.couponCode().trim()) {
       this.couponError.set('Please enter a coupon code.');
       this.couponSuccess.set(null);
       return;
     }
 
-    if (this.couponCode) {
-     this.cartService.applyCoupon(this.couponCode)
+    if (this.couponCode()) {
+     this.cartService.applyCoupon(this.couponCode())
       .subscribe({
         next: (response: any) => {
-          this.couponCode = this.couponCode;
+          this.couponCode.set(this.couponCode());
           this.couponDiscount.set(response.discount);
           // this.subTotal.set(response.cartTotal);
           this.totalAmount.set(response.finalTotal);

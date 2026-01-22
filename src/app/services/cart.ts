@@ -16,12 +16,12 @@ export class CartService {
 
   // 🔔 Signals for cart state
   cartItems = signal<Item[] | null>(null);
-  cartCount = signal<number>(0);
   totalPrice = signal<number>(0);
   subTotal = signal<number>(0);
   shipping = signal<number>(100);
   isLoader = signal<boolean>(false);
   cart = computed(()=> this.cartItems());
+  cartCount = computed(()=>this.cartItems()?.length)
   getSubtotal() {
     return this.subTotal();
   }
@@ -31,7 +31,7 @@ export class CartService {
   /** 🔄 Load cart (SSR-safe) */
   loadCart() {
     if (!this.isBrowser) return of(null); // SSR safety
-    return this.http.get<CartResponse>(this.apiUrl, { withCredentials: true }).pipe(
+    return this.http.get<CartResponse>(`${this.apiUrl}/my`, { withCredentials: true }).pipe(
       tap(res => {
         if (res.success) {
           this.updateSignals(res);
@@ -54,6 +54,7 @@ export class CartService {
     return this.http.post<CartResponse>(`${this.apiUrl}/add`, payload, { withCredentials: true }).pipe(
       tap(res => {
         if (res?.success) {
+
           this.updateSignals(res);
         }
       }),
@@ -147,7 +148,6 @@ export class CartService {
         if (res.success) {
            this.isLoader.set(false);
           this.cartItems.set([]);
-          this.cartCount.set(0);
           this.subTotal.set(0);
           this.totalPrice.set(0);
         }
@@ -163,7 +163,7 @@ export class CartService {
   private updateSignals(res: CartResponse) {
     const data = res.data;
     this.cartItems.set(data?.items || []);
-    this.cartCount.set(data?.items.length ?? 0);
+    // this.cartCount.set(data?.items.length ?? 0);
     this.subTotal.set(data?.subTotal ?? 0);
     this.totalPrice.set(
       (data?.subTotal ?? 0) + this.shipping()

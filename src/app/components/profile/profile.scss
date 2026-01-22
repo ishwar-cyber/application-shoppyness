@@ -3,8 +3,7 @@
 =========================== */
 
 .account-page {
-  padding: 20px;
-
+  padding: 0px;
   .layout {
     display: flex;
     gap: 20px;
@@ -163,7 +162,7 @@
 
 .section-card {
   background: #fff;
-  padding: 1.8rem;
+  padding: 0.8rem;
   border-radius: 16px;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
   border: 1px solid #ececec;
@@ -272,6 +271,7 @@
   .order-footer {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     font-weight: 600;
   }
 }
@@ -379,4 +379,14 @@
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+.btn-view{
+  border: none;
+  color: #fff;
+  background-color: #8f1eff;
+  border-radius: 5px;
+  font-weight: 600;
+  padding: 5px;
+  font-size: 12px;
 }
