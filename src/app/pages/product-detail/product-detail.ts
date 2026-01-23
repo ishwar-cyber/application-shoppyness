@@ -242,7 +242,7 @@ export class ProductDetail implements OnInit, OnDestroy {
   }
 
   // Add to Cart
-  addToCart(product: any): void {    
+  addToCart1(product: any): void {    
     const hasVariants = Array.isArray(product?.variants) && product.variants.length > 0;
     const stock = hasVariants
       ? (this.selectedVariant()?.stock ?? 1)
@@ -276,6 +276,51 @@ export class ProductDetail implements OnInit, OnDestroy {
       }
     });
   }
+addToCart(product: any): void {
+  const hasVariants =
+    Array.isArray(product?.variants) && product.variants.length > 0;
+
+  const stock = hasVariants
+    ? (this.selectedVariant()?.stock ?? 0)
+    : (product?.stock ?? 0);
+
+  // ✅ STRICT stock check (0 = out, 1 = available)
+  if (stock === 0) {
+    this.addedToCartMessage.set('Selected item is out of stock.');
+    setTimeout(() => this.addedToCartMessage.set(''), 3000);
+    return;
+  }
+
+  this.isAddingToCart.set(true);
+
+  const payload: any = {
+    productId: product.id,
+    quantity: this.quantity()
+  };
+
+  // ✅ Send variantId ONLY when variants exist
+  if (hasVariants && this.selectedVariant()) {
+    payload.variantId = this.selectedVariant().id;
+  }
+
+  this.cartService
+    .addToCart(payload)
+    .pipe(takeUntil(this.destroy$))
+    .subscribe({
+      next: () => {
+        this.isAddingToCart.set(false);
+        this.addedToCartMessage.set('Added to cart successfully.');
+        setTimeout(() => this.addedToCartMessage.set(''), 3000);
+      },
+      error: (err: any) => {
+        console.error('Error adding to cart:', err);
+        this.isAddingToCart.set(false);
+        this.addedToCartMessage.set('Failed to add to cart. Please try again.');
+        setTimeout(() => this.addedToCartMessage.set(''), 3000);
+      }
+    });
+}
+
 
   // Related products horizontal scroll
   scrollProducts(direction: 'left' | 'right') {
