@@ -276,15 +276,23 @@ export class ProductDetail implements OnInit, OnDestroy {
       }
     });
   }
+
 addToCart(product: any): void {
   const hasVariants =
     Array.isArray(product?.variants) && product.variants.length > 0;
 
+  // ❌ Variant required but not selected
+  if (hasVariants && !this.selectedVariant()) {
+    this.addedToCartMessage.set('Please select a variant.');
+    setTimeout(() => this.addedToCartMessage.set(''), 3000);
+    return;
+  }
+
   const stock = hasVariants
-    ? (this.selectedVariant()?.stock ?? 0)
+    ? (this.selectedVariant()!.stock ?? 0)
     : (product?.stock ?? 0);
 
-  // ✅ STRICT stock check (0 = out, 1 = available)
+  // ✅ Stock is 0 or 1 only
   if (stock === 0) {
     this.addedToCartMessage.set('Selected item is out of stock.');
     setTimeout(() => this.addedToCartMessage.set(''), 3000);
@@ -298,9 +306,9 @@ addToCart(product: any): void {
     quantity: this.quantity()
   };
 
-  // ✅ Send variantId ONLY when variants exist
-  if (hasVariants && this.selectedVariant()) {
-    payload.variantId = this.selectedVariant().id;
+  // ✅ Attach variantId ONLY when selected
+  if (hasVariants) {
+    payload.variantId = this.selectedVariant()!.id;
   }
 
   this.cartService
@@ -320,7 +328,6 @@ addToCart(product: any): void {
       }
     });
 }
-
 
   // Related products horizontal scroll
   scrollProducts(direction: 'left' | 'right') {
