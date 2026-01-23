@@ -146,7 +146,6 @@
                 </span>
               }
             </div>
-            <pre>{{currentStock()}}</pre>
             <div class="stock" [class.in-stock]="currentStock() === 1" [class.out-of-stock]="currentStock() !== 1">
               <i class="bi"
                  [class.bi-check-circle]="currentStock() === 1 "
