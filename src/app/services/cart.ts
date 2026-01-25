@@ -21,7 +21,8 @@ export class CartService {
   shipping = signal<number>(100);
   isLoader = signal<boolean>(false);
   cart = computed(()=> this.cartItems());
-  cartCount = computed(()=>this.cartItems()?.length)
+  cartTotalTemp = signal<number>(0);
+  cartCount = computed(()=>this.cartItems()?.length || this.cartTotalTemp());
   getSubtotal() {
     return this.subTotal();
   }
@@ -54,7 +55,6 @@ export class CartService {
     return this.http.post<CartResponse>(`${this.apiUrl}/add`, payload, { withCredentials: true }).pipe(
       tap(res => {
         if (res?.success) {
-
           this.updateSignals(res);
         }
       }),
@@ -66,20 +66,20 @@ export class CartService {
   }
 
   /** ✏️ Update quantity (optimistic) */
-  updateQuantity(itemId: number, quantity: number) {
+  updateQuantity(itemId: number, quantity: number, action: boolean = true) {
     this.isLoader.set(true);
     if (!this.isBrowser) return;
-
     const oldItems = [...(this.cartItems() || [])]; // safe backup
-
     this.cartItems.update(items =>
       (items || []).map(i =>
         i.id === itemId ? { ...i, quantity } : i
       )
     );
-
+    const payload = { 
+      action: action
+    };
   this.http
-    .put<CartResponse>(`${this.apiUrl}/items/${itemId}`, { quantity }, { withCredentials: true })
+    .put<CartResponse>(`${this.apiUrl}/items/${itemId}/update`, payload, { withCredentials: true })
     .subscribe({
       next: res => {
         if (res.success) {

@@ -3,10 +3,10 @@
   <!-- Wishlist -->
   <button 
     class="wishlist-btn"
-    (click)="toggleWishlist(); $event.stopPropagation()"
+    (click)="openShare(product);"
     [class.active]="isWishlisted()"
   >
-    <i class="bi" [class.bi-heart]="!isWishlisted()" [class.bi-heart-fill]="isWishlisted()"></i>
+    <i class="bi" [class.bi-share]="!isWishlisted()" [class.bi-share-fill]="isWishlisted()"></i>
   </button>
 
   <!-- Product Image -->
@@ -50,3 +50,13 @@
 
   </div>
 </div>
+
+@if (showSharePopup()) {
+  <div class="share-popup">
+    <button (click)="openLink(shareLinks.whatsapp)">WhatsApp</button>
+    <button (click)="openLink(shareLinks.facebook)">Facebook</button>
+    <button (click)="openLink(shareLinks.telegram)">Telegram</button>
+    <button (click)="openLink(shareLinks.twitter)">Twitter / X</button>
+    <button (click)="copyLink()">Copy Link</button>
+  </div>
+}

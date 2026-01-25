@@ -906,3 +906,20 @@ $shimmer-bg: linear-gradient(
     height: 240px;
   }
 }
+
+.product-img {
+  border-radius: 12px;
+}
+
+.cart-icon {
+  position: relative;
+}
+.cart-fly-image {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  pointer-events: none;
+  z-index: 1000;
+  transition: transform 0.8s ease-in-out, opacity 0.8s ease-in-out;
+}

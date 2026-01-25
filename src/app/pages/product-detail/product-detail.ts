@@ -315,8 +315,9 @@ addToCart(product: any): void {
     .addToCart(payload)
     .pipe(takeUntil(this.destroy$))
     .subscribe({
-      next: () => {
+      next: (res: any) => {
         this.isAddingToCart.set(false);
+        this.cartService.cartTotalTemp.set(res.data?.cartCount || 0);
         this.addedToCartMessage.set('Added to cart successfully.');
         setTimeout(() => this.addedToCartMessage.set(''), 3000);
       },
@@ -355,6 +356,4 @@ addToCart(product: any): void {
   currentStock(): number {
     return this.selectedVariant()?.stock ?? this.product()?.stock ?? 1;
   }
-
-
 }

@@ -69,4 +69,25 @@ export class ProductService {
       catchError(() => of({ serviceable: false }))
     );
   }
+
+  shareProduct(data: {
+    title: string;
+    text: string;
+    url: string;
+  }) {
+    // ✅ Native share (mobile best experience)
+    if (navigator.share) {
+      navigator.share({
+        title: data.title,
+        text: data.text,
+        url: data.url
+      }).catch(() => {});
+      return true;
+    }
+    return false;
+  }
+
+  openPopup(url: string) {
+    window.open(url, '_blank', 'noopener,noreferrer');
+  }
 }

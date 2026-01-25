@@ -14,6 +14,8 @@ export class ProductCard {
   private router = inject(Router);
   public cartService = inject(CartService);
   private toastr = inject(ToastrService);
+  showSharePopup =signal(false);
+  shareLinks: any = {}
   @Input() product:any = [];
   isLoading = input();
 
@@ -51,4 +53,39 @@ export class ProductCard {
       }
     });
   }
+
+openShare(product: any) {
+  const url = `${location.origin}/product/${product.slug}`;
+
+  // Native mobile share (best)
+  if (navigator.share) {
+    navigator.share({
+      title: product.name,
+      text: `Check this product: ${product.name}`,
+      url
+    }).catch(() => {});
+    return;
+  }
+
+  // Desktop fallback
+  this.shareLinks = {
+    whatsapp: `https://wa.me/?text=${encodeURIComponent(product.name)}%20${encodeURIComponent(url)}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+    telegram: `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(product.name)}`,
+    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(product.name)}&url=${encodeURIComponent(url)}`
+  };
+
+  this.showSharePopup.set(true);
+}
+
+
+openLink(url: string) {
+  window.open(url, '_blank', 'noopener,noreferrer');
+}
+
+copyLink() {
+  navigator.clipboard.writeText(location.href);
+  alert('Product link copied!');
+}
+
 }

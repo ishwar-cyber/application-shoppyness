@@ -1,0 +1,13 @@
+<button class="btn btn-outline-secondary" (click)="share()">
+  🔗 Share
+</button>
+
+@if(showOptions()) {
+<div class="share-box">
+  <button (click)="shareService.openPopup(links.whatsapp)">WhatsApp</button>
+  <button (click)="shareService.openPopup(links.facebook)">Facebook</button>
+  <button (click)="shareService.openPopup(links.telegram)">Telegram</button>
+  <button (click)="shareService.openPopup(links.twitter)">Twitter / X</button>
+  <button (click)="copyLink()">Copy Link</button>
+</div>
+}

@@ -73,9 +73,9 @@
 
           <div class="main-image">
             @if (selectedVariant() !== null && selectedVariant()?.image?.[0]?.url) {
-              <img [src]="selectedVariant()?.image?.[0]?.url" [alt]="p.name" itemprop="image" />
+              <img [src]="selectedVariant()?.image?.[0]?.url" [alt]="p.name" #productImageRef itemprop="image" />
             } @else {
-              <img [src]="selectedImage" [alt]="p.name" itemprop="image" />
+              <img [src]="selectedImage" #productImageRef [alt]="p.name" itemprop="image" />
             }
             @if (p.images?.length > 1) {
               <button class="nav-btn prev" type="button" (click)="prevImage()">
@@ -175,7 +175,7 @@
 
             <div class="actions">
               <button class="btn-primary"
-                      (click)="addToCart(p); openPopUp.set(true)"
+                      (click)="addToCart(p); openPopUp.set(true);"
                       [disabled]="currentStock() === 0 || isAddingToCart()">
                 <i class="bi bi-cart-plus"></i>
                 @if (!isAddingToCart()) { <span>Add to Cart</span> }

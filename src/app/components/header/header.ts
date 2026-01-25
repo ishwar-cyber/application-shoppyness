@@ -168,7 +168,7 @@ onSearchChange() {
 
     this.productService.searchProducts(query).subscribe({
       next: (res: any) => {
-        this.searchResults.set(res ?? []);
+        this.searchResults.set(res.data ?? []);
         this.isSearchFocused.set(true);
 
       },
