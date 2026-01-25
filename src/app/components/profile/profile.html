@@ -132,7 +132,9 @@
 
             <div class="form-group">
               <label>Address</label>
-              <textarea rows="3" formControlName="address" [readonly]="!isEditing()"></textarea>
+              <textarea rows="3" formControlName="address" [readonly]="!isEditing()">
+                {{ profileForm.get('address')?.value }}
+              </textarea>
             </div>
 
             <div class="actions">
