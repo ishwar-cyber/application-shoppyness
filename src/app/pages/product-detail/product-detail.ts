@@ -48,7 +48,7 @@ export class ProductDetail implements OnInit, OnDestroy {
   selectedVariant = signal<Variant | null>(null);
   isAddingToCart = signal<boolean>(false);
   quantity = signal<number>(1);
-  addedToCartMessage = signal<string>('');
+  addedToCartMessage = signal<string | null>(null);
   selectedImageIndex = signal<number>(0);
   productName = signal<string>('')
   // New: description + tabs

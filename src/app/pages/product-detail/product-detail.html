@@ -182,6 +182,12 @@
                 @else { <span>Adding...</span> }
               </button>
             </div>
+             <!-- SUCCESS / ERROR -->
+            @if(addedToCartMessage()){
+              <p class="alert success">✔{{ addedToCartMessage() }}</p>
+            } @else if(error()) {
+              <p class="alert error">⚠{{ error() }}</p>
+            }
           </div>
 
           @if (isAddingToCart()) {

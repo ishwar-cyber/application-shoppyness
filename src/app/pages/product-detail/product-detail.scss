@@ -923,3 +923,21 @@ $shimmer-bg: linear-gradient(
   z-index: 1000;
   transition: transform 0.8s ease-in-out, opacity 0.8s ease-in-out;
 }
+/* Alerts */
+.alert {
+  font-size: 13px;
+  padding: 0.5rem;
+  border-radius: var(--radius);
+  margin-bottom: 0.75rem;
+  text-align: center;
+
+  &.error {
+    background: #fee2e2;
+    color: #b91c1c;
+  }
+
+  &.success {
+    background: #dcfce7;
+    color: #15803d;
+  }
+}

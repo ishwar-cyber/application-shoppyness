@@ -232,10 +232,8 @@
         MOBILE BOTTOM NAV
   =========================== -->
   <nav class="mobile-bottom-nav">
-    <button class="bottom-item"
-            routerLink="/home"
-            routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
-            (click)="selectBottomMenu('home')">
+    <button class="bottom-item" routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+      (click)="selectBottomMenu('home')">
       <i class="bi bi-house-door"></i>
       <span>Home</span>
     </button>
@@ -251,11 +249,8 @@
       <span>Products</span>
     </button>
 
-    <button class="bottom-item"
-            routerLink="/my-account"
-            routerLinkActive="active"
-            
-            (click)="selectBottomMenu('my-account')">
+    <button class="bottom-item" routerLink="/my-account" routerLinkActive="active"
+       (click)="selectBottomMenu('my-account')">
       <i class="bi bi-person"></i>
       <span>Account</span>
     </button>
