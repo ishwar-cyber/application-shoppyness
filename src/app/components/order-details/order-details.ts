@@ -90,7 +90,9 @@ export class OrderDetails implements OnInit {
   }
 
   setOrderData(response: any) {
-    this.order.set(response);
+    console.log('order payload', this.order());
+    
+    this.order.set(response.data);
     this.ORDER_STEPS.set(this.ORDER_STEPS().map(step => ({
       ...step,
       completed: this.isStepCompleted(step.key, response.status)
@@ -100,6 +102,13 @@ export class OrderDetails implements OnInit {
   isStepCompleted(stepKey: string, currentStatus: string): boolean {
     const orderFlow = this.ORDER_STEPS().map(s => s.key);
     return orderFlow.indexOf(stepKey) <= orderFlow.indexOf(currentStatus);
+  }
+
+  copyOrderId() {
+    const platformId = inject(PLATFORM_ID);
+    if (isPlatformBrowser(platformId)) {
+      navigator.clipboard.writeText(this.orderId());
+    }
   }
 }
 

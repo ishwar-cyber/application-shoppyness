@@ -85,6 +85,13 @@ export class Checkout implements OnInit{
   loadAddresses() {
     let id = sessionStorage.getItem('userId');
     id && this.profileService.getUserProfile(id).subscribe((res: any) => {
+      if(res.data){
+        this.addressForm.patchValue({
+          fullName: res.data.username || '',
+          phone: res.data.phone || '',
+          email: res.data.email || ''
+        });
+      }
       this.addressList.set(res.data.addresses);
       if (res.data.addresses.length > 0) {
         this.selectedAddressId.set(res.data.addresses[0].id);
@@ -101,7 +108,6 @@ export class Checkout implements OnInit{
 createOrderPayload(): CreateOrder {
   return {
     shippingAddressId: this.selectedAddress()?.id,
-    paymentMethod: 'online',
     couponCode: this.couponCode() || null,
     items: (this.cartService.cartItems() || this.cartItems()).map(item => ({
       productId: item.productId,
@@ -201,8 +207,5 @@ createOrderPayload(): CreateOrder {
       },
       error: (err) => console.error(err)
     });
-  }
-
-
-  
+  }  
 }

@@ -1,213 +1,222 @@
-.order-details-wrapper {
-  padding: 1.5rem;
-  max-width: 760px;
-  margin: auto;
+/* ===============================
+  ROOT
+================================ */
+.order-container {
+  background: #f1f3f6;
+  min-height: 100vh;
+  font-family: Roboto, Arial, sans-serif;
+  color: #212121;
 }
 
-/* HEADER */
-.header-box {
-  background: var(--bg-white);
-  padding: 1.2rem;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
-  border: 1px solid var(--border);
-  margin-bottom: 1.5rem;
-  text-align: center;
+/* ===============================
+  HEADER (Flat, no shadow)
+================================ */
+.header {
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid #e0e0e0;
 
   h2 {
-    font-size: 22px;
-    margin-bottom: 4px;
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  button {
+    background: none;
+    border: none;
+    font-size: 14px;
+    color: #2874f0;
+  }
+}
+
+/* ===============================
+  CARD (Flat Flipkart style)
+================================ */
+.card {
+  background: #ffffff;
+  margin: 10px;
+  padding: 14px;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+
+  h4 {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+}
+
+/* ===============================
+  DELIVERY DETAILS
+================================ */
+.row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 8px;
+
+  .icon {
+    font-size: 16px;
+    margin-top: 2px;
+  }
+
+  strong {
+    font-size: 13px;
+    font-weight: 500;
   }
 
   p {
-    font-size: 15px;
-    color: var(--text-muted);
+    font-size: 13px;
+    color: #616161;
+    line-height: 1.4;
+  }
+}
+
+/* ===============================
+  PRICE DETAILS
+================================ */
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-bottom: 6px;
+
+  span:last-child {
+    font-weight: 500;
   }
 
-  .dates {
-    margin-top: 0.5rem;
-    display: flex;
-    justify-content: space-between;
+  .strike {
+    text-decoration: line-through;
+    color: #878787;
+  }
+
+  &.total {
     font-size: 14px;
-    color: var(--text-dark);
-
-    @media (max-width: 500px) {
-      flex-direction: column;
-      text-align: center;
-      gap: 4px;
-    }
+    font-weight: 600;
+    padding-top: 8px;
   }
 }
 
-/* TIMELINE */
-.tracking-timeline {
-  position: relative;
-  padding: 1rem 0 1.5rem 0;
+hr {
+  border: none;
+  border-top: 1px dashed #e0e0e0;
+  margin: 10px 0;
 }
 
-.timeline-step {
-  display: grid;
-  grid-template-columns: 32px 1fr;
-  gap: 0.8rem;
+.payment {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+/* ===============================
+  DOWNLOAD INVOICE
+================================ */
+.invoice-btn {
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #2874f0;
+  background: #ffffff;
+  color: #2874f0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ===============================
+  ORDER ID
+================================ */
+.order-id {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-between;
+  font-size: 13px;
+
+  strong {
+    font-weight: 500;
+  }
+
+  button {
+    background: none;
+    border: none;
+    font-size: 13px;
+  }
+}
+
+/* ===============================
+  TIMELINE (EXACT MATCH)
+================================ */
+.timeline {
+  margin-top: 10px;
+  padding-left: 6px;
+}
+
+.timeline-item {
   position: relative;
-  padding-bottom: 1.5rem;
-  
+  display: flex;
+  gap: 14px;
+  padding-bottom: 20px;
+
   &:last-child {
     padding-bottom: 0;
   }
+
+  &:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 14px;
+    height: calc(100% - 14px);
+    width: 2px;
+    background: #c8e6c9;
+  }
 }
 
-/* Circles */
-.circle {
-  width: 24px;
-  height: 24px;
+.dot {
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  border: 2px solid var(--primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
+  background: #c8e6c9;
+  margin-top: 2px;
 
-  &.completed {
-    background: var(--primary);
-    color: #fff;
-    border-color: var(--primary);
-  }
-
-  .check {
-    font-size: 14px;
-    font-weight: bold;
-  }
-
-  .dot {
-    width: 8px;
-    height: 8px;
-    background: var(--primary);
-    border-radius: 50%;
+  &.active {
+    background: #2e7d32;
   }
 }
 
-/* Connecting line */
-.line {
-  position: absolute;
-  width: 2px;
-  height: 100%;
-  background: var(--border);
-  left: 11px;
-  top: 28px;
-
-  &.completed {
-    background: var(--primary);
-  }
-}
-
-/* Step Content */
 .content {
-  padding-top: 2px;
-
-  .label {
-    font-size: 15px;
-    font-weight: 600;
-    margin-bottom: 2px;
-  }
-
-  .date {
+  strong {
     font-size: 13px;
-    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  p {
+    font-size: 12px;
+    color: #757575;
+    margin-top: 2px;
   }
 }
 
-/* SUMMARY CARD */
-.summary-card {
-  margin-top: 2rem;
-  background: var(--bg-white);
-  padding: 1.3rem;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
-  border: 1px solid var(--border);
-
-  h3 {
-    font-size: 18px;
-    margin-bottom: 1rem;
-  }
-
-  .summary-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 0.6rem 0;
-    border-bottom: 1px solid var(--border);
-
-    span {
-      font-size: 14px;
-      color: var(--text-dark);
-    }
-
-    strong {
-      font-size: 15px;
-      font-weight: 700;
-    }
-
-    &:last-child {
-      border-bottom: none;
-    }
+/* ===============================
+  DESKTOP (Flipkart behavior)
+================================ */
+@media (min-width: 768px) {
+  .order-container {
+    max-width: 720px;
+    margin: auto;
   }
 }
-
-/* MOBILE RESPONSIVE */
-@media (max-width: 480px) {
-  .timeline-step {
-    grid-template-columns: 28px 1fr;
+/* ===============================
+  MOBILE (Full width)
+================================ */
+@media (max-width: 767px) {
+  .order-container {
+    max-width: 100%;
+    margin: auto;
   }
-
-  .circle {
-    width: 20px;
-    height: 20px;
-  }
-
-  .summary-card {
-    padding: 1rem;
-  }
-}
-/* =============================
-   CONTINUE SHOPPING BUTTON
-============================= */
-
-.continue-shopping-box {
-  margin-top: 1.5rem;
-  display: flex;
-  justify-content: center;
-}
-
-.btn-shop {
-  background: var(--primary);
-  color: #fff;
-  font-size: 14px;
-  font-weight: 400;
-  border-radius: 12px;
-  margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border: none;
-  cursor: pointer;
-  transition: 0.25s ease;
-
-  i {
-    font-size: 18px;
-  }
-
-  &:hover {
-    background: var(--primary-dark);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(var(--primary-rgb), 0.25);
-  }
-
-  &:active {
-    transform: scale(0.97);
-  }
-}
-
-.cancel-order-box {
-  margin: 1rem 0;
-  text-align: right;
 }

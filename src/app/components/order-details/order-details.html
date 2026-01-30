@@ -1,87 +1,78 @@
-@if(ORDER_STEPS().length){
-
-<div class="order-details-wrapper">
-  <!-- CONTINUE SHOPPING -->
-  <div class="continue-shopping-box">
-    <button class="btn-shop" routerLink="/products">
-      <i class="bi bi-bag"></i> Continue Shopping
-    </button>
+<div class="order-container">
+<pre>{{ order() }}</pre>
+  <!-- Header -->
+  <div class="header">
+    <button class="back-btn" routerLink="/my-account">←</button>
+    <h2>Order Details</h2>
+    <!-- <button class="help-btn">Help</button> -->
   </div>
 
-  <!-- HEADER -->
-  <div class="header-box">
-    <h2>Order Tracking</h2>
-    <p>Order #{{ orderId() }}</p>
+  <!-- Delivery Details -->
+  <section class="card">
+    <h4>Delivery details</h4>
+    <div class="row">
+      <p class=""> <span class="icon">🏠</span> {{ order()?.customer?.address }}</p>
+    </div>
+    <div class="row">
+      <p class=""><span class="icon">👤</span>{{ order()?.customer?.name }} · {{ order()?.customer?.phone }}</p>
+    </div>
+  </section>
 
-    <div class="dates">
-      <span>Order Date: {{ orderDate() }}</span>
-      <span>Estimated Delivery: {{ estimatedDelivery() }}</span>
+  <!-- Price Details -->
+  <section class="card">
+    <h4>Price details</h4>
+    <div class="price-row">
+      <span>Listing price</span>
+      <span class="strike">₹{{ order()?.pricing?.mrp }}</span>
     </div>
-  </div>
 
-  <!-- CANCEL BUTTON -->
-   @if(canCancelOrder() && isCancelledFlag()){
-    <div class="cancel-order-box">
-      <button class="btn btn-outline-danger" (click)="cancelOrder()">
-        <i class="bi bi-x-circle"></i> Cancel Order
-      </button>
+    <div class="price-row">
+      <span>Selling price</span>
+      <span>₹{{ order()?.pricing?.selling }}</span>
     </div>
-   }
-  
-  <!-- CANCELLED ALERT -->
-  @if(isCancelled()){
-    <div class="alert alert-danger">
-      This order has been cancelled.
+    <hr />
+    <div class="price-row total">
+      <span>Total amount</span>
+      <span>₹{{ order()?.pricing?.total }}</span>
     </div>
+
+    <div class="payment">
+      <span>Payment method</span>
+      <strong>{{ order()?.paymentMethod  || 'Online'}}</strong>
+    </div>
+
+    <!-- <button class="invoice-btn" (click)="downloadInvoice()">
+      ⬇ Download Invoice
+    </button> -->
+  </section>
+
+  <!-- Order ID -->
+  <section class="card order-id">
+    <span>Order ID</span>
+    <strong>{{ order()?.id }}</strong>
+    <button (click)="copyOrderId()">📋</button>
+  </section>
+
+  @if (order()?.statusTimeline?.length > 0) {
+  <!-- Status Timeline -->
+    <section class="card">
+      <h4>Order Status</h4>
+
+      <div class="timeline">
+        @for (step of order()?.statusTimeline; track $index) {
+        <div
+          class="timeline-item"
+          [class.done]="step.done"
+        >
+          <div class="dot" [class.active]="step.done"></div>
+          <div class="content">
+            <strong>{{ step.label }}</strong>
+            <p>{{ step.date }}</p>
+          </div>
+        </div>
+      }
+      </div>
+    </section>
   }
 
-  <!-- TIMELINE -->
-  <div class="tracking-timeline">
-    @for (step of ORDER_STEPS(); track $index) {
-      <div class="timeline-step">
-        <!-- CIRCLE -->
-        <div class="circle"  [class.completed]="step.completed" 
-        [class.cancelled]="step.key === 'CANCELLED' && step.completed" >
-        @if(step.completed){
-           <span class="check">&#10003;</span>
-        } @else {
-            <div class="dot"></div>
-
-        }
-        </div>
-
-        <!-- TEXT -->
-        <div class="content">
-          <div class="label">{{ step.label }}</div>
-        </div>
-
-        <!-- LINE -->
-        @if($index + 1 < ORDER_STEPS().length) {
-          <div class="line" [class.completed]="ORDER_STEPS()[$index + 1].completed"></div>
-        }
-      </div>
-    }
-  </div>
-
-  <!-- SUMMARY -->
-  <div class="summary-card">
-    <h3>Order Summary</h3>
-
-    <div class="summary-row">
-      <span>Order Number</span>
-      <strong>{{ orderId() }}</strong>
-    </div>
-
-    <div class="summary-row">
-      <span>Order Date</span>
-      <strong>{{ orderDate() }}</strong>
-    </div>
-
-    <div class="summary-row">
-      <span>Estimated Delivery</span>
-      <strong>{{ estimatedDelivery() }}</strong>
-    </div>
-  </div>
-
 </div>
-}

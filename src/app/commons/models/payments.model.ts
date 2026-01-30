@@ -1,6 +1,5 @@
 export interface CreateOrder {
   shippingAddressId: number;
-  paymentMethod: 'online'; // keep strict if only one method for now
   couponCode?: string | null;
   items: CreateOrderItem[];
 }
