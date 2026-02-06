@@ -58,7 +58,7 @@ export class ProductDetail implements OnInit, OnDestroy {
   activeTab = signal<'description' | 'specs' | 'reviews'>('description');
 
 
-  private shareService = inject(ShareService);
+  shareService = inject(ShareService);
 
   @ViewChild('relatedProductsScroll', { static: false }) relatedProductsScroll!: ElementRef<HTMLElement> | undefined;
 
@@ -152,10 +152,6 @@ export class ProductDetail implements OnInit, OnDestroy {
         console.warn('Failed to load related products', err);
       }
     });
-  }
-
-  shareProduct(product:any){
-    this.shareService.openShare(product)
   }
 
   private updateSeoTags(product: any): void {

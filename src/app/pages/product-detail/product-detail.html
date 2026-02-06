@@ -96,9 +96,9 @@
             <h1 class="title">{{ productName() ? p.name +' '+ productName() : p.name }}</h1>
             <span 
               class="wishlist-btn"
-              (click)="shareProduct(product);"
+              (click)="this.shareService.openShare(p);"
             >
-              <i class="bi-share"></i>
+              <i class="bi bi-share"></i>
             </span>
           </span>
           <div class="meta-row">
