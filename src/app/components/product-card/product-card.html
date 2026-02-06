@@ -3,7 +3,7 @@
   <!-- Wishlist -->
   <button 
     class="wishlist-btn"
-    (click)="openShare(product);"
+    (click)="openShare(product); $event.stopPropagation();"
     [class.active]="isWishlisted()"
   >
     <i class="bi" [class.bi-share]="!isWishlisted()" [class.bi-share-fill]="isWishlisted()"></i>

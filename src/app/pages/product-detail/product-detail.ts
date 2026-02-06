@@ -18,6 +18,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { Loader } from "../../components/loader/loader";
 import { PopUp } from '../../components/pop-up/pop-up';
+import { ShareService } from '../../services/share-service';
 
 @Component({
   selector: 'app-product-detail',
@@ -44,6 +45,7 @@ export class ProductDetail implements OnInit, OnDestroy {
   loading = signal<boolean>(true);
   error = signal<string>('');
   openPopUp = signal<boolean>(false);
+  showSharePopup =signal(false);
 
   selectedVariant = signal<Variant | null>(null);
   isAddingToCart = signal<boolean>(false);
@@ -54,6 +56,9 @@ export class ProductDetail implements OnInit, OnDestroy {
   // New: description + tabs
   sanitizedDescription = signal<SafeHtml | null>(null);
   activeTab = signal<'description' | 'specs' | 'reviews'>('description');
+
+
+  private shareService = inject(ShareService);
 
   @ViewChild('relatedProductsScroll', { static: false }) relatedProductsScroll!: ElementRef<HTMLElement> | undefined;
 
@@ -147,6 +152,10 @@ export class ProductDetail implements OnInit, OnDestroy {
         console.warn('Failed to load related products', err);
       }
     });
+  }
+
+  shareProduct(product:any){
+    this.shareService.openShare(product)
   }
 
   private updateSeoTags(product: any): void {

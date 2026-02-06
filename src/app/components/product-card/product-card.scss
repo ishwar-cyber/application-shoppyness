@@ -30,6 +30,7 @@
     cursor: pointer;
     color: var(--text-muted);
     transition: 0.2s ease;
+    z-index: 1000;
 
     &.active {
       color: #ef4444;
