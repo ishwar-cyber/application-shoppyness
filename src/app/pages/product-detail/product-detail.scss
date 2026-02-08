@@ -841,7 +841,6 @@ $shimmer-bg: linear-gradient(90deg,
 .info-section {
 
   .title {
-    height: 20px;
     width: 100%;
     margin-bottom: 10px;
     border-radius: 4px;
@@ -973,4 +972,9 @@ $shimmer-bg: linear-gradient(90deg,
     background: #dcfce7;
     color: #15803d;
   }
+}
+
+.warranty-text{
+  font-size: 13px;
+  color: var(--text-muted);
 }
