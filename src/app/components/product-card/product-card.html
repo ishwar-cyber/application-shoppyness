@@ -24,7 +24,7 @@
 
     <!-- Price -->
     <div class="price-box">
-      <span class="price">₹{{ product?.price | number:'1.0-0' }}</span>
+      <span class="price">₹{{ product.variants.length > 0 ? product.variants[0]?.price : product?.price | number:'1.0-0' }}</span>
       @if(product?.oldPrice) {
       <span class="old-price">
         ₹{{ product?.oldPrice | number:'1.0-0' }}

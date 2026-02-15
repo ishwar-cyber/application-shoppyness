@@ -230,9 +230,9 @@ export class ProductDetail implements OnInit, OnDestroy {
     this.productName.set(variant.name);
     this.selectedVariant.set(variant);
     const images = this.product()?.images ?? [];
-    if (variant?.image && Array.isArray(images) && images.length > 0) {
+    if (variant?.images && Array.isArray(images) && images.length > 0) {
       const imgs = images as any[];
-      const idx = imgs.findIndex(i => i.url === variant?.image);
+      const idx = imgs.findIndex(i => i.url === variant?.images);
       if (idx >= 0) this.selectedImageIndex.set(idx);
     }
   }

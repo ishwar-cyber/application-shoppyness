@@ -73,8 +73,8 @@
 
           <div class="main-image"  (mousemove)="onMouseMove($event)"
              (mouseleave)="resetZoom()">
-            @if (selectedVariant() !== null && selectedVariant()?.image?.[0]?.url) {
-              <img [src]="selectedVariant()?.image?.[0]?.url" [style.transform]="transformStyle()" [alt]="p.name" #productImageRef itemprop="image" />
+            @if (selectedVariant() !== null && selectedVariant()?.images?.[0]?.url) {
+              <img [src]="selectedVariant()?.images?.[0]?.url" [style.transform]="transformStyle()" [alt]="p.name" #productImageRef itemprop="image" />
             } @else {
               <img [src]="selectedImage" #productImageRef [style.transform]="transformStyle()" [alt]="p.name" itemprop="image" />
             }
