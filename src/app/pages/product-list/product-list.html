@@ -208,7 +208,7 @@
                   <p class="brand">{{ productGrid.brand?.name || '' }}</p>
 
                   <div class="price-row">
-                    <strong class="price">₹{{ productGrid.price }}</strong>
+                    <strong class="price">₹{{ productGrid.variants.length > 0 ? productGrid.variants[0]?.price : productGrid?.price | number:'1.0-0' }}</strong>
                   </div>
 
                   <button class="btn-primary btn-sm">View</button>
@@ -237,7 +237,7 @@
                     {{ productList.description | slice:0:120 }}...
                   </p> -->
 
-                  <strong class="price">₹{{ productList.price }}</strong>
+                  <strong class="price">₹{{ productList.variants.length > 0 ? productList.variants[0]?.price : productList?.price | number:'1.0-0' }}</strong>
                 </div>
 
               </div>
