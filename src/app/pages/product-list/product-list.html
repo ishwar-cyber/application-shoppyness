@@ -208,7 +208,11 @@
                   <p class="brand">{{ productGrid.brand?.name || '' }}</p>
 
                   <div class="price-row">
-                    <strong class="price">₹{{ productGrid.variants.length > 0 ? productGrid.variants[0]?.price : productGrid?.price | number:'1.0-0' }}</strong>
+                    @if(productGrid.variants && productGrid.variants.length > 0){
+                       <strong class="price">₹{{productGrid.variants[0]?.price | number:'1.0-0' }}</strong>
+                    } @else {
+                      <strong class="price">₹{{productGrid?.price | number:'1.0-0' }}</strong>
+                    }
                   </div>
 
                   <button class="btn-primary btn-sm">View</button>
