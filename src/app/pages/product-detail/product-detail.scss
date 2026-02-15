@@ -78,11 +78,14 @@
     align-items: center;
     justify-content: center;
     min-height: 320px;
+    cursor: zoom-in;
+    overflow: hidden;
 
     img {
       max-width: 100%;
       max-height: 360px;
       object-fit: contain;
+      transition: transform 0.2s ease;
     }
 
     .nav-btn {

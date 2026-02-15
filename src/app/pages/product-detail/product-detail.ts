@@ -361,4 +361,24 @@ addToCart(product: any): void {
   currentStock(): number {
     return this.selectedVariant()?.stock ?? this.product()?.stock ?? 1;
   }
+
+  zoomLevel = 2;
+  transformStyle = signal('scale(1)');
+  // selectedImage = 'assets/images/product1.jpg';
+
+  onMouseMove(event: MouseEvent) {
+    const target = event.currentTarget as HTMLElement;
+    const rect = target.getBoundingClientRect();
+
+    const x = ((event.clientX - rect.left) / rect.width) * 100;
+    const y = ((event.clientY - rect.top) / rect.height) * 100;
+
+    this.transformStyle.set(
+      `scale(${this.zoomLevel}) translate(-${x/2}%, -${y/2}%)`
+    );
+  }
+
+  resetZoom() {
+    this.transformStyle.set('scale(1)');
+  }
 }
