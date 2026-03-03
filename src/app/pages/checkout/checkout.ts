@@ -110,7 +110,7 @@ createOrderPayload(): CreateOrder {
     shippingAddressId: this.selectedAddress()?.id,
     couponCode: this.couponCode() || null,
     items: (this.cartService.cartItems() || this.cartItems()).map(item => ({
-      productId: item.productId,
+      cartItem: item.id,
       variantId: item.variantId || null,
       quantity: item.quantity || 1
     }))
@@ -182,7 +182,7 @@ createOrderPayload(): CreateOrder {
           this.couponDiscount.set(response.discount);
           // this.subTotal.set(response.cartTotal);
           this.totalAmount.set(response.finalTotal);
-          this.couponSuccess.set(`Coupon applied successfully! ₹ ${response.discount} discount added.`);
+          this.couponSuccess.set(` ✔ Coupon applied successfully! ₹ ${response.discount} discount added.`);
           this.couponError.set(null);
         }, error: (err) => {
           console.error('Error applying coupon:', err);

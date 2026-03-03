@@ -227,7 +227,7 @@ export class ProductDetail implements OnInit, OnDestroy {
 
   // Variant selection
   selectVariant(variant: Variant) {
-    this.productName.set(variant.name);
+    this.productName.set(variant?.name);
     this.selectedVariant.set(variant);
     const images = this.product()?.images ?? [];
     if (variant?.images && Array.isArray(images) && images.length > 0) {

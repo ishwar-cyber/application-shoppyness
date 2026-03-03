@@ -363,4 +363,7 @@ export class ProductList implements OnInit {
       document.body.classList.remove('filter-drawer-open');
     }
   }
+  getProductPrice(product: ProductModel): number {
+    return product.variants?.[0]?.price ?? product.price ?? 0;
+  }
 }

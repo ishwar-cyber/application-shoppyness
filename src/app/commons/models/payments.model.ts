@@ -5,7 +5,7 @@ export interface CreateOrder {
 }
 
 export interface CreateOrderItem {
-  productId: number;
+  cartItem: number;
   variantId?: number | null;
   quantity: number;
 }

@@ -27,7 +27,7 @@ export interface Item {
   product: Product;
   slug: string;
   name: string;
-  images:Image[],
+  image:Image[],
   price: number;
   quantity: number;
   createdAt: string;

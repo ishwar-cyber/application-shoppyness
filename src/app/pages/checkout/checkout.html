@@ -79,13 +79,13 @@
       <div class="summary-box">
         <h3>Order Summary</h3>
         <div class="items">
-          @for (item of cartItems(); track item.productId) {
+          @for (item of cartItems(); track item.id) {
             <div class="item">
-              <img [src]="item?.product?.images[0].url" alt="product"/>
+              <img [src]="item?.image" alt="product"/>
               <div class="details">
                 <h4>{{ item.name }}</h4>
                 <p>Qty: {{ item.quantity }}</p>
-                <strong>₹ {{ item.product.price }}</strong>
+                <strong>₹ {{ item.price }}</strong>
               </div>
             </div>
           }
@@ -110,10 +110,10 @@
           @if (couponError()) {
             <p class="coupon-error">{{ couponError() }}</p>
           }
-
-          @if (couponSuccess()) {
-            <p class="coupon-success">✔ {{ couponSuccess() }}</p>
-          }
+          <!-- <pre>{{couponSuccess()}}</pre> -->
+          <!-- @if (couponSuccess()) { -->
+            <p class="coupon-success">  {{ couponSuccess() }}</p>
+          <!-- } -->
         </div>
 
         <div class="price-box">

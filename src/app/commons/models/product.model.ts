@@ -9,7 +9,7 @@ export interface ProductModel {
   discount: number
   slug?: string
   price: number
-  variants: Variant[]
+  variants?: Variant[]
   category: Category[]
   pincode: string[]
   stock: number
@@ -42,7 +42,7 @@ export interface Variant {
   sku: string
   price: number
   stock: number
-  images?: [Image]
+  images: [Image]
   id: number
 }
 
