@@ -1,5 +1,4 @@
 <div class="order-container">
-<pre>{{ order() }}</pre>
   <!-- Header -->
   <div class="header">
     <button class="back-btn" routerLink="/my-account">←</button>
@@ -11,34 +10,37 @@
   <section class="card">
     <h4>Delivery details</h4>
     <div class="row">
-      <p class=""> <span class="icon">🏠</span> {{ order()?.customer?.address }}</p>
+      <p class=""> <span class="icon">🏠</span> {{ orders()?.customer?.address }}</p>
     </div>
     <div class="row">
-      <p class=""><span class="icon">👤</span>{{ order()?.customer?.name }} · {{ order()?.customer?.phone }}</p>
+      <p class=""><span class="icon">👤</span>{{ orders()?.customer?.name }} · {{ orders()?.customer?.phone }}</p>
     </div>
   </section>
 
   <!-- Price Details -->
   <section class="card">
     <h4>Price details</h4>
-    <div class="price-row">
-      <span>Listing price</span>
-      <span class="strike">₹{{ order()?.pricing?.mrp }}</span>
-    </div>
+    @if(orders()?.pricing?.mrp){
+      <div class="price-row">
+        <span>Listing price</span>
+        <span class="strike">₹{{ orders()?.pricing?.mrp }}</span>
+      </div>
+    }
+  
 
     <div class="price-row">
       <span>Selling price</span>
-      <span>₹{{ order()?.pricing?.selling }}</span>
+      <span>₹{{ orders()?.pricing?.selling }}</span>
     </div>
     <hr />
     <div class="price-row total">
       <span>Total amount</span>
-      <span>₹{{ order()?.pricing?.total }}</span>
+      <span>₹{{ orders()?.pricing?.total }}</span>
     </div>
 
     <div class="payment">
       <span>Payment method</span>
-      <strong>{{ order()?.paymentMethod  || 'Online'}}</strong>
+      <strong>{{ orders()?.paymentMethod  || 'Online'}}</strong>
     </div>
 
     <!-- <button class="invoice-btn" (click)="downloadInvoice()">
@@ -49,17 +51,17 @@
   <!-- Order ID -->
   <section class="card order-id">
     <span>Order ID</span>
-    <strong>{{ order()?.id }}</strong>
+    <strong>{{ orders()?.id }}</strong>
     <button (click)="copyOrderId()">📋</button>
   </section>
 
-  @if (order()?.statusTimeline?.length > 0) {
+  @if (orders()?.statusTimeline?.length > 0) {
   <!-- Status Timeline -->
     <section class="card">
       <h4>Order Status</h4>
 
       <div class="timeline">
-        @for (step of order()?.statusTimeline; track $index) {
+        @for (step of orders()?.statusTimeline; track $index) {
         <div
           class="timeline-item"
           [class.done]="step.done"

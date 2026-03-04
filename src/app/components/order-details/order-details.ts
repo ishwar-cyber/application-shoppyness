@@ -18,7 +18,7 @@ interface OrderStatus {
 })
 export class OrderDetails implements OnInit {
 
-  order = signal<any>(null);
+  orders = signal<any>(null);
   orderId = signal<string>('');
   orderDate = signal<string>('');
   estimatedDelivery = signal<string>('2025-11-15');
@@ -53,6 +53,8 @@ export class OrderDetails implements OnInit {
   getOrderForTracking(userId: string, orderId: string) {
     this.profileService.getOrderById(userId, orderId).subscribe((order: any) => {
       if (order) {
+        console.log('order', this.orders.set(order.data));
+        
         this.isCancelledFlag.set(order.payload?.orderStatus.toLowerCase() === 'cancelled' ?  false : true)
         this.ORDER_STEPS.set(order?.payload?.tracking);
         this.orderId.set(order?.payload?.orderNumber || '');
@@ -87,16 +89,6 @@ export class OrderDetails implements OnInit {
       reason: 'i dont want this model'
     }
     this.profileService.cancelOrder(this.orderId(), reason).subscribe();
-  }
-
-  setOrderData(response: any) {
-    console.log('order payload', this.order());
-    
-    this.order.set(response.data);
-    this.ORDER_STEPS.set(this.ORDER_STEPS().map(step => ({
-      ...step,
-      completed: this.isStepCompleted(step.key, response.status)
-    })));
   }
 
   isStepCompleted(stepKey: string, currentStatus: string): boolean {
