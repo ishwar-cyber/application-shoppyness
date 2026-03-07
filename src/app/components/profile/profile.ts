@@ -18,6 +18,7 @@ interface Order {
   totalAmount?: number;
   items?: Array<{ id: string; name: string; quantity: number; price: number; }>;
   trackingNumber?: string;
+  statusTimeline?: Array<{ isCurrent: boolean; done: boolean; label: string; date: string; }>
 }
 interface UserSettings {
   orderUpdates: boolean;

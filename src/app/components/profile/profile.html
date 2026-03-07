@@ -173,9 +173,11 @@
                   
                   <div class="order-header">
                     <h3>#{{ order.id }}</h3>
-                    <span class="badge" [class]="getOrderStatusClass(order.orderStatus)">
-                      {{ order.orderStatus | titlecase }}
-                    </span>
+                    @for (item of order.statusTimeline; track $index) {
+                      <span class="badge" [class]="getOrderStatusClass(item.label)">
+                        {{ order.orderStatus | titlecase }}
+                      </span>
+                    }
                   </div>
 
                   <p class="date">Placed on {{ order.date | date:'mediumDate' }}</p>

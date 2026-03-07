@@ -1,7 +1,8 @@
 import { CommonModule, isPlatformBrowser, ViewportScroller } from '@angular/common';
-import { Component, HostListener, inject, OnInit, PLATFORM_ID, Input, Output, EventEmitter, signal, SimpleChanges } from '@angular/core';
+import { Component, HostListener, inject, OnInit, PLATFORM_ID, Input, Output, EventEmitter, signal, SimpleChanges, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 
 import { Seo } from '../../services/seo';
 import { CartService } from '../../services/cart';
@@ -13,7 +14,7 @@ import { forkJoin } from 'rxjs';
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, ScrollingModule],
   templateUrl: './product-list.html',
   styleUrls: ['./product-list.scss']
 })
@@ -58,6 +59,8 @@ export class ProductList implements OnInit {
   isMobileView = signal<boolean>(false);
   isFilterDrawerOpen = signal<boolean>(false);
   isBrowser = signal<boolean>(false);
+  // Prevent multiple automatic loads; trigger once when sentinel is visible
+  private loadInitiated = false;
   // -------------------------------------------
   // Inject Services (Unchanged)
   // -------------------------------------------
@@ -69,7 +72,7 @@ export class ProductList implements OnInit {
   private readonly homeService = inject(HomeService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly scroller = inject(ViewportScroller);
-
+  @ViewChild('scrollTrigger') scrollTrigger!: ElementRef;
   // Listen window resize
   @HostListener('window:resize') onResize() { this.checkScreenSize(); }
 
@@ -108,7 +111,6 @@ export class ProductList implements OnInit {
     if (this.mode === 'external' && this.products) {
       this.prepareProductList(this.products);
       this.isLoading.set(false);
-      this.loadAllProducts();
       return;
     }
 
@@ -125,6 +127,26 @@ export class ProductList implements OnInit {
       keywords: 'laptop, mobile, electronics',
       url: 'https://shoppyness.com/products'
     });
+  }
+
+  ngAfterViewInit() {
+
+    // Only run observer in browser (avoid server-side errors)
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    const observer = new IntersectionObserver(entries => {
+      if (!entries[0].isIntersecting) return;
+
+      // Guard so we only trigger the initial load once
+      if (this.loadInitiated) return;
+      this.loadInitiated = true;
+      this.loadAllProducts();
+    }, { threshold: 0.5 });
+
+    if (this.scrollTrigger?.nativeElement) {
+      observer.observe(this.scrollTrigger.nativeElement);
+    }
+
   }
 
   setupFromRoute() {
@@ -203,7 +225,9 @@ export class ProductList implements OnInit {
     if (this.subCategorySlug()) return this.loadCategoryProducts(this.subCategorySlug());
     if (this.categorySlug()) return this.loadCategoryProducts(this.categorySlug());
 
-    this.loadAllProducts();
+    // Defer loading all-products until user scrolls into the viewport sentinel
+    // The IntersectionObserver in ngAfterViewInit will call `loadAllProducts()`
+    this.isLoading.set(false);
   }
 
   loadAllProducts() {
