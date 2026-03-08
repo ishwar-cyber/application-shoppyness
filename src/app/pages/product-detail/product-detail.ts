@@ -56,7 +56,7 @@ export class ProductDetail implements OnInit, OnDestroy {
   // New: description + tabs
   sanitizedDescription = signal<SafeHtml | null>(null);
   activeTab = signal<'description' | 'specs' | 'reviews'>('description');
-
+  showZoom = signal(false);
 
   shareService = inject(ShareService);
 
@@ -364,7 +364,7 @@ addToCart(product: any): void {
 
   zoomLevel = 2;
   transformStyle = signal('scale(1)');
-  // selectedImage = 'assets/images/product1.jpg';
+  transformOrigin = signal('center');
 
   onMouseMove(event: MouseEvent) {
     const target = event.currentTarget as HTMLElement;
@@ -373,12 +373,20 @@ addToCart(product: any): void {
     const x = ((event.clientX - rect.left) / rect.width) * 100;
     const y = ((event.clientY - rect.top) / rect.height) * 100;
 
-    this.transformStyle.set(
-      `scale(${this.zoomLevel}) translate(-${x/2}%, -${y/2}%)`
-    );
+    this.transformOrigin.set(`${x}% ${y}%`);
+    this.transformStyle.set(`scale(${this.zoomLevel})`);
   }
 
   resetZoom() {
     this.transformStyle.set('scale(1)');
+    this.transformOrigin.set('center');
+  }
+
+  openFullscreen(){
+  this.showZoom.set(true);
+  }
+
+  closeFullscreen(){
+    this.showZoom.set(false);
   }
 }

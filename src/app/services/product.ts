@@ -14,13 +14,14 @@ export class ProductService {
   private readonly http = inject(HttpClient);
   private readonly state = inject(TransferState);
 
-  getProduct() {
-    const KEY = makeStateKey<ProductModel[]>('products');
-    const saved = this.state.get(KEY, null as any);
-    if (saved) return of(saved);
-    return this.http.get<ProductModel[]>(`${this.URL}/products`).pipe(
-      tap(data => this.state.set(KEY, data))
-    );
+  getProduct(page?: number, limit?: number) {
+    let params = new HttpParams();
+    if (page !== undefined && limit !== undefined) {
+      params = params
+        .set('page', page.toString())
+        .set('limit', limit.toString());
+    }
+    return this.http.get(`${this.URL}/products`, { params });
   }
 
   getProductById(slug: string) {

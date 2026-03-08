@@ -5,20 +5,21 @@ import { initialProductState } from "./products.state";
 export const productReducer = createReducer(
     initialProductState,
 
-    on(ProductsActions.loadProducts, state =>({
+    on(ProductsActions.loadProducts, state => ({
         ...state,
         loading: true
     })),
 
-    on(ProductsActions.loadProductsSuccess, (state,{products}) =>({
+    on(ProductsActions.loadProductsSuccess, (state, { products, pagination }) => ({
         ...state,
         loading: false,
-        products
+        products: [...state.products, ...products],
+        pagination
     })),
 
-    on(ProductsActions.loadProductsFailure,(state,{error})=>({
+    on(ProductsActions.loadProductsFailure, (state, { error }) => ({
         ...state,
         loading: false,
         error
     }))
-)
+);

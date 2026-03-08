@@ -578,3 +578,13 @@
   height: 100vh;
   width: 100%;
 }
+.fetching-indicator {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}

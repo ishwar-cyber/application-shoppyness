@@ -59,6 +59,12 @@ export class ProductList implements OnInit {
   isMobileView = signal<boolean>(false);
   isFilterDrawerOpen = signal<boolean>(false);
   isBrowser = signal<boolean>(false);
+
+  page = signal<number>(1);
+  limit = 15;
+  hasMore = signal<boolean>(true);
+  isFetching = signal<boolean>(false);
+
   // Prevent multiple automatic loads; trigger once when sentinel is visible
   private loadInitiated = false;
   // -------------------------------------------
@@ -98,6 +104,7 @@ export class ProductList implements OnInit {
   // -------------------------------------------
   ngOnInit() {
     this.isLoading.set(true);
+    this.loadAllProducts();
      if(this.isBrowser()){
       this.mode = sessionStorage.getItem('mode') as any || this.mode;
     } 
@@ -130,23 +137,14 @@ export class ProductList implements OnInit {
   }
 
   ngAfterViewInit() {
-
-    // Only run observer in browser (avoid server-side errors)
     if (!isPlatformBrowser(this.platformId)) return;
-
+    
     const observer = new IntersectionObserver(entries => {
-      if (!entries[0].isIntersecting) return;
-
-      // Guard so we only trigger the initial load once
-      if (this.loadInitiated) return;
-      this.loadInitiated = true;
-      this.loadAllProducts();
+      if (entries[0].isIntersecting) {
+        this.loadAllProducts();
+      }
     }, { threshold: 0.5 });
-
-    if (this.scrollTrigger?.nativeElement) {
-      observer.observe(this.scrollTrigger.nativeElement);
-    }
-
+    observer.observe(this.scrollTrigger.nativeElement);
   }
 
   setupFromRoute() {
@@ -231,21 +229,33 @@ export class ProductList implements OnInit {
   }
 
   loadAllProducts() {
-    this.isLoading.set(true);
-    this.productService.getProduct().subscribe(res => {
-       this.isLoading.set(false);
-      this.prepareProductList(res.data);
+    console.log('auto-loading products for page', this.page());
+    if (!this.hasMore() || this.isFetching()) return;
+    
+    this.isFetching.set(true);
+    this.productService.getProduct(this.page(), this.limit).subscribe((res:any) => {
+      const newProducts = res.data || [];
+      if (newProducts.length < this.limit) {
+        this.hasMore.set(false); // no more pages
+      }
+      this.allProducts.update(prev => [...prev, ...newProducts]);
+      this.filteredProducts.set(this.allProducts());
+      this.page.update(p => p + 1);
+      this.isFetching.set(false);
+      this.isLoading.set(false);
     });
   }
 
   loadCategoryProducts(slug: string) {
-     this.isLoading.set(true);
+    this.resetPagination();
+    this.isLoading.set(true);
     this.productService.getProductByCategoryId(slug).subscribe((res: any) => {
        this.isLoading.set(false);
       this.prepareProductList(res.data);
     });
   }
   loadSubCategoryProducts(payload:object){
+    this.resetPagination();
     this.isLoading.set(true);
     this.productService.getProductBySubCategorySlug(payload).subscribe({
       next: (res:any) =>{
@@ -254,6 +264,7 @@ export class ProductList implements OnInit {
     })
   }
   loadSearchProducts() {
+    this.resetPagination();
     this.productService.searchProducts(this.searchQuery()).subscribe((res: any) => {
       this.prepareProductList(res.data);
     });
@@ -303,6 +314,7 @@ export class ProductList implements OnInit {
      PRICE FILTER
   ---------------------------------------------------------- */
   filterProducts() {
+    this.resetPagination();
     this.isFilterDrawerOpen.set(!this.isFilterDrawerOpen());
     if (isPlatformBrowser(this.platformId)) {
       document.body.classList.toggle('filter-drawer-open', this.isFilterDrawerOpen());
@@ -337,6 +349,7 @@ export class ProductList implements OnInit {
   }
 
   resetFilters() {
+    this.resetPagination();
     this.selectedBrands.set('');
     this.selectedCategories.set('');
     this.selectedProcessor.set('');
@@ -390,4 +403,13 @@ export class ProductList implements OnInit {
   getProductPrice(product: ProductModel): number {
     return product.variants?.[0]?.price ?? product.price ?? 0;
   }
+
+  resetPagination() {
+    this.page.set(1);
+    this.hasMore.set(true);
+    this.allProducts.set([]);
+    this.filteredProducts.set([]);
+  }
+
+
 }
