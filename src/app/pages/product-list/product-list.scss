@@ -575,7 +575,7 @@
   }
 }
 .viewport{
-  height: 100vh;
+  // height: 100vh;
   width: 100%;
 }
 .fetching-indicator {
@@ -583,7 +583,10 @@
   justify-content: center;
   margin: 20px 0;
 }
-
+.visually-hidden{
+  color: #111;
+  position: relative !important;
+}
 .spinner-border {
   width: 3rem;
   height: 3rem;

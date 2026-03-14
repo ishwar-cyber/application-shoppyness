@@ -14,13 +14,46 @@ export class ProductService {
   private readonly http = inject(HttpClient);
   private readonly state = inject(TransferState);
 
-  getProduct(page?: number, limit?: number) {
+  getProduct(
+    page?: number,
+    limit?: number,
+    categories?: string[],
+    brands?: string[],
+    processors?: string[],
+    generic?: string[],
+    price?: number[]
+  ) {
     let params = new HttpParams();
-    if (page !== undefined && limit !== undefined) {
-      params = params
-        .set('page', page.toString())
-        .set('limit', limit.toString());
+
+    if (categories?.length) {
+      params = params.set('categories', categories.join(','));
     }
+
+    if (brands?.length) {
+      params = params.set('brands', brands.join(','));
+    }
+
+    if (processors?.length) {
+      params = params.set('processors', processors.join(','));
+    }
+
+    if (generic?.length) {
+      params = params.set('generic', generic.join(','));
+    }
+
+    if (price?.length === 2) {
+      params = params.set('minPrice', price[0].toString());
+      params = params.set('maxPrice', price[1].toString());
+    }
+
+    if (page !== undefined) {
+      params = params.set('page', page.toString());
+    }
+
+    if (limit !== undefined) {
+      params = params.set('limit', limit.toString());
+    }
+
     return this.http.get(`${this.URL}/products`, { params });
   }
 
@@ -57,8 +90,8 @@ export class ProductService {
       params = params.set('minPrice', price[0].toString());
       params = params.set('maxPrice', price[1].toString());
     }
-    
-    return this.http.get<any[]>(`${this.URL}/products/filter`, { params });
+
+    return this.http.get<any[]>(`${this.URL}/products`, { params });
   }
 
   searchProducts(query: string) {
@@ -82,7 +115,7 @@ export class ProductService {
         title: data.title,
         text: data.text,
         url: data.url
-      }).catch(() => {});
+      }).catch(() => { });
       return true;
     }
     return false;

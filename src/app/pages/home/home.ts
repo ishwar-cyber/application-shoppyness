@@ -1,7 +1,7 @@
 import { Component, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { Seo } from '../../services/seo';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ProductCard } from '../../components/product-card/product-card';
 import { ProductService } from '../../services/product';
 import { HomeService } from '../../services/home';
@@ -54,6 +54,7 @@ export class Home implements OnInit{
 
   private readonly seoService = inject(Seo);
   private readonly homeService = inject(HomeService);
+  private readonly router = inject(Router);
 
   ngOnInit(): void {
     // Set SEO meta tags for home page
@@ -126,5 +127,11 @@ export class Home implements OnInit{
       (this.currentSlide() - 1 + total) % total
     );
   }
+
+  goToProductPage(slug: string) {
+  this.router.navigate(['/products'], {
+    queryParams: { category: slug }
+  });
+}
 }
 

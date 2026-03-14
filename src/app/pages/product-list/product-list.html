@@ -38,8 +38,8 @@
           @for (brand of brands(); track brand.id) {
             <button
               type="button"
-              class="filter-item filter-btn" [class.active]="selectedBrands() === brand.name"
-              (click)="toggleBrand(brand.name)">
+              class="filter-item filter-btn" [class.active]="selectedBrands() === brand.slug"
+              (click)="toggleBrand(brand.slug); isFilterDrawerOpen.set(false)">
               {{ brand.name | uppercase}}
             </button>
           }
@@ -53,7 +53,7 @@
             min="{{ minPrice() }}"
             max="{{ maxPrice() }}"
             [(ngModel)]="priceRange()[1]"
-            (change)="filterProducts()"
+            (change)="getProducts()"
           />
           <p class="price-label">
             ₹{{ minPrice() }} - ₹{{ priceRange()[1] }}
@@ -61,7 +61,7 @@
         </div>
 
         @if (isMobileView()) {
-          <button class="apply-btn" (click)="filterProducts()">Apply Filters</button>
+          <button class="apply-btn" (click)="getProducts()">Apply Filters</button>
         }
 
         <button class="reset-btn" (click)="resetFilters()">Reset</button>
@@ -255,9 +255,9 @@
 
 <div #scrollTrigger class="viewport"></div>
 
-@if (isFetching()){
+@if (isFetching()) {
   <div class="fetching-indicator">
-    <div class="spinner-border text-primary" role="status">
+    <div class="text-primary" role="status">
       <span class="visually-hidden">Loading...</span>
     </div>
   </div>

@@ -15,7 +15,7 @@ export class ProductsEffect {
       ofType(ProductsAction.loadProducts),
 
       switchMap(({ page, limit }) =>
-        this.api.getProduct(page, limit).pipe(
+        this.api.getProduct(page, limit, undefined, undefined, undefined, undefined, undefined).pipe(
 
           map((res: any) =>
             ProductsAction.loadProductsSuccess({

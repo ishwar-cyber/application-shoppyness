@@ -3,7 +3,7 @@ import { Component, HostListener, inject, OnInit, PLATFORM_ID, Input, Output, Ev
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ScrollingModule } from '@angular/cdk/scrolling';
-
+import { combineLatest } from 'rxjs';
 import { Seo } from '../../services/seo';
 import { CartService } from '../../services/cart';
 import { ProductService } from '../../services/product';
@@ -23,7 +23,7 @@ export class ProductList implements OnInit {
   // -------------------------------------------
   // ❤️ REUSABLE COMPONENT INPUTS / OUTPUTS
   // -------------------------------------------
-  @Input() mode: 'category' | 'subcategory' | 'search' | 'external'= 'external';
+  @Input() mode: 'category' | 'subcategory' | 'search' | 'external' = 'external';
   @Input() apiParams: any = {};
   @Input() products: ProductModel[] | null = null;
 
@@ -59,9 +59,10 @@ export class ProductList implements OnInit {
   isMobileView = signal<boolean>(false);
   isFilterDrawerOpen = signal<boolean>(false);
   isBrowser = signal<boolean>(false);
+  includeCategoryInFilter = signal<boolean>(false);
 
   page = signal<number>(1);
-  limit = 15;
+  limit = 100;
   hasMore = signal<boolean>(true);
   isFetching = signal<boolean>(false);
 
@@ -73,7 +74,7 @@ export class ProductList implements OnInit {
   private readonly seo = inject(Seo);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  public  readonly cartService = inject(CartService);
+  public readonly cartService = inject(CartService);
   private readonly productService = inject(ProductService);
   private readonly homeService = inject(HomeService);
   private readonly platformId = inject(PLATFORM_ID);
@@ -94,20 +95,20 @@ export class ProductList implements OnInit {
     // If mode is 'external' and products are provided
     this.apiParams = changes?.['apiParams'] ? changes?.['apiParams']['currentValue'] : this.mode;
     this.isBrowser.set(isPlatformBrowser(this.platformId));
-    if(this.isBrowser()){
+    if (this.isBrowser()) {
       this.mode = sessionStorage.getItem('mode') as any || this.mode;
     }
-    this.setupFromRoute();
+    // this.setupFromRoute();
   }
   // -------------------------------------------
   // INIT
   // -------------------------------------------
   ngOnInit() {
     this.isLoading.set(true);
-    this.loadAllProducts();
-     if(this.isBrowser()){
+    // this.loadAllProducts();
+    if (this.isBrowser()) {
       this.mode = sessionStorage.getItem('mode') as any || this.mode;
-    } 
+    }
     this.isMobileView.set(isPlatformBrowser(this.platformId) ? window.innerWidth <= 768 : false);
     this.checkScreenSize();
     this.scroller.scrollToPosition([0, 0]);
@@ -116,6 +117,7 @@ export class ProductList implements OnInit {
     // CASE 1: External products
     // -------------------------
     if (this.mode === 'external' && this.products) {
+      console.log('Using external products input', this.products);
       this.prepareProductList(this.products);
       this.isLoading.set(false);
       return;
@@ -138,64 +140,77 @@ export class ProductList implements OnInit {
 
   ngAfterViewInit() {
     if (!isPlatformBrowser(this.platformId)) return;
-    
+
     const observer = new IntersectionObserver(entries => {
       if (entries[0].isIntersecting) {
+
+        if (
+          this.selectedBrands() ||
+          this.selectedCategories() ||
+          this.searchQuery()
+        ) return;
+
         this.loadAllProducts();
       }
     }, { threshold: 0.5 });
+
     observer.observe(this.scrollTrigger.nativeElement);
   }
 
   setupFromRoute() {
-    this.isLoading.set(true);
-    // CATEGORY
-    if (this.mode === 'category') {
-      this.categorySlug.set(this.apiParams.slug || '');
-      this.loadCategoryProducts(this.categorySlug());
-      this.selectedCategories.set(this.categorySlug());
-      return;
-    }
+    combineLatest([
+      this.route.paramMap,
+      this.route.queryParams
+    ]).subscribe(([params, query]) => {
 
-    // SUBCATEGORY
-    if (this.mode === 'subcategory') {   
-      this.subCategorySlug.set(this.apiParams.slug || '');
-      this.loadSubCategoryProducts(this.apiParams);
-      return;
-    }
+      const catSlug = params.get('catSlug') || params.get('slug') || '';
+      const subSlug = params.get('subSlug') || '';
 
-    // SEARCH
-    if (this.mode === 'search') {
-      this.searchQuery.set(this.apiParams.search || '');
-      this.loadSearchProducts();
-      return;
-    }
+      this.categorySlug.set(catSlug);
+      this.subCategorySlug.set(subSlug);
 
-    // DEFAULT (Your original behavior)
-    this.route.paramMap.subscribe((params: any) => {
-      const p = params.params;
-      this.categorySlug.set(p['catSlug'] || p['slug'] || '');
-      this.subCategorySlug.set(p['subSlug'] || '');
-
-      if (p['search']) {
-        this.searchQuery.set(p['search']);
+      const search = params.get('search');
+      if (search) {
+        this.searchQuery.set(search);
       }
 
-      this.loadDataBasedOnRoute();
-    });
+      if (query['brand']) {
+        this.selectedBrands.set(String(query['brand']));
+      }
 
-    this.loadQueryParams();
+      if (query['category']) {
+        this.selectedCategories.set(String(query['category']));
+      }
+
+      if (query['min'] && query['max']) {
+        this.priceRange.set([Number(query['min']), Number(query['max'])]);
+      }
+
+      this.includeCategoryInFilter.set(Boolean(query['category']));
+
+      this.applyFilters();
+    });
   }
 
   loadQueryParams() {
     this.route.queryParams.subscribe(params => {
-      if (params['brand']) this.selectedBrands.set(params['brand'].split(','));
+
+      if (params['brand']) {
+        this.selectedBrands.set(String(params['brand']).split(',')[0] || '');
+      }
+
+      if (params['category']) {
+        this.selectedCategories.set(String(params['category']).split(',')[0] || '');
+      }
 
       if (params['min'] && params['max']) {
         this.priceRange.set([Number(params['min']), Number(params['max'])]);
       }
 
-      this.filterProducts();
+      this.includeCategoryInFilter.set(Boolean(params['category']));
+
+      // ✅ ONLY place where filters run
+      this.applyFilters();
     });
   }
 
@@ -230,10 +245,16 @@ export class ProductList implements OnInit {
 
   loadAllProducts() {
     console.log('auto-loading products for page', this.page());
-    if (!this.hasMore() || this.isFetching()) return;
-    
+    if (
+      this.selectedBrands() ||
+      this.selectedCategories() ||
+      this.searchQuery()
+    ) {
+      return; // filtered mode active
+    }
+
     this.isFetching.set(true);
-    this.productService.getProduct(this.page(), this.limit).subscribe((res:any) => {
+    this.productService.getProduct(this.page(), this.limit).subscribe((res: any) => {
       const newProducts = res.data || [];
       if (newProducts.length < this.limit) {
         this.hasMore.set(false); // no more pages
@@ -250,16 +271,16 @@ export class ProductList implements OnInit {
     this.resetPagination();
     this.isLoading.set(true);
     this.productService.getProductByCategoryId(slug).subscribe((res: any) => {
-       this.isLoading.set(false);
+      this.isLoading.set(false);
       this.prepareProductList(res.data);
     });
   }
-  loadSubCategoryProducts(payload:object){
+  loadSubCategoryProducts(payload: object) {
     this.resetPagination();
     this.isLoading.set(true);
     this.productService.getProductBySubCategorySlug(payload).subscribe({
-      next: (res:any) =>{
-         this.prepareProductList(res.data);
+      next: (res: any) => {
+        this.prepareProductList(res.data);
       }
     })
   }
@@ -274,10 +295,24 @@ export class ProductList implements OnInit {
   // Prepare Products (Unchanged)
   // ----------------------------------------------------
   private prepareProductList(data: any[]) {
-    const prices = data.map((p: any) => p.price || 0);
+    console.log('Preparing product list', data);
+    // Compute price per product using variants first, then price field, fallback 0
+    const prices = data.map((p: any) => p?.variants?.[0]?.price ?? p?.price ?? 0);
+    console.log('all prices', prices);
 
-    this.minPrice.set(Math.min(...prices));
-    this.maxPrice.set(Math.max(...prices));
+    let min = 0;
+    let max = 0;
+    if (prices.length > 0) {
+      // Use Math.min/Math.max on finite numbers only
+      const finitePrices = prices.filter((v: any) => Number.isFinite(v));
+      if (finitePrices.length > 0) {
+        min = Math.min(...finitePrices);
+        max = Math.max(...finitePrices);
+      }
+    }
+
+    this.minPrice.set(min);
+    this.maxPrice.set(max);
     this.priceRange.set([this.minPrice(), this.maxPrice()]);
 
     this.allProducts.set(data);
@@ -301,19 +336,12 @@ export class ProductList implements OnInit {
     this.filteredProducts.set(sorted);
   }
 
-  // ----------------------------------------------------
-  // BRAND / CATEGORY FILTERS (Unchanged)
-  // ----------------------------------------------------
-   toggleBrand(brand: string) {
-    this.selectedBrands.set(brand);
 
-    this.updateParams();
-  }
 
   /* ----------------------------------------------------------
      PRICE FILTER
   ---------------------------------------------------------- */
-  filterProducts() {
+  getProducts() {
     this.resetPagination();
     this.isFilterDrawerOpen.set(!this.isFilterDrawerOpen());
     if (isPlatformBrowser(this.platformId)) {
@@ -322,29 +350,136 @@ export class ProductList implements OnInit {
     this.updateParams();
   }
   toggleCategory(slug: string) {
-    this.router.navigate(['/category/',slug])
-    this.isFilterDrawerOpen.set(!this.isFilterDrawerOpen());
-    this.selectedCategories.set(slug);
+    // Single-select: toggle select/deselect
+    if (this.selectedCategories() === slug) {
+      this.selectedCategories.set('');
+      // user deselected category -> do not include in API filters
+      this.includeCategoryInFilter.set(false);
+    } else {
+      this.selectedCategories.set(slug);
+      // user explicitly selected category -> include in API filters
+      this.includeCategoryInFilter.set(true);
+    }
+    this.isFilterDrawerOpen.set(false);
+    this.updateParams();
   }
+
+  toggleBrand(brand: string) {
+    this.selectedBrands.set(
+      this.selectedBrands() === brand ? '' : brand
+    );
+
+    this.updateParams(); // URL change triggers filter
+  }
+
   updateParams() {
     const params: any = {};
-    const brand = this.selectedBrands();
-    const price = this.priceRange()[1];
-    if (brand.length) params['brand'] = brand;
-    const noFilters =
-     !brand.length && price === this.priceRange()[0];
 
-    if (noFilters) {
-      this.router.navigate([], {
-        queryParams: {},
-        replaceUrl: true,
-      });
-      return;
+    const brand = this.selectedBrands();
+    const priceRange = this.priceRange();
+    const category = this.selectedCategories();
+
+    // CATEGORY
+    if (category) {
+      const isSameAsRoute =
+        this.mode === 'category' && category === this.categorySlug();
+
+      params['category'] = isSameAsRoute ? null : category;
+    } else {
+      params['category'] = null;
+    }
+
+    // BRAND
+    params['brand'] = brand || null;
+
+    // PRICE
+    if (
+      priceRange &&
+      (priceRange[0] !== this.minPrice() || priceRange[1] !== this.maxPrice())
+    ) {
+      params['min'] = priceRange[0];
+      params['max'] = priceRange[1];
+    } else {
+      params['min'] = null;
+      params['max'] = null;
     }
 
     this.router.navigate([], {
+      relativeTo: this.route,
       queryParams: params,
-      replaceUrl: true,
+      queryParamsHandling: 'merge',
+      replaceUrl: true
+    });
+  }
+
+  private getBrandsArray(): string[] {
+    const b = this.selectedBrands();
+    if (!b) return [];
+    return [String(b).trim()].filter(Boolean);
+  }
+
+  private getCategoriesArray(): string[] {
+    const c = this.selectedCategories();
+    if (!c) return [];
+    return [String(c).trim()].filter(Boolean);
+  }
+
+  private applyFilters() {
+    if (this.isFetching()) return;
+    const brands = this.getBrandsArray();
+    const categories = this.getCategoriesArray();
+    const price = this.priceRange();
+
+    if (
+      !brands.length &&
+      !categories.length &&
+      (!price || (price[0] === this.minPrice() && price[1] === this.maxPrice()))
+    ) {
+      if (this.mode === 'category' && this.categorySlug())
+        return this.loadCategoryProducts(this.categorySlug());
+
+      if (this.mode === 'subcategory' && this.subCategorySlug())
+        return this.loadSubCategoryProducts({ slug: this.subCategorySlug(), subSlug: '' });
+
+      if (this.mode === 'search' && this.searchQuery())
+        return this.loadSearchProducts();
+
+      this.resetPagination();
+      this.loadAllProducts();
+      return;
+    }
+
+    // Only include category filter if allowed (from route, queryparam or user selection)
+    const categoriesToSend = this.includeCategoryInFilter() ? categories : [];
+
+    this.isLoading.set(true);
+    this.productService.getProduct(undefined, undefined, categoriesToSend, brands, undefined, undefined, price).subscribe({
+      next: (res: any) => {
+        // Handle server response shape: { products: [], filters: { categories: [], brands: [], priceRange: { min, max } } }
+        const data = res?.products ?? res?.data ?? res ?? [];
+
+        // Update dynamic filter options if provided by backend
+        const filters = res?.filters ?? res?.data?.filters ?? null;
+        if (filters) {
+          if (filters.brands) this.brands.set(filters.brands || []);
+          if (filters.categories) this.categories.set(filters.categories || []);
+          if (filters.priceRange) {
+            this.minPrice.set(filters.priceRange.min ?? this.minPrice());
+            this.maxPrice.set(filters.priceRange.max ?? this.maxPrice());
+            // If current price range is outside new bounds, clamp it
+            const pr = this.priceRange();
+            const newMin = this.minPrice();
+            const newMax = this.maxPrice();
+            this.priceRange.set([Math.max(pr[0], newMin), Math.min(pr[1], newMax)]);
+          }
+        }
+
+        this.prepareProductList(data);
+        this.isLoading.set(false);
+      },
+      error: () => {
+        this.isLoading.set(false);
+      }
     });
   }
 
@@ -356,25 +491,25 @@ export class ProductList implements OnInit {
     this.selectedStorage.set('');
     this.searchQuery.set('');
     this.priceRange.set([this.minPrice(), this.maxPrice()]);
-    this.filterProducts();
+    this.getProducts();
   }
 
   // ----------------------------------------------------
   // FILTER DRAWER (Unchanged)
   // ----------------------------------------------------
-  checkScreenSize() { 
+  checkScreenSize() {
     if (isPlatformBrowser(this.platformId)) {
       this.isMobileView.set(window.innerWidth < 768);
       if (!this.isMobileView()) this.isFilterDrawerOpen.set(false);
     }
-   }
-  toggleFilterDrawer() { 
+  }
+  toggleFilterDrawer() {
     this.isFilterDrawerOpen.set(!this.isFilterDrawerOpen());
 
     if (isPlatformBrowser(this.platformId)) {
       document.body.classList.toggle('filter-drawer-open', this.isFilterDrawerOpen());
     }
-   }
+  }
 
   // ----------------------------------------------------
   // Add to Cart (EXTENDED)
