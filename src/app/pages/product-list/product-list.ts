@@ -39,6 +39,7 @@ export class ProductList implements OnInit {
 
   selectedCategories = signal<string>('');
   selectedBrands = signal<string>('');
+  selectedSubCategory = signal<string>('');
   selectedStorage = signal<string>('');
   selectedProcessor = signal<string>('');
   priceRange = signal<[number, number]>([0, 0]);
@@ -147,6 +148,7 @@ export class ProductList implements OnInit {
         if (
           this.selectedBrands() ||
           this.selectedCategories() ||
+          this.selectedSubCategory() ||
           this.searchQuery()
         ) return;
 
@@ -182,6 +184,10 @@ export class ProductList implements OnInit {
         this.selectedCategories.set(String(query['category']));
       }
 
+      if (query['subcategory']) {
+        this.selectedSubCategory.set(String(query['subcategory']));
+      }
+
       if (query['min'] && query['max']) {
         this.priceRange.set([Number(query['min']), Number(query['max'])]);
       }
@@ -201,6 +207,10 @@ export class ProductList implements OnInit {
 
       if (params['category']) {
         this.selectedCategories.set(String(params['category']).split(',')[0] || '');
+      }
+
+      if (params['subcategory']) {
+        this.selectedSubCategory.set(String(params['subcategory']).split(',')[0] || '');
       }
 
       if (params['min'] && params['max']) {
@@ -248,6 +258,7 @@ export class ProductList implements OnInit {
     if (
       this.selectedBrands() ||
       this.selectedCategories() ||
+      this.selectedSubCategory() ||
       this.searchQuery()
     ) {
       return; // filtered mode active
@@ -372,12 +383,20 @@ export class ProductList implements OnInit {
     this.updateParams(); // URL change triggers filter
   }
 
+  toggleSubCategory(subSlug: string) {
+    this.selectedSubCategory.set(
+      this.selectedSubCategory() === subSlug ? '' : subSlug
+    ); 
+    this.updateParams(); // URL change triggers filter
+  }
+
   updateParams() {
     const params: any = {};
 
     const brand = this.selectedBrands();
     const priceRange = this.priceRange();
     const category = this.selectedCategories();
+    const subCategory = this.selectedSubCategory();
 
     // CATEGORY
     if (category) {
@@ -387,6 +406,13 @@ export class ProductList implements OnInit {
       params['category'] = isSameAsRoute ? null : category;
     } else {
       params['category'] = null;
+    }
+
+    // SUBCATEGORY
+    if (subCategory) {
+      params['subcategory'] = subCategory;
+    } else {
+      params['subcategory'] = null;
     }
 
     // BRAND

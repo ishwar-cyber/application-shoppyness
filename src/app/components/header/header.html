@@ -139,7 +139,8 @@
                  (mouseover)="openMegaMenu(cat)">
               <button class="category-btn"
                       [class.active]="activeCategory() === cat.slug"
-                      [routerLink]="['/category', cat.slug]">
+                      [routerLink]="['/products']"
+                      [queryParams]="{ category: cat.slug }">
                 {{ cat.name }}
               </button>
 
@@ -149,10 +150,11 @@
                   <div class="mega-column">
                     <div class="mega-links">
                       @for (sub of cat.subcategories; track sub.slug) {
-                        <a class="mega-link"
-                           [routerLink]="['/category', cat.slug, sub.slug]">
-                          {{ sub.name }}
-                        </a>
+                       <a class="mega-link"
+                        [routerLink]="['/products']"
+                        [queryParams]="{ category: cat.slug, subcategory: sub.slug }">
+                        {{ sub.name }}
+                      </a>
                       }
                     </div>
                   </div>
