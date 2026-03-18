@@ -3,7 +3,7 @@
     <h2 class="title">Contact Us</h2>
     <p class="subtitle">We’d love to hear from you</p>
 
-    <form [formGroup]="contactForm" (ngSubmit)="onSubmit()">
+    <form [formGroup]="contactForm">
 
       <div class="row">
         <!-- First Name -->
@@ -12,10 +12,11 @@
           <input type="text" class="form-control"
                  formControlName="firstName"
                  placeholder="Enter first name" />
-
-          <div class="error" *ngIf="isInvalid('firstName')">
-            Only letters, 2-100 characters required
-          </div>
+            @if (isInvalid('firstName')) {
+                <div class="error">
+                    Only letters, 2-100 characters required
+                </div>
+            }
         </div>
 
         <!-- Last Name -->
@@ -24,10 +25,11 @@
           <input type="text" class="form-control"
                  formControlName="lastName"
                  placeholder="Enter last name" />
-
-          <div class="error" *ngIf="isInvalid('lastName')">
-            Only letters, 2-100 characters required
-          </div>
+            @if (isInvalid('lastName')) {
+                <div class="error">
+                    Only letters, 2-100 characters required
+                </div>
+            }
         </div>
       </div>
 
@@ -37,22 +39,24 @@
         <input type="email" class="form-control"
                formControlName="email"
                placeholder="example@email.com" />
-
-        <div class="error" *ngIf="isInvalid('email')">
-          Enter valid email (example@email.com)
-        </div>
+        @if (isInvalid('email')) {
+            <div class="error">
+              Enter valid email (example@email.com)
+            </div>
+        }
       </div>
 
       <!-- Phone -->
       <div class="mb-3">
         <label>Phone</label>
         <input type="text" class="form-control"
-               formControlName="phone"
+               formControlName="phone" minlength="10" maxlength="10"
                placeholder="10 digit number" />
-
-        <div class="error" *ngIf="isInvalid('phone')">
-          Enter valid 10-digit number
-        </div>
+        @if (isInvalid('phone')) {
+            <div class="error">
+              Enter valid 10-digit number
+            </div>
+        }
       </div>
 
       <!-- Message -->
@@ -62,15 +66,16 @@
                   class="form-control"
                   formControlName="message"
                   placeholder="Write your requirement..."></textarea>
-
-        <div class="error" *ngIf="isInvalid('message')">
-          Message must be at least 5 characters
-        </div>
+        @if (isInvalid('message')) {
+            <div class="error">
+              Message must be at least 5 characters
+            </div>
+        }
       </div>
 
       <!-- Submit -->
-      <button class="btn btn-primary w-100"
-              [disabled]="isSubmitting()">
+      <button class="btn btn-primary w-100" type="button"
+              [disabled]="isSubmitting()" (click)="onSubmit()">
         {{ isSubmitting() ? 'Submitting...' : 'Submit' }}
       </button>
 

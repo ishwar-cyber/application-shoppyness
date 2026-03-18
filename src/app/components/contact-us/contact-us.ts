@@ -38,9 +38,12 @@ export class ContactUs {
       Validators.required,
       Validators.email
     ]],
+    // pattern start with 6 to 9 and total 10 digits
     phone: ['', [
       Validators.required,
-      Validators.pattern(/^[0-9]{10}$/)
+      Validators.pattern(/^[6-9][0-9]{9}$/),
+      Validators.minLength(10),
+      Validators.maxLength(10)
     ]],
     message: ['', [
       Validators.required,
