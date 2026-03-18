@@ -46,7 +46,8 @@ export class ProductList implements OnInit {
 
   minPrice = signal<number>(0);
   maxPrice = signal<number>(0);
-
+  // ✅ Selected range
+  selectedMaxPrice = signal<number>(0);
   searchQuery = signal<string>('');
   viewMode = signal<'grid' | 'list'>('grid');
   sortOption = signal<string>('featured');
@@ -118,7 +119,6 @@ export class ProductList implements OnInit {
     // CASE 1: External products
     // -------------------------
     if (this.mode === 'external' && this.products) {
-      console.log('Using external products input', this.products);
       this.prepareProductList(this.products);
       this.isLoading.set(false);
       return;
@@ -159,6 +159,11 @@ export class ProductList implements OnInit {
     observer.observe(this.scrollTrigger.nativeElement);
   }
 
+    // ✅ Handle change
+  onPriceChange(event: Event) {
+    const value = +(event.target as HTMLInputElement).value;
+    this.selectedMaxPrice.set(value);
+  }
   setupFromRoute() {
     combineLatest([
       this.route.paramMap,
@@ -254,7 +259,6 @@ export class ProductList implements OnInit {
   }
 
   loadAllProducts() {
-    console.log('auto-loading products for page', this.page());
     if (
       this.selectedBrands() ||
       this.selectedCategories() ||
@@ -267,6 +271,17 @@ export class ProductList implements OnInit {
     this.isFetching.set(true);
     this.productService.getProduct(this.page(), this.limit).subscribe((res: any) => {
       const newProducts = res.data || [];
+      // Get Min and Max price form new products
+      for (const p of newProducts) {
+        const price = p?.variants?.[0]?.price ?? p?.price ?? 0;
+        if (price < this.minPrice() || this.minPrice() === 0) {
+          this.minPrice.set(price);
+        }
+        if (price > this.maxPrice()) {
+          this.maxPrice.set(price);
+          this.selectedMaxPrice.set(price);
+        }
+      }
       if (newProducts.length < this.limit) {
         this.hasMore.set(false); // no more pages
       }
@@ -306,24 +321,18 @@ export class ProductList implements OnInit {
   // Prepare Products (Unchanged)
   // ----------------------------------------------------
   private prepareProductList(data: any[]) {
-    console.log('Preparing product list', data);
     // Compute price per product using variants first, then price field, fallback 0
     const prices = data.map((p: any) => p?.variants?.[0]?.price ?? p?.price ?? 0);
-    console.log('all prices', prices);
-
-    let min = 0;
-    let max = 0;
-    if (prices.length > 0) {
-      // Use Math.min/Math.max on finite numbers only
-      const finitePrices = prices.filter((v: any) => Number.isFinite(v));
-      if (finitePrices.length > 0) {
-        min = Math.min(...finitePrices);
-        max = Math.max(...finitePrices);
+      for (const p of data) {
+        const price = p?.variants?.[0]?.price ?? p?.price ?? 0;
+        if (price < this.minPrice() || this.minPrice() === 0) {
+          this.minPrice.set(price);
+        }
+        if (price > this.maxPrice()) {
+          this.maxPrice.set(price);
+          this.selectedMaxPrice.set(price);
+        }
       }
-    }
-
-    this.minPrice.set(min);
-    this.maxPrice.set(max);
     this.priceRange.set([this.minPrice(), this.maxPrice()]);
 
     this.allProducts.set(data);
@@ -358,7 +367,7 @@ export class ProductList implements OnInit {
     if (isPlatformBrowser(this.platformId)) {
       document.body.classList.toggle('filter-drawer-open', this.isFilterDrawerOpen());
     }
-    this.updateParams();
+    this.applyFilters();
   }
   toggleCategory(slug: string) {
     // Single-select: toggle select/deselect
@@ -394,7 +403,6 @@ export class ProductList implements OnInit {
     const params: any = {};
 
     const brand = this.selectedBrands();
-    const priceRange = this.priceRange();
     const category = this.selectedCategories();
     const subCategory = this.selectedSubCategory();
 
@@ -420,11 +428,10 @@ export class ProductList implements OnInit {
 
     // PRICE
     if (
-      priceRange &&
-      (priceRange[0] !== this.minPrice() || priceRange[1] !== this.maxPrice())
+      this.minPrice() || this.selectedMaxPrice()
     ) {
-      params['min'] = priceRange[0];
-      params['max'] = priceRange[1];
+      params['min'] = this.minPrice();
+      params['max'] = this.selectedMaxPrice();
     } else {
       params['min'] = null;
       params['max'] = null;
@@ -454,7 +461,7 @@ export class ProductList implements OnInit {
     if (this.isFetching()) return;
     const brands = this.getBrandsArray();
     const categories = this.getCategoriesArray();
-    const price = this.priceRange();
+    const price = [this.minPrice(), this.selectedMaxPrice()];
 
     if (
       !brands.length &&
@@ -477,8 +484,8 @@ export class ProductList implements OnInit {
 
     // Only include category filter if allowed (from route, queryparam or user selection)
     const categoriesToSend = this.includeCategoryInFilter() ? categories : [];
-
-    this.isLoading.set(true);
+    price
+    this.isLoading.set(true); 
     this.productService.getProduct(undefined, undefined, categoriesToSend, brands, undefined, undefined, price).subscribe({
       next: (res: any) => {
         // Handle server response shape: { products: [], filters: { categories: [], brands: [], priceRange: { min, max } } }
@@ -518,6 +525,12 @@ export class ProductList implements OnInit {
     this.searchQuery.set('');
     this.priceRange.set([this.minPrice(), this.maxPrice()]);
     this.getProducts();
+    // reset URL
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {},
+      replaceUrl: true
+    });
   }
 
   // ----------------------------------------------------

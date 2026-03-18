@@ -80,40 +80,6 @@
     }
   }
 
-  /* Filter Groups */
-  .filter-group {
-    margin-bottom: 1.4rem;
-
-    h4 {
-      font-size: 15px;
-      margin-bottom: 10px;
-      font-weight: 600;
-      color: var(--text-dark);
-    }
-
-    .filter-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 8px;
-      cursor: pointer;
-      font-size: 14px;
-      color: var(--text-muted);
-      &.active{
-        color: var(--primary);
-        font-weight: 700;
-      }
-      input {
-        cursor: pointer;
-      }
-    }
-  }
-
-  .price-label {
-    font-size: 13px;
-    margin-top: 6px;
-    color: #374151;
-  }
 
   /* Buttons */
   .apply-btn,
@@ -590,4 +556,28 @@
 .spinner-border {
   width: 3rem;
   height: 3rem;
+}
+.filter-group {
+  background: #fff;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+
+  h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .form-range {
+    width: 100%;
+    cursor: pointer;
+  }
+
+  .price-label {
+    margin-top: 10px;
+    font-weight: 500;
+    color: #333;
+  }
 }

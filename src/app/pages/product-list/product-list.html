@@ -50,13 +50,15 @@
           <h4>Price</h4>
           <input 
             type="range"
-            min="{{ minPrice() }}"
-            max="{{ maxPrice() }}"
-            [(ngModel)]="priceRange()[1]"
+            [min]="minPrice()"
+            [max]="maxPrice()"
+            [value]="selectedMaxPrice()"
+            (input)="onPriceChange($event)"
             (change)="getProducts()"
+            class="form-range"
           />
           <p class="price-label">
-            ₹{{ minPrice() }} - ₹{{ priceRange()[1] }}
+            ₹{{ minPrice() }} - ₹{{ selectedMaxPrice() }}
           </p>
         </div>
 

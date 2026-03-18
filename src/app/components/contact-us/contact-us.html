@@ -1,1 +1,79 @@
-<p>contact-us works!</p>
+<div class="contact-container">
+  <div class="contact-card shadow-lg">
+    <h2 class="title">Contact Us</h2>
+    <p class="subtitle">We’d love to hear from you</p>
+
+    <form [formGroup]="contactForm" (ngSubmit)="onSubmit()">
+
+      <div class="row">
+        <!-- First Name -->
+        <div class="col-md-6 mb-3">
+          <label>First Name</label>
+          <input type="text" class="form-control"
+                 formControlName="firstName"
+                 placeholder="Enter first name" />
+
+          <div class="error" *ngIf="isInvalid('firstName')">
+            Only letters, 2-100 characters required
+          </div>
+        </div>
+
+        <!-- Last Name -->
+        <div class="col-md-6 mb-3">
+          <label>Last Name</label>
+          <input type="text" class="form-control"
+                 formControlName="lastName"
+                 placeholder="Enter last name" />
+
+          <div class="error" *ngIf="isInvalid('lastName')">
+            Only letters, 2-100 characters required
+          </div>
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="mb-3">
+        <label>Email</label>
+        <input type="email" class="form-control"
+               formControlName="email"
+               placeholder="example@email.com" />
+
+        <div class="error" *ngIf="isInvalid('email')">
+          Enter valid email (example@email.com)
+        </div>
+      </div>
+
+      <!-- Phone -->
+      <div class="mb-3">
+        <label>Phone</label>
+        <input type="text" class="form-control"
+               formControlName="phone"
+               placeholder="10 digit number" />
+
+        <div class="error" *ngIf="isInvalid('phone')">
+          Enter valid 10-digit number
+        </div>
+      </div>
+
+      <!-- Message -->
+      <div class="mb-3">
+        <label>What are you looking for?</label>
+        <textarea rows="4"
+                  class="form-control"
+                  formControlName="message"
+                  placeholder="Write your requirement..."></textarea>
+
+        <div class="error" *ngIf="isInvalid('message')">
+          Message must be at least 5 characters
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <button class="btn btn-primary w-100"
+              [disabled]="isSubmitting()">
+        {{ isSubmitting() ? 'Submitting...' : 'Submit' }}
+      </button>
+
+    </form>
+  </div>
+</div>
