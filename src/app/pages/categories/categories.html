@@ -19,11 +19,16 @@
     @for (cat of categories(); track cat.id) {
       <a class="category-card" [routerLink]="['/category', cat.slug]">
         <div class="icon-box">
-          <img
-            [src]="cat.image || 'assets/default-category.svg'"
-            [alt]="cat.name"
-            loading="lazy"
-          />
+          @if(cat.image.url){
+              <img
+                [src]="cat.image.url"
+                [alt]="cat.name"
+                loading="lazy"
+              />
+              } @else {
+                <i class="bi bi-grid-3x3-gap-fill"></i>
+              } 
+          
         </div>
         <h3>{{ cat.name }}</h3>
       </a>

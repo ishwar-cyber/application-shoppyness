@@ -105,7 +105,6 @@ export class PaymentStatus implements OnInit {
   }
 
   ngOnInit(): void {
-    // Cashfree sends ?order_id=...
     this.orderId.set(this.route.snapshot.queryParamMap.get('order_id') || this.route.snapshot.paramMap.get('orderId'));
     this.pollStatus();
   }
